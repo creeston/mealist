@@ -50,9 +50,8 @@ export class MenuService {
 
   listMenus() {
     if (!this.menus) {
-      this.menus = this.http.post<Menu[]>(
-        environment.apiUrl + '/api/ListMenus',
-        {},
+      this.menus = this.http.get<Menu[]>(
+        environment.apiUrl + '/api/menus',
         this.createHttpOptions()
       );
       this.menus.subscribe((menus) => {

@@ -67,7 +67,7 @@ export class AuthenticationService {
     };
 
     return this.http
-      .post(environment.apiUrl + '/api/GetUserProfile', {}, httpOptions)
+      .get(environment.apiUrl + '/api/GetUserProfile', httpOptions)
       .pipe(
         map((r) => {
           let profile = r as UserProfile;

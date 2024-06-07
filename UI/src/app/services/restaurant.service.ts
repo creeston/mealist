@@ -20,7 +20,7 @@ export class RestaurantService {
 
   createRestaurant(rest: Restaurant) {
     return this.http.post(
-      environment.apiUrl + '/api/CreateRestaurant',
+      environment.apiUrl + '/api/restaurants',
       rest,
       this.createHttpOptions()
     );
@@ -35,8 +35,8 @@ export class RestaurantService {
   }
 
   updateRestaurant(rest: Restaurant) {
-    return this.http.post(
-      environment.apiUrl + '/api/UpdateRestaurant',
+    return this.http.put(
+      environment.apiUrl + '/api/restaurants',
       rest,
       this.createHttpOptions()
     );
@@ -48,9 +48,8 @@ export class RestaurantService {
     }
     if (!this.restaurants$) {
       this.restaurants$ = this.http
-        .post<Restaurant[]>(
-          environment.apiUrl + '/api/ListRestaurants',
-          {},
+        .get<Restaurant[]>(
+          environment.apiUrl + '/api/restaurants',
           this.createHttpOptions()
         )
         .pipe(
@@ -72,9 +71,8 @@ export class RestaurantService {
 
   deleteRestaurant(restId: string) {
     this.clearCache();
-    return this.http.post(
-      environment.apiUrl + '/api/DeleteRestaurant/' + restId,
-      {},
+    return this.http.delete(
+      environment.apiUrl + '/api/restaurants/' + restId,
       this.createHttpOptions()
     );
   }

@@ -61,9 +61,8 @@ export class QrMenuService {
       return;
     }
     if (!this.qrMenus) {
-      this.qrMenus = this.http.post<QrMenu[]>(
-        environment.apiUrl + '/api/ListQrMenus',
-        {},
+      this.qrMenus = this.http.get<QrMenu[]>(
+        environment.apiUrl + '/api/codes',
         this.createHttpOptions()
       );
       this.qrMenus.subscribe((data: QrMenu[] | HttpEvent<QrMenu[]>) => {

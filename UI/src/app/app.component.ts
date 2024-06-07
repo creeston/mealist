@@ -79,6 +79,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
+    this.cookie.set('ApiJwt', 'JWT');
     let lang = this.cookie.get('LOCALE');
     if (lang) {
       this.translate.use(lang);

@@ -54,7 +54,7 @@ export class RestaurantsComponent implements OnInit {
 
   createRestaurant() {
     const dialogRef = this.dialog.open(CreateRestaurantDialog, {
-      width: '450px',
+      width: '550px',
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
