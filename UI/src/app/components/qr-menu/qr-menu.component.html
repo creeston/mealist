@@ -1,0 +1,230 @@
+<div #container class="container">
+  <!-- <mat-spinner *ngIf="(!menu || menuLoading) && !userId" class="loading-spinner"></mat-spinner> -->
+  <div
+    *ngIf="!menu || menuLoading"
+    class="gradient-border"
+    [class.loadingplaceholder]="!previewMode"
+    [class.previewloadingplaceholder]="previewMode"
+    [class.menuloadingpreview]="menuLoading"
+    [class.menuloading]="!menuLoading"
+  >
+    <img
+      *ngIf="!previewImageParam"
+      [src]="
+        'https://qrmenuapistorage.blob.core.windows.net/preview/' +
+        urlSuffix +
+        '.jpg'
+      "
+      class="menu-thumbnail"
+      (loaded)="checkColors()"
+    />
+    <img
+      *ngIf="previewImageParam"
+      [src]="previewImageParam"
+      class="menu-thumbnail"
+      (loaded)="checkColors()"
+    />
+    <div
+      *ngIf="isColorDetected"
+      class="gradient-border-after"
+      [style.background-image]="
+        'linear-gradient(60deg,' +
+        color1 +
+        ',' +
+        color2 +
+        ',' +
+        color3 +
+        ',' +
+        color4 +
+        ')'
+      "
+    ></div>
+  </div>
+  <div class="back-button-container" *ngIf="selectedMenu">
+    <button
+      type="button"
+      mat-button
+      [style.backgroundColor]="menu!.secondaryColor"
+      [style.color]="menu!.fontColor"
+      (click)="container.scrollTop = 0; back()"
+      [ngClass]="{
+        'back-button': !previewMode,
+        'back-button-preview': previewMode
+      }"
+    >
+      <mat-icon class="back-icon">west</mat-icon>
+    </button>
+  </div>
+  <div
+    *ngIf="menu && !menuLoading"
+    class="menu"
+    [ngStyle]="{
+      'box-shadow': '0px 0px 17px 0px ' + menu.primaryColor + ', 0 0px 0px 0px'
+    }"
+  >
+    <div
+      class="menu-metadata"
+      *ngIf="!selectedMenu"
+      [style.backgroundColor]="menu.primaryColor"
+    >
+      <div
+        *ngIf="
+          menu.restaurant &&
+          !menu.hideSections.includes('wifi') &&
+          menu.restaurant.wifiName &&
+          menu.restaurant.wifiPassword
+        "
+        class="wifi-data"
+      >
+        <span class="iconify" data-icon="mdi-wifi"></span>
+        <span>WIFI: {{ menu.restaurant.wifiName }}</span>
+        <span>PASWORD: {{ menu.restaurant.wifiPassword }}</span>
+        <!-- <button
+          mat-icon-button
+          [cdkCopyToClipboard]="menu.restaurant.wifiPassword"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button> -->
+      </div>
+      <h1
+        *ngIf="menu.restaurant && !menu.hideSections.includes('name')"
+        class="rest-name"
+        [style.color]="menu.fontColor"
+      >
+        {{ menu.restaurant.name }}
+      </h1>
+      <div
+        class="rest-social flex-container"
+        *ngIf="menu.restaurant && !menu.hideSections.includes('social')"
+      >
+        <a
+          href="{{ menu.restaurant.facebookUrl }}"
+          target="_blank"
+          *ngIf="menu.restaurant.facebookUrl"
+          [style.color]="menu.fontColor"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi-facebook"
+            data-inline="false"
+          ></span>
+        </a>
+        <a
+          href="{{ menu.restaurant.instagramUrl }}"
+          target="_blank"
+          *ngIf="menu.restaurant.instagramUrl"
+          [style.color]="menu.fontColor"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi-instagram"
+            data-inline="false"
+          ></span>
+        </a>
+        <a
+          href="{{ menu.restaurant.vkUrl }}"
+          target="_blank"
+          *ngIf="menu.restaurant.vkUrl"
+          [style.color]="menu.fontColor"
+        >
+          <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
+        </a>
+        <a
+          href="{{ menu.restaurant.tripAdvisorUrl }}"
+          target="_blank"
+          *ngIf="menu.restaurant.tripAdvisorUrl"
+          [style.color]="menu.fontColor"
+        >
+          <span
+            class="iconify"
+            data-icon="fa:tripadvisor"
+            data-inline="false"
+          ></span>
+        </a>
+      </div>
+      <div class="menu-restaurant">
+        <p
+          *ngIf="menu.displayName"
+          class="menu-name"
+          [style.color]="menu.fontColor"
+        >
+          {{ menu.displayName }}
+        </p>
+        <p
+          *ngIf="menu.restaurant && !menu.hideSections.includes('address')"
+          class="rest-address"
+          [style.color]="menu.fontColor"
+        >
+          {{ menu.restaurant.address }}
+        </p>
+      </div>
+    </div>
+    <div class="menus-container flex-container" *ngIf="!selectedMenu">
+      <div *ngFor="let item of menu.menuItems" class="menu-item">
+        <div
+          class="menu-image-container"
+          (click)="container.scrollTop = 0; openMenu(item)"
+        >
+          <img
+            [src]="item.images[item.thumbnailIndex]"
+            class="menu-thumbnail"
+            *ngIf="item.thumbnailIndex >= 0"
+            (loaded)="checkMenuColors()"
+          />
+          <img
+            src="assets/placeholder.png"
+            class="menu-thumbnail"
+            *ngIf="item.thumbnailIndex < 0"
+          />
+          <div
+            class="menu-item-name"
+            [style.backgroundColor]="menu.secondaryColor"
+          >
+            <p [style.color]="menu.fontColor">{{ item.title }}</p>
+            <mat-icon [style.color]="menu.fontColor">visibility</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="selectedMenu">
+      <div
+        *ngFor="let image of selectedMenu.images; let i = index"
+        #menuContent
+      >
+        <pinch-zoom [wheel]="false">
+          <img
+            crossorigin="anonymous"
+            class="menu-image"
+            [src]="image"
+            [id]="'image_' + i"
+          />
+        </pinch-zoom>
+        <img
+          crossorigin="anonymous"
+          class="menu-image-original"
+          [src]="image"
+          [id]="'image_original_' + i"
+          (loaded)="drawCanvas(i)"
+        />
+        <canvas [id]="'canvas_' + i" class="markup-canvas"> </canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Invisible canvas for rending PDF -->
+<div
+  *ngIf="menu && !previewMode"
+  [style.visibility]="'hidden'"
+  [style.position]="'absolute'"
+>
+  <div *ngFor="let menu of menu.menuItems; let i = index">
+    <canvas
+      *ngFor="let k of Arr(menu.pagesCount).fill(1); let j = index"
+      [id]="'viewcanvas_' + i + '_' + j"
+      [style.height.px]="0"
+      [style.width.px]="0"
+    >
+    </canvas>
+  </div>
+</div>

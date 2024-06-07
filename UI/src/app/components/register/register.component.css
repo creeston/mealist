@@ -1,0 +1,25 @@
+.register-button {
+    margin: 0 auto;
+    display: block;
+}
+
+.mat-spinner {
+    margin: 30px auto !important;
+}
+
+.login-link {
+    text-decoration: underline;
+    color: grey;
+}
+
+.mat-card-footer p {
+    margin-bottom: 0px;
+    margin-top: 20px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.sent_message {
+    text-align: center;
+    font-size: 13px;
+}

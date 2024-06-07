@@ -1,0 +1,48 @@
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+  <mat-card
+    [class.padding]="screen.width > 800"
+    [class.nopadding]="screen.width <= 800"
+  >
+    <mat-card-header>
+      <mat-card-title [translate]="'login.enter'"></mat-card-title>
+    </mat-card-header>
+    <div class="example-full-width">
+      <button mat-button class="login-button">
+        <mat-icon style="width: 50px; height: 30px" svgIcon="logo"></mat-icon
+        ><span [translate]="'login.enter_google'"></span>
+      </button>
+    </div>
+    <!-- <p class="gradient">
+      <span [translate]="'or'"></span>
+    </p>
+    <mat-card-content>
+      <form [formGroup]="myForm">
+        <mat-form-field class="example-full-width">
+          <input matInput [placeholder]="'login.email.title' | translate" formControlName="email">
+          <mat-error *ngIf="triedToSend && myForm.get('email').invalid"></mat-error>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+          <input matInput [placeholder]="'login.password.title' | translate" formControlName="password" [type]="hide ? 'password' : 'text'">
+          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="triedToSend && myForm.get('password').invalid"></mat-error>
+        </mat-form-field>
+      <div class="full-width flex-container">
+        <button mat-raised-button [disabled]="disabled" (click)="signIn()">{{'login.enter' | translate}}</button>
+        <button mat-raised-button (click)="resetPassword()" >{{'login.password.forgot' | translate}}</button>
+      </div>
+    </form> 
+  </mat-card-content>-->
+    <mat-card-footer>
+      <p>
+        <span [translate]="'login.register_1'"></span
+        ><a
+          class="register-link"
+          [routerLink]="['/register']"
+          [translate]="'login.register_2'"
+        ></a>
+      </p>
+    </mat-card-footer>
+  </mat-card>
+</div>

@@ -1,0 +1,62 @@
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+  <mat-card [class.padding]="screen.width > 800">
+    <mat-card-header>
+      <mat-card-title [translate]="'login.registration'"></mat-card-title>
+    </mat-card-header>
+    <div class="example-full-width">
+      <button mat-button class="register-button">
+        <mat-icon style="width: 50px; height: 30px" svgIcon="logo"></mat-icon>
+        <span [translate]="'login.register_google'"></span>
+      </button>
+    </div>
+    <!-- <mat-card-content>
+        <form [formGroup]="myForm" *ngIf="registerState == 0 && !loading">
+         
+          <p class="gradient">
+            <span [translate]="'or'"></span>
+          </p>
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="name@example.com" formControlName="email" required>
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <input matInput [placeholder]="'login.password.title' | translate" formControlName="password" required [type]="hide ? 'password' : 'text'">
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="example-full-width">
+            <input matInput [placeholder]="'login.password.repeat' | translate" formControlName="confirmPassword" required [type]="hideConfirm ? 'password' : 'text'">
+            <button mat-icon-button matSuffix (click)="hideConfirm = !hideConfirm" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirm">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+        </form>
+        <mat-spinner *ngIf="loading"></mat-spinner>
+        <form *ngIf="registerState == 1 && !loading" [formGroup]="codeForm">
+          <p class="sent_message"><span [translate]="'login.code.was_sent'"></span>: {{myForm.get('email').value}}</p>
+          <mat-form-field class="example-full-width">
+            <mat-label [translate]="'login.code.title'"></mat-label>
+            <input matInput placeholder="123456" formControlName="code" required>
+          </mat-form-field>
+        </form>
+        <div class="example-full-width" *ngIf="!loading && registerState == 0">
+          <button mat-raised-button class="register-button" (click)="sendCode()" [disabled]="disabled" >{{'login.register' | translate}}</button>
+        </div>
+        <div class="flex-container" *ngIf="!loading && registerState == 1">
+          <button mat-button (click)="back()" *ngIf="registerState == 1" >{{'back' | translate}}</button>
+          <button mat-raised-button (click)="register()" [disabled]="disabled">{{'login.register' | translate}}</button>
+        </div>
+      </mat-card-content> -->
+    <mat-card-footer>
+      <p>
+        <span [translate]="'login.enter_1'"></span
+        ><a
+          class="login-link"
+          [routerLink]="['/login']"
+          [translate]="'login.enter_2'"
+        ></a>
+      </p>
+    </mat-card-footer>
+  </mat-card>
+</div>

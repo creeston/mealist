@@ -1,0 +1,132 @@
+.menuThumbnail  {
+    object-fit: cover;
+}
+
+.crop {
+    overflow: hidden;
+    height: 100%;
+}
+
+.flexContainer {
+    display: -webkit-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.loadingSpinner {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.mat-card-header-text {
+    margin: 0 16px !important;
+}
+
+.field {
+    width: 350px;
+}
+
+
+/* Put color overlay on image
+ .menu-image-container:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100em;
+    height: 20em;
+    background: rgba(86, 88, 233, 0.493);
+} */
+
+.drop-zone-active > .manage {
+    opacity: 0.2;
+}
+
+.drop-zone {
+    width: 100%;
+    min-height: calc(100vh - 90px);
+}
+
+.drop-zone-active > .dropdown-placeholder {
+    display: block;
+}
+
+.drop-zone-active > .empty-placeholder {
+    display: none;
+}
+
+.empty-placeholder {
+    position: absolute;
+    width: 100%;
+    z-index: 15;
+    text-align: center;
+    top: 30vh;
+    cursor: default;
+    background-color: rgba(255, 255, 255, 0.425);
+}
+
+.empty-placeholder > h1 {
+    font-size: 55px;
+    line-height: 55px;
+    color: #66686950;
+    font-weight: bold;
+}
+
+.empty-placeholder > p {
+    font-weight: bold;
+    color: #66686950;
+}
+
+.dropdown-placeholder {
+    display: none;
+    position: absolute;
+    width: 100%;
+    z-index: 20;
+    text-align: center;
+    top: 30vh;
+    cursor: none;
+    background-color: rgba(255, 255, 255, 0.425);
+}
+
+.dropdown-placeholder > h1 {
+    font-size: 55px;
+    line-height: 55px;
+    color: #666869;
+    font-weight: bold;
+}
+
+.dropdown-placeholder > p {
+    font-weight: bold;
+    color: #666869;
+}
+
+
+.mat-dialog-container {
+    padding: 0px;
+}
+
+.confirmation-container {
+    margin: 24px;
+}
+
+.progress-bar {
+    position: absolute !important;
+}
+
+.icon-button {
+    min-width: 40px;
+    margin-right: 10px;
+    padding: 0px;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+    background-color: #A0B454b0;
+  }
+  
+  ::ng-deep .mat-progress-bar-buffer {
+    background: #E4E8EB;
+  }

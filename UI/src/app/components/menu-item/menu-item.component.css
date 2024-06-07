@@ -1,0 +1,144 @@
+.menu-row {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 2px;
+    height: 150px;
+    margin-bottom: 10px;
+}
+
+.menu-title-icon {
+    font-size: 25px;
+    color: #797d80;
+    position: absolute;
+    left: 33px;
+    top: 35px;
+}
+
+.date-icon {
+    font-size: 22px;
+    color: #d4d4d4;
+    position: absolute;
+    left: -30px;
+    top: -2px;
+}
+
+.menu-title {
+    color: #797d80;
+    border-color: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.menu-button {
+    color: #797d80;
+    font-size: 25px;
+    display: inline-block;
+}
+
+.menu-date {
+    font-size: 14px;
+    color: #a4a6a8;
+    white-space: nowrap;
+    position: relative;
+    cursor: default;
+    margin-bottom: 5px;
+}
+
+.menu-metadata {
+    width: calc(100% - 65px);
+    height: 100%;
+    padding-top: 75px;
+    padding-left: 65px;
+}
+
+
+.menu-row:hover {
+    border: 1px solid #d4d4d4;
+}
+
+.menu-image-container {
+    position: relative;
+    height: 20em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.menu-image-container:hover {
+    cursor: pointer;
+}
+
+
+
+.empty-image-placeholder { 
+    text-align: center;
+    /* background-color: rgba(86, 88, 233, 0.493); */
+    background-color: #9fb454d4;
+    height: 100%;
+    width: 100%;
+    padding-top: 90px;
+}
+
+.empty-image-placeholder > p {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+
+.not-reviewed::before {
+    content: '❗';
+    font-size: 12px;
+    position: absolute;
+    top: -10px;
+    left: 5px;
+}
+
+.warning-asterisk {
+    color: red;
+}
+
+.menu-phone-button {
+    display: block;
+}
+
+.menu-buttons {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.menu-features {
+
+}
+
+.menu-feature-label {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    user-select: none;
+
+    font-size: 13px;
+    color: #646464;
+}
+
+::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+    background-color: #9fb454d4 ;
+}
+
+::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+    background-color: white ;
+}
+
+.black-overlay {
+    position: fixed;
+    width: 1500px;
+    height: 20px;
+    top: 0px;
+    background-color: #00000082;
+}

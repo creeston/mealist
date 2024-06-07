@@ -1,0 +1,90 @@
+.menu-title {
+    color: #797d80;
+    border-color: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 24px;
+    margin-bottom: 10px;
+    cursor: default;
+}
+
+.rest-address {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rest-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-row:hover {
+    border: 1px solid #d4d4d4;
+}
+
+.menu-date {
+    font-size: 14px;
+    color: #a4a6a8;
+    white-space: nowrap;
+    position: relative;
+    cursor: default;
+    margin-bottom: 5px;
+}
+
+.menu-social {
+    top: -5px;
+}
+
+
+.menu-metadata {
+    width: calc(100% - 65px);
+    height: 100%;
+    padding-top: 65px;
+    padding-left: 65px;
+    overflow: hidden;
+}
+
+.menu-title-icon {
+    font-size: 25px;
+    color: #797d80;
+    position: absolute;
+    left: 33px;
+    top: 25px;
+}
+
+.date-icon {
+    font-size: 22px;
+    color: #d4d4d4;
+    position: absolute;
+    left: -30px;
+    top: -2px;
+}
+
+
+.menu-button {
+    color: #797d80;
+    font-size: 25px;
+}
+
+.menu-image-container {
+    position: relative;
+    height: 20em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.iconify { 
+    width: 15px; 
+    height: 15px; 
+}
+
+a {
+    text-decoration: none;
+    color: #797d80;
+}
+
+a > .iconify {
+    margin-left: 5px;
+}

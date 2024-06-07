@@ -1,0 +1,31 @@
+<div [style.maxHeight.px]="screen.height - 30" class="form">
+  <mat-form-field class="full-width">
+    <mat-label [translate]="'contact.title'"></mat-label>
+    <textarea matInput [formControl]="feedbackControl" rows="5"></textarea>
+    <mat-error
+      *ngIf="triedToSend && feedbackControl.invalid"
+      [translate]="'contact.enter_message'"
+    ></mat-error>
+  </mat-form-field>
+  <mat-form-field class="full-width" appearance="fill" *ngIf="!globals.email">
+    <mat-label>{{ "login.email.title" | translate }}</mat-label>
+    <input type="email" matInput [formControl]="emailFormControl" />
+    <mat-hint>{{ "login.email.callback" | translate }}</mat-hint>
+    <mat-error
+      *ngIf="triedToSend && emailFormControl.hasError('email') && !emailFormControl.hasError('required')"
+    >
+      {{ "login.email.invalid" | translate }}
+    </mat-error>
+    <mat-error *ngIf="triedToSend && emailFormControl.hasError('required')">
+      {{ "login.email.enter" | translate }}
+    </mat-error>
+  </mat-form-field>
+  <button
+    mat-raised-button
+    class="sendFeedbackButton"
+    (click)="sendFeedback()"
+    [disabled]="disabled"
+  >
+    <span [translate]="'contact.send'">{{ "send" | translate }}</span>
+  </button>
+</div>

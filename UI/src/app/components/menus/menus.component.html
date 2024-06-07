@@ -1,0 +1,69 @@
+<div (appDropZone)="onDrop($event)" class="drop-zone">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="loading"
+    class="progress-bar"
+  ></mat-progress-bar>
+  <div class="dropdown-placeholder">
+    <h1 [translate]="'menus.drop.title'"></h1>
+    <p [translate]="'menus.drop.support'"></p>
+  </div>
+  <div
+    class="empty-placeholder"
+    *ngIf="dataLoaded && (!menus || menus.length === 0)"
+  >
+    <h1 [translate]="'menus.placeholder.title'"></h1>
+    <p [translate]="'menus.placeholder.description'"></p>
+  </div>
+  <div class="manage">
+    <div class="manage-bar">
+      <div class="manager-bar-left">
+        <mat-icon aria-hidden="false">menu_book</mat-icon>
+        <div class="description-container">
+          <span
+            class="manage-description"
+            *ngIf="globals.role != 'reviewer'"
+            [translate]="'menus.description'"
+          ></span>
+          <span
+            class="manage-description"
+            *ngIf="globals.role == 'reviewer'"
+            [translate]="'menus.description_reviewer'"
+          ></span>
+        </div>
+        <span class="manage-label" [translate]="'menus.title'"></span>
+        <span *ngIf="globals.menusCount >= 0">({{ globals.menusCount }})</span>
+      </div>
+      <div class="manage-bar-right" *ngIf="globals.role != 'reviewer'">
+        <button
+          mat-raised-button
+          (click)="createMenu()"
+          [class.smallbutton]="screen.width < 800"
+        >
+          <mat-icon>add</mat-icon>
+          <span *ngIf="screen.width > 800" [translate]="'menus.add'"></span>
+        </button>
+      </div>
+      <div class="manage-bar-right">
+        <button
+          mat-button
+          (click)="forceRefresh()"
+          class="icon-button"
+          [class.smallbutton]="screen.width < 800"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-spinner *ngIf="!dataLoaded" class="loading-spinner"></mat-spinner>
+    <div *ngIf="dataLoaded">
+      <div *ngFor="let menu of menus; let i = index">
+        <menu-item
+          [menu]="menu"
+          (loading)="loading = $event"
+          (onMenuDeleted)="onMenuDeleted(menu)"
+        ></menu-item>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+.restCard {
+    margin-top: 20px;
+    width: 350px;
+    padding: 20px 30px;
+}
+
+.addRestButton {
+    margin: 0 auto;
+    display:block;
+    margin-top: 30px;
+}
+
+.flexContainer {
+    display: -webkit-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.field {
+    width: 350px;
+}
+
+.menu-row {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 2px;
+    margin-bottom: 10px;
+}
+
+.qr-code-stat-icon {
+    font-size: 30px;
+}
+
+.qr-code-stat {
+    font-size: 14px;
+    color: #a4a6a8;
+    width: 100%;
+    text-align: center;
+    border-right: 1px solid #f7f7f7;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+    background-color: #A0B454b0;
+  }
+  
+  ::ng-deep .mat-progress-bar-buffer {
+    background: #E4E8EB;
+  }
+
+
+.icon-button {
+    min-width: 40px;
+    margin-right: 10px;
+    padding: 0px;
+}
+
+
+.empty-placeholder {
+    position: absolute;
+    width: 100%;
+    z-index: 15;
+    text-align: center;
+    top: 30vh;
+    cursor: default;
+    background-color: rgba(255, 255, 255, 0.425);
+}
+
+.empty-placeholder > h1 {
+    font-size: 55px;
+    line-height: 55px;
+    color: #66686950;
+    font-weight: bold;
+}
+
+.empty-placeholder > p {
+    font-weight: bold;
+    color: #66686950;
+}

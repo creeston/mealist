@@ -1,0 +1,15 @@
+<mat-progress-bar
+  mode="indeterminate"
+  *ngIf="disabled"
+  class="progress-bar"
+></mat-progress-bar>
+<div class="confirmation-container">
+  <h2 mat-dialog-title>{{message}}</h2>
+  <p *ngIf="secondary_message">{{secondary_message}}</p>
+  <div mat-dialog-actions class="flex-container">
+    <button mat-raised-button (click)="close()">{{"no" | translate}}</button>
+    <button mat-button (click)="onClick()" [disabled]="disabled">
+      {{"yes" | translate}}
+    </button>
+  </div>
+</div>

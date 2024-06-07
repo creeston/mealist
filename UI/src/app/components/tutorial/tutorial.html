@@ -1,0 +1,12 @@
+<div class="body">
+  <markdown [src]="getTutorialPath()"></markdown>
+  <mat-checkbox *ngIf="!simple" class="stop-checkbox" [(ngModel)]="stopTutorial"
+    >{{ "tutorial.stop" | translate}}</mat-checkbox
+  >
+  <div class="actions flex-container">
+    <button mat-button (click)="onClose()">{{"close" | translate}}</button>
+    <button mat-raised-button (click)="onContinue()" *ngIf="!simple">
+      {{"continue" | translate}}
+    </button>
+  </div>
+</div>

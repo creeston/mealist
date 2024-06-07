@@ -1,0 +1,217 @@
+<mat-progress-bar
+  mode="indeterminate"
+  *ngIf="editMealsLoading || loading"
+  class="progress-bar"
+></mat-progress-bar>
+<div class="manage">
+  <div class="manage-bar">
+    <div class="manager-bar-left">
+      <mat-icon aria-hidden="false">qr_code</mat-icon>
+      <div class="description-container">
+        <span
+          class="manage-description"
+          *ngIf="screen.width > 800"
+          [translate]="'codes.description'"
+        ></span>
+        <span
+          class="manage-description"
+          *ngIf="screen.width <= 800"
+          [translate]="'codes.description_short_1'"
+        ></span>
+        <span
+          class="manage-description-1"
+          *ngIf="screen.width <= 800"
+          [translate]="'codes.description_short_2'"
+        ></span>
+      </div>
+      <span class="manage-label" [translate]="'codes.label'"></span>
+      <span *ngIf="globals.qrMenusCount >= 0"
+        >({{ globals.qrMenusCount }})</span
+      >
+    </div>
+    <div class="manage-bar-right">
+      <button
+        mat-raised-button
+        (click)="createCode()"
+        [class.smallbutton]="screen.width < 800"
+      >
+        <mat-icon class="icon-add">add</mat-icon>
+        <span *ngIf="screen.width > 800" [translate]="'codes.add'"></span>
+      </button>
+    </div>
+    <div class="manage-bar-right">
+      <button
+        mat-button
+        (click)="forceRefresh()"
+        [class.smallbutton]="screen.width < 800"
+        class="icon-button"
+      >
+        <mat-icon class="icon-add">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-spinner *ngIf="!dataLoaded" class="loading-spinner"></mat-spinner>
+  <div *ngIf="dataLoaded">
+    <div *ngFor="let qrmenu of qrMenus" class="menu-row">
+      <mat-grid-list cols="6" rows="2" rowHeight="75px">
+        <mat-grid-tile
+          [colspan]="screen.width > 800 ? 2 : screen.width > 600 ? 4 : 6"
+          [rowspan]="2"
+          class="grid-cell"
+        >
+          <div class="menu-metadata">
+            <div class="menu-title">
+              <mat-icon class="menu-title-icon">qr_code</mat-icon
+              >{{ qrmenu.name }}
+            </div>
+            <div class="menu-date">
+              <mat-icon class="date-icon">schedule</mat-icon>Apr 7, 2021
+            </div>
+            <div class="link-date-container">
+              <a
+                class="menu-link float-right"
+                target="_blank"
+                [href]="getMenuPublicUrl(qrmenu)"
+                ><mat-icon class="link-icon">link</mat-icon
+                ><span>{{ qrmenu.urlSuffix }}</span></a
+              >
+              <div class="menu-date float-left">
+                <mat-icon class="date-icon">brunch_dining</mat-icon
+                >{{
+                  qrmenu.restaurant
+                    ? qrmenu.restaurant.name
+                    : qrmenu.restaurantId.substring(0, 5)
+                }}
+              </div>
+            </div>
+          </div>
+          <div class="button-menu" *ngIf="screen.width <= 600">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <!-- <button
+                mat-button
+                (click)="downloadQRCode(qrmenu)"
+                [matTooltip]="'download' | translate"
+                class="menu-button"
+              >
+                <mat-icon>file_download</mat-icon>
+              </button> -->
+              <button
+                mat-button
+                (click)="deleteCode(qrmenu)"
+                [matTooltip]="'delete' | translate"
+                class="menu-button"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+              <button
+                mat-button
+                (click)="edit(qrmenu)"
+                [matTooltip]="'edit' | translate"
+                class="menu-button"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-button
+                (click)="editMeals(qrmenu)"
+                [matTooltip]="'codes.edit_stop_list' | translate"
+                class="menu-button"
+                [disabled]="editMealsLoading"
+              >
+                <mat-icon>no_meals</mat-icon>
+              </button>
+            </mat-menu>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="1"
+          *ngIf="screen.width > 1000"
+          [rowspan]="2"
+          class="grid-cell"
+        >
+          <div class="qr-code-stats">
+            <p class="qr-stats-value">{{ qrmenu.scansCount }}</p>
+            <p [translate]="'codes.scans'"></p>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="1"
+          [rowspan]="2"
+          class="grid-cell"
+          *ngIf="screen.width > 800"
+        >
+          <img
+            [src]="getMenuPreviewUrl(qrmenu)"
+            class="preview-image"
+            (click)="openQrMenu(qrmenu)"
+          />
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="1"
+          [rowspan]="2"
+          class="grid-cell"
+          *ngIf="screen.width > 800"
+        >
+          <div class="qrcode-image">
+            <ngx-kjua
+              [text]="getMenuPublicUrl(qrmenu)"
+              [render]="'image'"
+              [crisp]="true"
+              [minVersion]="1"
+              [ecLevel]="'H'"
+              [size]="150"
+              [fill]="'#000'"
+              [back]="'#fff'"
+              [rounded]="80"
+              [quiet]="1"
+              [mode]="'plain'"
+              [cssClass]="'qr-code'"
+            ></ngx-kjua>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="screen.width > 1000 ? 1 : 2"
+          [rowspan]="1"
+          class="grid-cell menu-buttons"
+          *ngIf="screen.width > 600"
+        >
+          <button
+            mat-button
+            (click)="deleteCode(qrmenu)"
+            [matTooltip]="'delete' | translate"
+            class="menu-button"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-grid-tile>
+        <mat-grid-tile
+          [colspan]="screen.width > 1000 ? 1 : 2"
+          [rowspan]="1"
+          class="grid-cell menu-buttons"
+          *ngIf="screen.width > 600"
+        >
+          <button
+            mat-button
+            (click)="edit(qrmenu)"
+            [matTooltip]="'edit' | translate"
+            class="menu-button"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-button
+            (click)="editMeals(qrmenu)"
+            [matTooltip]="'codes.edit_stop_list' | translate"
+            class="menu-button"
+            [disabled]="editMealsLoading"
+          >
+            <mat-icon>no_meals</mat-icon>
+          </button>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+  </div>
+</div>

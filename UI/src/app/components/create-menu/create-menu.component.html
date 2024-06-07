@@ -1,0 +1,44 @@
+<mat-progress-bar mode="indeterminate" *ngIf="disabled"></mat-progress-bar>
+<div class="confirmation-container">
+  <mat-form-field class="field">
+    <mat-label
+      *ngIf="!fileControl.value || fileControl.value.length <= 1"
+      [translate]="'menu.name'"
+    ></mat-label>
+    <mat-label
+      *ngIf="fileControl.value && fileControl.value.length > 1"
+      [translate]="'menu.prefix'"
+    ></mat-label>
+    <input [formControl]="menuNameControl" matInput />
+    <mat-icon matSuffix>create</mat-icon>
+    <mat-error *ngIf="menuNameControl.invalid"
+      ><span [translate]="'menu.exists_1'"></span
+      ><span> '{{ duplicatedMenuName }}' </span
+      ><span [translate]="'menu.exists_2'"></span
+    ></mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="field">
+    <ngx-mat-file-input
+      [formControl]="fileControl"
+      [color]="color"
+      [multiple]="true"
+      accept="application/pdf,image/png"
+      [placeholder]="'menu.choose' | translate"
+    >
+    </ngx-mat-file-input>
+    <mat-error
+      *ngIf="fileControl.invalid"
+      [translate]="'menu.choose'"
+    ></mat-error>
+  </mat-form-field>
+
+  <button
+    mat-raised-button
+    class="addMenuButton"
+    (click)="createMenu()"
+    [disabled]="disabled"
+  >
+    <span [translate]="'create'"></span>
+  </button>
+</div>

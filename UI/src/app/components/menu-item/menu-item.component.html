@@ -1,0 +1,217 @@
+<div class="menu-row" [style.opacity]="opacity">
+  <mat-grid-list cols="7" rowHeight="150px">
+    <mat-grid-tile
+      [colspan]="screen.width > 800 ? 2 : screen.width > 600 ? 5 : 7"
+      [rowspan]="1"
+      class="grid-cell"
+    >
+      <div class="menu-metadata">
+        <mat-icon aria-hidden="false" class="menu-title-icon"
+          >picture_as_pdf</mat-icon
+        >
+        <div class="menu-title" [matTooltip]="menu.name">{{ menu.name }}</div>
+        <div class="menu-date">
+          <mat-icon aria-hidden="false" class="date-icon">schedule</mat-icon
+          >{{
+            menu.creationDate
+              | date : "MMM d, y" : "" : translateHelper.getCurrentLang()
+          }}
+        </div>
+        <div *ngIf="menu.stopListEnabled">
+          <div
+            class="menu-date"
+            *ngIf="menu.state < 10 && menu.state >= 4"
+            [matTooltip]="'menu.not_processed' | translate"
+          >
+            <mat-icon class="date-icon">brunch_dining</mat-icon
+            ><span [translate]="'menu.dishes_count'"></span>: ? ({{
+              menu.parsingProgress * 100
+            }}%) <span class="warning-asterisk">*</span>
+          </div>
+          <div
+            class="menu-date"
+            *ngIf="menu.state == 11 && globals.role == 'client'"
+            [matTooltip]="'menu.not_reviewed' | translate"
+          >
+            <mat-icon class="date-icon">brunch_dining</mat-icon
+            ><span [translate]="'menu.dishes_count'"></span>: ?
+          </div>
+          <div
+            class="menu-date"
+            *ngIf="menu.state == 12 || globals.role == 'reviewer'"
+          >
+            <mat-icon class="date-icon">brunch_dining</mat-icon
+            ><span [translate]="'menu.dishes_count'"></span>:
+            {{ menu.dishesCount }}
+          </div>
+          <div
+            class="menu-date"
+            *ngIf="menu.state == 10"
+            [matTooltip]="'menu.please_review' | translate"
+          >
+            <mat-icon class="date-icon">brunch_dining</mat-icon
+            ><span [translate]="'menu.dishes_count'"></span>:
+            {{ menu.dishesCount }} <span class="warning-asterisk">*</span>
+          </div>
+        </div>
+      </div>
+      <div class="button-menu" *ngIf="screen.width <= 600">
+        <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #actionMenu="matMenu">
+          <button
+            mat-button
+            (click)="showPdfGallery(menu)"
+            class="menu-phone-button"
+            [disabled]="menu.pagesCount === null"
+          >
+            <span [translate]="'show'"></span>
+          </button>
+          <button
+            mat-button
+            (click)="openPdf(menu)"
+            class="menu-phone-button"
+            [disabled]="menu.pagesCount === null"
+          >
+            <span [translate]="'download'"></span>
+          </button>
+          <div *ngIf="menu.stopListEnabled">
+            <button
+              mat-button
+              (click)="openSmartMenu(menu)"
+              class="menu-phone-button"
+              *ngIf="menu.state == 10 || menu.state == 12"
+              [disabled]="true"
+            >
+              <span [translate]="'edit'"></span>
+            </button>
+            <!-- <button mat-button (click)=requestReview() class="menu-phone-button" *ngIf="globals.userProfile.humanReviewCount < 2 && menu.state != 11">
+              <span [translate]="'menu.ask_review'"></span>
+            </button>
+            <button mat-button (click)=requestReview() class="menu-phone-button" *ngIf="globals.userProfile.humanReviewCount >= 2 && menu.state != 11" disabled>
+              <span [translate]="'menu.ask_review'"></span>
+            </button> -->
+            <button
+              mat-button
+              (click)="refreshState()"
+              class="menu-phone-button"
+              *ngIf="menu.state < 10"
+              [disabled]="refreshDisabled"
+            >
+              <span [translate]="'refresh'"></span>
+            </button>
+          </div>
+          <button
+            mat-button
+            (click)="deleteMenu(menu)"
+            class="menu-phone-button"
+          >
+            <span [translate]="'delete'"></span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="1"
+      class="grid-cell"
+      *ngIf="screen.width > 800"
+    >
+      <div class="menu-features">
+        <mat-slide-toggle
+          [ngModel]="menu.stopListEnabled"
+          (change)="change($event)"
+          class="menu-feature"
+        >
+          <span
+            [translate]="'menu.stop_list'"
+            class="menu-feature-label"
+          ></span>
+        </mat-slide-toggle>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile
+      [colspan]="3"
+      [rowspan]="1"
+      class="grid-cell"
+      *ngIf="screen.width > 800"
+    >
+      <div class="menu-image-container" (click)="showPdfGallery(menu)">
+        <img class="menuThumbnail" [src]="menu.previewImageUrl" />
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile
+      [colspan]="screen.width > 800 ? 1 : 2"
+      *ngIf="screen.width > 600"
+      [rowspan]="1"
+      class="grid-cell"
+    >
+      <div class="flex-container menu-buttons">
+        <button
+          mat-icon-button
+          (click)="showPdfGallery(menu)"
+          [matTooltip]="'menu.show' | translate"
+          class="menu-button"
+          [disabled]="menu.pagesCount === null"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          (click)="openPdf(menu)"
+          [matTooltip]="'menu.download' | translate"
+          class="menu-button"
+          [disabled]="menu.pagesCount === null"
+        >
+          <mat-icon>file_download</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          (click)="deleteMenu(menu)"
+          [matTooltip]="'delete' | translate"
+          class="menu-button"
+          *ngIf="globals.role == 'client'"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+        <div *ngIf="menu.stopListEnabled">
+          <button
+            (click)="openSmartMenu(menu)"
+            mat-icon-button
+            class="menu-button"
+            [matTooltip]="'menu.edit_markup' | translate"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <!-- <button mat-icon-button (click)=requestReview() [matTooltip]="'menu.ask_review' | translate" class="menu-button" *ngIf="menu.state != 11 && globals.userProfile.humanReviewCount < 2">
+            <mat-icon>engineering</mat-icon>
+          </button>
+          <div [matTooltip]="'errors.human_review_exceeded' | translate" [matTooltipDisabled]="false" *ngIf="menu.state != 11 && globals.userProfile.humanReviewCount >= 2" class="menu-button" >
+            <button mat-icon-button disabled>
+              <mat-icon>engineering</mat-icon>
+            </button>
+          </div> -->
+          <button
+            mat-icon-button
+            (click)="refreshState()"
+            [matTooltip]="'menu.refresh_state' | translate"
+            [class.smallbutton]="screen.width < 800"
+            *ngIf="globals.role == 'client' && menu.state < 10"
+            class="menu-button"
+            [disabled]="refreshDisabled"
+          >
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+<canvas
+  *ngFor="let j of Arr(menu.pagesCount).fill(1); let i = index"
+  [id]="'canvas' + i"
+  [style.visibility]="'hidden'"
+  [style.position]="'absolute'"
+>
+</canvas>

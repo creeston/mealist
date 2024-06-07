@@ -1,0 +1,309 @@
+.mat-stepper-vertical {
+  margin-top: 8px;
+}
+  
+.mat-form-field {
+  margin-top: 5px;
+}
+
+
+.field {
+  width: 100%;
+}
+
+.menuThumbnail {
+  width: 60px;
+  margin-bottom: -44px;
+  margin-left: 10px;
+}
+
+.menuPreview {
+  width: 80px;
+  display: block;
+}
+
+.restCard {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 350px;
+}
+
+
+.flexContainer {
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.menuPreviewContainer {
+  width: 100px;
+}
+
+h4, h5 {
+  margin: 0px;
+}
+
+
+.grid {
+  box-sizing: border-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: flex;
+  -webkit-flex: 0 1 auto;
+  -ms-flex: 0 1 auto;
+  -webkit-box-flex: 0;
+  flex: 0 1 auto;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+
+.col {
+  box-sizing: border-box;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  -ms-flex-preferred-size: 0;
+  -webkit-flex-basis: 0;
+  flex-basis: 0;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 12px 0 12px;
+  position: relative;
+}
+
+.col-fixed {
+  flex: initial;
+}
+
+.col-preview {
+  transition: width .3s ease-in-out;
+}
+
+.preview-container {
+  width: 466px;
+}
+
+.overflow_base {
+  background-color: #FFF;
+  border-color: #d4d4d4;
+  border-style: solid;
+  border-width: 0 1px;
+  position: fixed;
+  width: 468px;
+  top: 0;
+  z-index: 5;
+  min-height: 100vh;
+  -webkit-box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
+  -moz-box-shadow: 0 0 24px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
+}
+
+.redesign {
+  line-height: normal;
+}
+
+
+.data__mockup {
+  margin-left: 0px;
+}
+
+#smartphonePlaceholder iframe {
+  height: 516px;
+  width: 100%;
+  border: 0;
+}
+
+#smartphonePlaceholder .angularPreviewWrapper {
+  overflow: scroll;
+  overflow-x: hidden;
+  width: 320px;
+  height: 100%;
+}
+
+.redesign .preview .preview-smartphone .preview-smartphone-wrapper #smartphonePlaceholder {
+  border: none;
+  /* background-color: #000; */
+  width: 320px;
+  height: 516px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.state-generator-data #smartphonePlaceholder {
+  display: block !important;
+}
+
+#smartphonePlaceholder {
+  overflow: scroll !important;
+  overflow-x: hidden !important;
+  /* background: #eee !important; */
+}
+
+.ratchet {
+  position: relative;
+  text-align: left;
+}
+
+.redesign .preview .preview-smartphone .preview-smartphone-wrapper {
+  position: absolute;
+  top: 70px;
+  left: 17px;
+  width: 320px;
+  height: 516px;
+}
+
+.col-preview .redesign .preview .mockup__smartphone-wrapper {
+  /*border: 1px solid #d3d3d3;
+  top: 45px !important;
+  left: 12px !important;
+  width: 322px !important;*/
+  position: relative;
+}
+
+.col-preview .redesign .preview.mockup__preview.active {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  visibility: visible;
+  overflow: visible;
+}
+
+.redesign .preview-smartphone {
+  background-image: url("/assets/preview-iphone-new.png") !important;
+  background-repeat: no-repeat;
+  height: 670px;
+}
+
+.create-button {
+  text-align: center;
+  margin-right: 90px;
+}
+
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
+}
+
+
+.page-selector {
+  margin-left: 10px;
+}
+
+.menu-title {
+  margin-right: 10px;
+  position: relative;
+  top: 5px;
+}
+
+.color-picker {
+  margin-left: 20px;
+}
+
+
+.round-slider {
+  width: 245px;
+}
+
+.logo-upload-field {
+  width: 240px;
+}
+
+.round-container > p {
+  margin-bottom: -15px;
+}
+
+.qr-code-preview {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qrcode-color-picker {
+  margin-left: 5px;
+  margin-right: 10px;
+}
+
+
+::ng-deep .mat-step-header .mat-step-icon-selected {
+  background-color: #A0B454b0; 
+}
+
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: #A0B454b0; 
+}
+
+.menu-name-field {
+  width: 100%;
+  margin-left: 36px;
+  margin-top: 20px;
+}
+
+.menu-name-field .mat-form-field, .menu-url-field .mat-form-field {
+  max-width: 70%;
+  width: 500px;
+}
+
+.menu-url-field {
+  width: 100%;
+  margin-left: 36px;
+  margin-top: 20px;
+}
+
+ul {
+  list-style-type: none;
+}
+
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  opacity: 0.03 !important;
+  background-color: #A0B454b0!important;
+}
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: #A0B454b0;
+}
+
+
+.next-button {
+  display: block;
+}
+
+
+.url-preifx {
+  font-size: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #00000085;
+}

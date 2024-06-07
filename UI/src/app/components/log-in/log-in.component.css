@@ -1,0 +1,17 @@
+.login-button {
+    margin: 0 auto;
+    display: block;
+}
+
+
+.register-link {
+    text-decoration: underline;
+    color: grey;
+}
+
+.mat-card-footer p {
+    margin-bottom: 0px;
+    margin-top: 20px;
+    font-size: 12px;
+    text-align: center;
+}

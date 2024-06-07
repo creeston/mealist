@@ -1,0 +1,64 @@
+.addRestButton {
+    margin: 10px auto 0px auto;
+}
+
+.field {
+    width: 100%;
+}
+
+.twoInputsContainer > .field {
+    width: 45%;
+}
+
+.twoInputsContainer > .small-field {
+    width: 25%;
+}
+
+.twoInputsContainer > .large-field {
+    width: 65%;
+}
+
+
+.left-field {
+    float: left;
+}
+
+.right-field {
+    float: right;
+}
+
+.social-icons-container {
+    width: 50%;
+    margin: 10px auto 0px auto
+}
+
+.social-icons-container > button {
+    min-width: 0px;
+    padding: 5px;
+    line-height: 0px;
+}
+
+.iconify { 
+    width: 24px; 
+    height: 24px; 
+}
+
+.form {
+   /* overflow: scroll; */
+}
+
+.preview-map {
+    margin: 5px auto 5px auto;
+    display: block;
+    border: 1px solid #00000045;
+}
+
+
+.icon-in-corner {
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    font-size: 12px;
+    left: -4px;
+    top: -1px;
+}
