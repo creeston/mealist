@@ -1,11 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {
-  Restaurant,
-  RestaurantService,
-} from '../../services/restaurant.service';
+import { RestaurantService } from '../../services/restaurant.service';
 import { ScreenService } from '../../services/screen.service';
+import { Restaurant } from '../../api/model/models';
 
 @Component({
   selector: 'create-rest-dialog',
@@ -48,8 +46,8 @@ export class CreateRestaurantDialog {
     if (this.data) {
       this.restNameControl.setValue(this.data.name);
       this.restAddressControl.setValue(this.data.address);
-      this.restCityControl.setValue(this.data.city);
-      this.restDescriptionControl.setValue(this.data.description);
+      this.restCityControl.setValue(this.data.city ?? '');
+      this.restDescriptionControl.setValue(this.data.description ?? '');
       this.wifiNameControl.setValue(this.data.wifiName ?? '');
       this.wifiPasswordControl.setValue(this.data.wifiPassword ?? '');
       if (this.data.facebookUrl) {
@@ -130,7 +128,7 @@ export class CreateRestaurantDialog {
     restModel.address = this.restAddressControl.value ?? '';
     restModel.city = this.restCityControl.value ?? '';
     restModel.description = this.restDescriptionControl.value ?? '';
-    restModel.wifiName = this.wifiNameControl.value;
+    restModel.wifiName = this.wifiNameControl.value ?? '';
 
     if (this.wifiPasswordControl.value) {
       restModel.wifiPassword = this.wifiPasswordControl.value;

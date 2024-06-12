@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: Mealist API
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    CreateRestaurantRequest:
+      type: "object"
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        description:
+          type: string
+        wifiName:
+          type: string
+        wifiPassword:
+          type: string
+        instagramUrl:
+          type: string
+        vkUrl:
+          type: string
+        facebookUrl:
+          type: string
+        tripAdvisorUrl:
+          type: string
+      required:
+        - name
+        - address
+    Restaurant:
+      type: "object"
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        description:
+          type: string
+        mapsView:
+          type: string
+        wifiName:
+          type: string
+        wifiPassword:
+          type: string
+        instagramUrl:
+          type: string
+        vkUrl:
+          type: string
+        facebookUrl:
+          type: string
+        tripAdvisorUrl:
+          type: string
+      required:
+        - name
+        - address
+    Menu:
+      type: "object"
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+    Code:
+      type: "object"
+      properties:
+        menuId:
+          type: integer
+      required:
+        - menuId

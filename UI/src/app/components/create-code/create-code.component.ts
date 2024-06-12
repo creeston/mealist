@@ -4,15 +4,13 @@ import { MatStep, MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getDocument } from 'pdfjs-dist';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  Restaurant,
-  RestaurantService,
-} from '../../services/restaurant.service';
+import { RestaurantService } from '../../services/restaurant.service';
 import { Menu, MenuService } from '../../services/menu.service';
 import { QrItem, QrMenu, QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
+import { Restaurant } from '../../api/model/models';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
@@ -146,10 +144,10 @@ export class CreateCodeComponent {
 
         restPromise.subscribe((rests: any) => {
           let restId = rests.findIndex(
-            (r: Restaurant) => r.rowKey == menu.restaurant!.rowKey
+            (r: Restaurant) => r.id == menu.restaurant!.id
           );
           this.qrmenu.restaurant = this.rests[restId];
-          this.restControl.setValue(this.qrmenu.restaurant.name);
+          this.restControl.setValue(this.qrmenu.restaurant?.name ?? '');
           this.onRestChange(this.qrmenu.restaurant, menu.hideSections);
           menusPromise.subscribe((menus: Menu[]) => {
             menu.menuItems.forEach((item: QrItem) => {
@@ -306,7 +304,7 @@ export class CreateCodeComponent {
       this.qrmenu.fontColor,
       this.urlSuffixControl.value ?? '',
       this.qrmenu.hideSections,
-      this.qrmenu.restaurant?.rowKey ?? '',
+      '12',
       this.qrmenu.previewIndex
     );
 
@@ -345,7 +343,7 @@ export class CreateCodeComponent {
       this.qrmenu.fontColor,
       this.urlSuffixControl.value ?? '',
       this.qrmenu.hideSections,
-      this.qrmenu.restaurant?.rowKey ?? '',
+      '1',
       this.qrmenu.previewIndex
     );
 

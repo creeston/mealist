@@ -73,6 +73,8 @@ import {
   SearchFilterPipe,
 } from './components/edit-meals/edit-meals.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ApiModule } from './api/api.module';
+import { Configuration, ConfigurationParameters } from './api/configuration';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);
@@ -80,6 +82,13 @@ registerLocaleData(localeRu);
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
+}
+
+export function apiConfigFactory(): Configuration {
+  const params: ConfigurationParameters = {
+    basePath: 'http://localhost:3000',
+  };
+  return new Configuration(params);
 }
 
 @NgModule({
@@ -106,6 +115,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SearchFilterPipe,
   ],
   imports: [
+    // https://www.kevinboosten.dev/how-i-use-an-openapi-spec-in-my-angular-projects
+    ApiModule.forRoot(apiConfigFactory),
     AngularMaterialModule,
     ReactiveFormsModule,
     FormsModule,

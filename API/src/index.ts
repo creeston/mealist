@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import restaurantRoutes from "./routes/restaurants";
-import menuRoutes from "./routes/menus";
-import codesRoutes from "./routes/codes";
+import { initialize } from "express-openapi";
+import { resolve } from "path";
+import swaggerUi from "swagger-ui-express";
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -12,6 +13,15 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+
+initialize({
+  apiDoc: "./src/api-doc.yaml",
+  app: app,
+  promiseMode: true,
+  paths: resolve(__dirname, "routes"),
+  routesGlob: "**/*.{ts,js}",
+  routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, TypeScript Express!");
@@ -24,9 +34,18 @@ app.get("/api/GetUserProfile", (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/restaurants", restaurantRoutes);
-app.use("/api/menus", menuRoutes);
-app.use("/api/codes", codesRoutes);
+app.use(
+  "/api-documentation",
+  swaggerUi.serve,
+  swaggerUi.setup(
+    {},
+    {
+      swaggerOptions: {
+        url: "http://localhost:3000/api-docs",
+      },
+    }
+  )
+);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

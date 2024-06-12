@@ -3,12 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
 import { CreateRestaurantDialog } from '../create-restaurant/create-restaurant.component';
-import {
-  Restaurant,
-  RestaurantService,
-} from '../../services/restaurant.service';
+import { RestaurantService } from '../../services/restaurant.service';
 import { ScreenService } from '../../services/screen.service';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
+import { Restaurant } from '../../api/model/models';
 
 @Component({
   selector: 'rest-item',
@@ -44,7 +42,7 @@ export class RestItemComponent implements OnInit {
       });
 
       dialogRef.componentInstance.callback.subscribe((e) => {
-        this.service.deleteRestaurant(rest.rowKey).subscribe(
+        this.service.deleteRestaurant(rest.id + '').subscribe(
           (r: any) => {
             dialogRef.componentInstance.close();
             this.onRestDeleted.emit();

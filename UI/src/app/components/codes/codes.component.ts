@@ -7,15 +7,13 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { QrMenu, QrMenuService } from '../../services/qrmenu.service';
-import {
-  Restaurant,
-  RestaurantService,
-} from '../../services/restaurant.service';
+import { RestaurantService } from '../../services/restaurant.service';
 import { Globals } from '../../globals';
 import { ScreenService } from '../../services/screen.service';
 import { MenuService } from '../../services/menu.service';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
 import { environment } from '../../../environments/environment';
+import { Restaurant } from '../../api/model/models';
 
 @Component({
   selector: 'app-codes',
@@ -72,7 +70,7 @@ export class CodesComponent implements OnInit {
       this.qrMenus = data;
       this.qrMenus.forEach((menu: QrMenu) => {
         this.rests.forEach((r) => {
-          if (r.rowKey == menu.restaurantId) {
+          if ('TODO' == menu.restaurantId) {
             menu.restaurant = r;
           }
         });
@@ -87,7 +85,7 @@ export class CodesComponent implements OnInit {
       this.dataLoaded = true;
       this.qrMenus.forEach((menu: QrMenu) => {
         this.rests.forEach((r) => {
-          if (r.rowKey == menu.restaurantId) {
+          if ('TODO' == menu.restaurantId) {
             menu.restaurant = r;
           }
         });

@@ -3,12 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { CreateRestaurantDialog } from '../create-restaurant/create-restaurant.component';
-import {
-  Restaurant,
-  RestaurantService,
-} from '../../services/restaurant.service';
+import { RestaurantService } from '../../services/restaurant.service';
 import { Globals } from '../../globals';
 import { ScreenService } from '../../services/screen.service';
+import { Restaurant } from '../../api/model/models';
 
 @Component({
   selector: 'app-restaurants',

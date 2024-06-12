@@ -4,9 +4,10 @@ import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { Menu } from './menu.service';
-import { Restaurant } from './restaurant.service';
+
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
+import { Restaurant } from '../api/model/models';
 
 @Injectable()
 export class QrMenuService {

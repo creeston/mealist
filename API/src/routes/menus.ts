@@ -1,9 +1,34 @@
-import { Router, Request, Response } from "express";
-const router = Router();
-let menus: any[] = [];
+import { Operation } from "express-openapi";
+import { components } from "../types/api";
+import { Response, Request } from "express";
 
-router.get("/", (req: Request, res: Response) => {
-  res.json(menus);
-});
+type Menu = components["schemas"]["Menu"];
 
-export default router;
+let menus: Menu[] = [];
+
+export const GET: Operation = [
+  (req: Request, res: Response): void => {
+    res.json(menus);
+  },
+];
+
+GET.apiDoc = {
+  description: "Get Menus",
+  operationId: "getMenus",
+  tags: ["menus"],
+  responses: {
+    200: {
+      description: "List of menus",
+      content: {
+        "application/json": {
+          schema: {
+            type: "array",
+            items: {
+              $ref: "#/components/schemas/Menu",
+            },
+          },
+        },
+      },
+    },
+  },
+};

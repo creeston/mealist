@@ -1,74 +1,85 @@
-import { Router, Request, Response } from "express";
-import { Restaurant } from "../models/restaurant";
+import { Request } from "express";
+import { components } from "../types/api";
+import { Operation } from "express-openapi";
+import { Response } from "express";
 
-const router = Router();
-let restaurants: Restaurant[] = [];
+type Restaurant = components["schemas"]["Restaurant"];
+type CreateRestaurantRequest = components["schemas"]["CreateRestaurantRequest"];
 
-router.post("/", (req: Request, res: Response) => {
-  const restaurant: Restaurant = {
-    id: restaurants.length + 1,
-    name: req.body.name,
-    description: req.body.description,
-    address: req.body.address,
-    city: req.body.city,
-    mapsView: req.body.mapsView,
-    wifiName: req.body.wifiName,
-    wifiPassword: req.body.wifiPassword,
-    instagramUrl: req.body.instagramUrl,
-    vkUrl: req.body.vkUrl,
-    facebookUrl: req.body.facebookUrl,
-    tripAdvisorUrl: req.body.tripAdvisorUrl,
-  };
+export const restaurants: Restaurant[] = [];
 
-  restaurants.push(restaurant);
-  res.status(201).json(restaurant);
-});
+export const GET: Operation = [
+  (req: Request, res: Response): void => {
+    res.json(restaurants);
+  },
+];
 
-router.get("/", (req: Request, res: Response) => {
-  res.json(restaurants);
-});
+GET.apiDoc = {
+  description: "Get all restaurants",
+  operationId: "getRestaurants",
+  tags: ["restaurants"],
+  responses: {
+    200: {
+      description: "List of restaurants",
+      content: {
+        "application/json": {
+          schema: {
+            type: "array",
+            items: {
+              $ref: "#/components/schemas/Restaurant",
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
-router.get("/:id", (req: Request, res: Response) => {
-  const task = restaurants.find((t) => t.id === parseInt(req.params.id));
+export const POST: Operation = [
+  (req: Request, res: Response): void => {
+    const createRestaurantRequest = req.body as CreateRestaurantRequest;
+    const restaurant: Restaurant = {
+      id: restaurants.length + 1,
+      name: createRestaurantRequest.name,
+      address: createRestaurantRequest.address,
+      description: createRestaurantRequest.description,
+      city: createRestaurantRequest.city,
+      wifiName: createRestaurantRequest.wifiName,
+      wifiPassword: createRestaurantRequest.wifiPassword,
+      instagramUrl: createRestaurantRequest.instagramUrl,
+      vkUrl: createRestaurantRequest.vkUrl,
+      facebookUrl: createRestaurantRequest.facebookUrl,
+      tripAdvisorUrl: createRestaurantRequest.tripAdvisorUrl,
+    };
 
-  if (!task) {
-    res.status(404).send("Task not found");
-  } else {
-    res.json(task);
-  }
-});
+    restaurants.push(restaurant);
+    res.status(201).json(restaurant);
+  },
+];
 
-router.put("/:id", (req: Request, res: Response) => {
-  const restaurant = restaurants.find((t) => t.id === parseInt(req.params.id));
-
-  if (!restaurant) {
-    res.status(404).send("Task not found");
-  } else {
-    restaurant.name = req.body.name;
-    restaurant.description = req.body.description;
-    restaurant.address = req.body.address;
-    restaurant.city = req.body.city;
-    restaurant.mapsView = req.body.mapsView;
-    restaurant.wifiName = req.body.wifiName;
-    restaurant.wifiPassword = req.body.wifiPassword;
-    restaurant.instagramUrl = req.body.instagramUrl;
-    restaurant.vkUrl = req.body.vkUrl;
-    restaurant.facebookUrl = req.body.facebookUrl;
-    restaurant.tripAdvisorUrl = req.body.tripAdvisorUrl;
-
-    res.json(restaurant);
-  }
-});
-
-router.delete("/:id", (req: Request, res: Response) => {
-  const index = restaurants.findIndex((t) => t.id === parseInt(req.params.id));
-
-  if (index === -1) {
-    res.status(404).send("Restaurant not found");
-  } else {
-    restaurants.splice(index, 1);
-    res.status(204).send();
-  }
-});
-
-export default router;
+POST.apiDoc = {
+  description: "Create Restaurant",
+  operationId: "createRestaurant",
+  tags: ["restaurants"],
+  requestBody: {
+    content: {
+      "application/json": {
+        schema: {
+          $ref: "#/components/schemas/CreateRestaurantRequest",
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created Restaurant",
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/Restaurant",
+          },
+        },
+      },
+    },
+  },
+};
