@@ -3,6 +3,7 @@ import cors from "cors";
 import { initialize } from "express-openapi";
 import { resolve } from "path";
 import swaggerUi from "swagger-ui-express";
+import { connectToDatabase } from "./db/connection";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,6 +48,13 @@ app.use(
   )
 );
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+connectToDatabase()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+    });
+  })
+  .catch((error: Error) => {
+    console.error("Database connection failed", error);
+    process.exit();
+  });

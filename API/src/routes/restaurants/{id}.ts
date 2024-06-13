@@ -2,34 +2,23 @@ import { Request } from "express";
 import { components } from "../../types/api";
 import { Operation } from "express-openapi";
 import { Response } from "express";
-import { restaurants } from "../restaurants";
+import { collections } from "../../db/connection";
+import { ObjectId } from "mongodb";
 
 type Restaurant = components["schemas"]["Restaurant"];
 
 export const PUT: Operation = [
-  (req: Request, res: Response): void => {
-    const restaurant = restaurants.find(
-      (t) => t.id === parseInt(req.params.id)
-    );
+  async (req: Request, res: Response) => {
+    const id = req?.params?.id;
+    const restaurantUpdate = req.body as Restaurant;
+    const query = { _id: new ObjectId(id) };
+    const result = await collections.restaurants!.updateOne(query, {
+      $set: restaurantUpdate,
+    });
 
-    if (!restaurant) {
-      res.status(404).send("Task not found");
-    } else {
-      const restaurantUpdate = req.body as Restaurant;
-      restaurant.name = restaurantUpdate.name;
-      restaurant.description = restaurantUpdate.description;
-      restaurant.address = restaurantUpdate.address;
-      restaurant.city = restaurantUpdate.city;
-      restaurant.mapsView = restaurantUpdate.mapsView;
-      restaurant.wifiName = restaurantUpdate.wifiName;
-      restaurant.wifiPassword = restaurantUpdate.wifiPassword;
-      restaurant.instagramUrl = restaurantUpdate.instagramUrl;
-      restaurant.vkUrl = restaurantUpdate.vkUrl;
-      restaurant.facebookUrl = restaurantUpdate.facebookUrl;
-      restaurant.tripAdvisorUrl = restaurantUpdate.tripAdvisorUrl;
-
-      res.json(restaurant);
-    }
+    result
+      ? res.status(200).send(`Successfully updated game with id ${id}`)
+      : res.status(304).send(`Game with id: ${id} not updated`);
   },
 ];
 

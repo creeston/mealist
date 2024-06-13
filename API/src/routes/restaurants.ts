@@ -2,15 +2,17 @@ import { Request } from "express";
 import { components } from "../types/api";
 import { Operation } from "express-openapi";
 import { Response } from "express";
+import { collections } from "../db/connection";
 
 type Restaurant = components["schemas"]["Restaurant"];
 type CreateRestaurantRequest = components["schemas"]["CreateRestaurantRequest"];
 
-export const restaurants: Restaurant[] = [];
-
 export const GET: Operation = [
   (req: Request, res: Response): void => {
-    res.json(restaurants);
+    const restaurants = collections.restaurants?.find({}).toArray() as
+      | Restaurant[]
+      | undefined;
+    res.json(restaurants ?? []);
   },
 ];
 
@@ -36,10 +38,10 @@ GET.apiDoc = {
 };
 
 export const POST: Operation = [
-  (req: Request, res: Response): void => {
+  async (req: Request, res: Response) => {
     const createRestaurantRequest = req.body as CreateRestaurantRequest;
     const restaurant: Restaurant = {
-      id: restaurants.length + 1,
+      id: createRestaurantRequest.name,
       name: createRestaurantRequest.name,
       address: createRestaurantRequest.address,
       description: createRestaurantRequest.description,
@@ -52,8 +54,14 @@ export const POST: Operation = [
       tripAdvisorUrl: createRestaurantRequest.tripAdvisorUrl,
     };
 
-    restaurants.push(restaurant);
-    res.status(201).json(restaurant);
+    const result = await collections.restaurants!.insertOne(restaurant);
+    result
+      ? res
+          .status(201)
+          .send(
+            `Successfully created a new restaurant with id ${result.insertedId}`
+          )
+      : res.status(500).send("Failed to create a new restaurant.");
   },
 ];
 

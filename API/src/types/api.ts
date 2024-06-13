@@ -23,7 +23,7 @@ export interface components {
       tripAdvisorUrl?: string;
     };
     Restaurant: {
-      id?: number;
+      id?: string;
       name: string;
       address: string;
       city?: string;
