@@ -1,4 +1,4 @@
-.addRestButton {
+.submit-button {
     margin: 10px auto 0px auto;
 }
 
@@ -6,15 +6,15 @@
     width: 100%;
 }
 
-.twoInputsContainer > .field {
+.two-inputs-container > .field {
     width: 45%;
 }
 
-.twoInputsContainer > .small-field {
+.two-inputs-container > .small-field {
     width: 25%;
 }
 
-.twoInputsContainer > .large-field {
+.two-inputs-container > .large-field {
     width: 65%;
 }
 
@@ -45,7 +45,6 @@
 
 .form {
     padding: 20px;
-   /* overflow: scroll; */
 }
 
 .preview-map {
@@ -53,7 +52,6 @@
     display: block;
     border: 1px solid #00000045;
 }
-
 
 .icon-in-corner {
     position: absolute;

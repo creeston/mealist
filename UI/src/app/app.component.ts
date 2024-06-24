@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { Globals } from './globals';
 import { AuthenticationService } from './services/auth.service';
-import { Location } from '@angular/common';
 import { MenuService } from './services/menu.service';
 import { QrMenuService } from './services/qrmenu.service';
 import { RestaurantService } from './services/restaurant.service';
@@ -24,9 +23,6 @@ import { ContactUsDialog } from './components/contact-us/contact-us';
 })
 export class AppComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
-  supportedLanguges = ['ru', 'be'];
-  languageMapping = { ru: 'рус', be: 'бел' };
-  selectedLanguage = this.supportedLanguges[0];
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -40,7 +36,6 @@ export class AppComponent {
     private restService: RestaurantService,
     private qrMenusService: QrMenuService,
     private cookie: CookieService,
-    private location: Location,
     private sidenavService: SidenavService,
     public screen: ScreenService,
     public translate: TranslateService
@@ -51,7 +46,6 @@ export class AppComponent {
       'logo',
       this.domSanitizer.bypassSecurityTrustResourceUrl(googleLogoURL)
     );
-    translate.setDefaultLang(this.selectedLanguage);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -59,36 +53,8 @@ export class AppComponent {
     this.screen.set(window.innerWidth, window.innerHeight);
   }
 
-  getUsersLocale(): string {
-    if (
-      typeof window === 'undefined' ||
-      typeof window.navigator === 'undefined'
-    ) {
-      return this.supportedLanguges[0];
-    }
-    const wn = window.navigator as any;
-    let lang = wn.languages ? wn.languages[0] : this.supportedLanguges[0];
-    lang =
-      lang || wn.language || wn.browserLanguage || (wn.userLanguage as string);
-    lang = lang.substring(0, 2);
-    if (this.supportedLanguges.indexOf(lang) === -1) {
-      return this.supportedLanguges[0];
-    } else {
-      return lang;
-    }
-  }
-
   ngOnInit() {
     this.cookie.set('ApiJwt', 'JWT');
-    let lang = this.cookie.get('LOCALE');
-    if (lang) {
-      this.translate.use(lang);
-      this.selectedLanguage = lang;
-    } else {
-      let locale = this.getUsersLocale();
-      this.selectLanguage(locale);
-    }
-
     let jwt = this.cookie.get('ApiJwt');
     this.screen.set(window.innerWidth, window.innerHeight);
     this.globals.isLogged = Boolean(jwt);
@@ -104,35 +70,8 @@ export class AppComponent {
     }
   }
 
-  selectLanguage(language: string) {
-    this.translate.use(language);
-    this.selectedLanguage = language;
-    this.cookie.set('LOCALE', this.selectedLanguage);
-  }
-
-  goTo(path: string) {
-    this.router.navigate([path]);
-    if (this.sidenav.mode == 'over') {
-      this.toggleSidenav();
-    }
-  }
-
   ngAfterViewInit(): void {
     this.sidenavService.setSidenav(this.sidenav);
-  }
-
-  toggleSidenav() {
-    this.sidenav.toggle();
-  }
-
-  logout() {
-    this.globals.isLogged = false;
-    this.globals.email = '';
-    this.cookie.delete('ApiJwt');
-    // this.router.navigate(['/login']);
-    if (this.sidenav.opened) {
-      this.toggleSidenav();
-    }
   }
 
   contactUs() {
@@ -148,9 +87,5 @@ export class AppComponent {
         }
       });
     });
-  }
-
-  back() {
-    this.location.back();
   }
 }

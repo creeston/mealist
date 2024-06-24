@@ -3,16 +3,37 @@ import { components } from "../types/api";
 import { Operation } from "express-openapi";
 import { Response } from "express";
 import { collections } from "../db/connection";
+import { RestaurantModel } from "../db/models/restaurant";
 
 type Restaurant = components["schemas"]["Restaurant"];
 type CreateRestaurantRequest = components["schemas"]["CreateRestaurantRequest"];
 
 export const GET: Operation = [
-  (req: Request, res: Response): void => {
-    const restaurants = collections.restaurants?.find({}).toArray() as
-      | Restaurant[]
-      | undefined;
-    res.json(restaurants ?? []);
+  async (req: Request, res: Response) => {
+    const restaurants = await collections.restaurants?.find({}).toArray();
+    if (!restaurants) {
+      res.json([]);
+    }
+
+    const restaurantsModels = restaurants!.map((restaurant) => {
+      const { _id, ...rest } = restaurant;
+
+      return {
+        id: _id.toString(),
+        name: rest.name,
+        address: rest.address,
+        city: rest.city,
+        description: rest.description,
+        mapsView: rest.mapsView,
+        wifiName: rest.wifiName,
+        wifiPassword: rest.wifiPassword,
+        instagramUrl: rest.instagramUrl,
+        vkUrl: rest.vkUrl,
+        facebookUrl: rest.facebookUrl,
+        tripAdvisorUrl: rest.tripAdvisorUrl,
+      } as Restaurant;
+    });
+    res.json(restaurantsModels);
   },
 ];
 
@@ -41,7 +62,6 @@ export const POST: Operation = [
   async (req: Request, res: Response) => {
     const createRestaurantRequest = req.body as CreateRestaurantRequest;
     const restaurant: Restaurant = {
-      id: createRestaurantRequest.name,
       name: createRestaurantRequest.name,
       address: createRestaurantRequest.address,
       description: createRestaurantRequest.description,
@@ -55,12 +75,9 @@ export const POST: Operation = [
     };
 
     const result = await collections.restaurants!.insertOne(restaurant);
+    restaurant.id = result.insertedId.toString();
     result
-      ? res
-          .status(201)
-          .send(
-            `Successfully created a new restaurant with id ${result.insertedId}`
-          )
+      ? res.status(201).json(restaurant)
       : res.status(500).send("Failed to create a new restaurant.");
   },
 ];

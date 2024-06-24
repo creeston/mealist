@@ -5,7 +5,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "API",
       "program": "${workspaceFolder}/API/src/index.ts",
       "preLaunchTask": "tsc: build - API/tsconfig.json",
       "outFiles": [

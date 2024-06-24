@@ -7,6 +7,47 @@ import { ObjectId } from "mongodb";
 
 type Restaurant = components["schemas"]["Restaurant"];
 
+export const GET: Operation = [
+  async (req: Request, res: Response) => {
+    const id = req?.params?.id;
+    const query = { _id: new ObjectId(id) };
+    const restaurant = await collections.restaurants!.findOne(query);
+
+    restaurant
+      ? res.status(200).json(restaurant)
+      : res.status(404).send(`Restaurant with id: ${id} not found`);
+  },
+];
+
+GET.apiDoc = {
+  description: "Get Restaurant",
+  operationId: "getRestaurant",
+  tags: ["restaurants"],
+  parameters: [
+    {
+      name: "id",
+      in: "path",
+      required: true,
+      schema: {
+        type: "string",
+      },
+      description: "Restaurant ID",
+    },
+  ],
+  responses: {
+    200: {
+      description: "Restaurant",
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/Restaurant",
+          },
+        },
+      },
+    },
+  },
+};
+
 export const PUT: Operation = [
   async (req: Request, res: Response) => {
     const id = req?.params?.id;
@@ -16,9 +57,11 @@ export const PUT: Operation = [
       $set: restaurantUpdate,
     });
 
+    restaurantUpdate.id = id;
+
     result
-      ? res.status(200).send(`Successfully updated game with id ${id}`)
-      : res.status(304).send(`Game with id: ${id} not updated`);
+      ? res.status(200).json(restaurantUpdate)
+      : res.status(304).send(`Restaurant with id: ${id} not updated`);
   },
 ];
 
@@ -32,7 +75,7 @@ PUT.apiDoc = {
       in: "path",
       required: true,
       schema: {
-        type: "integer",
+        type: "string",
       },
       description: "Restaurant ID",
     },
@@ -41,7 +84,7 @@ PUT.apiDoc = {
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/Restaurant",
+          $ref: "#/components/schemas/CreateRestaurantRequest",
         },
       },
     },
@@ -56,6 +99,40 @@ PUT.apiDoc = {
           },
         },
       },
+    },
+  },
+};
+
+export const DELETE: Operation = [
+  async (req: Request, res: Response) => {
+    const id = req?.params?.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await collections.restaurants!.deleteOne(query);
+
+    result
+      ? res.status(204).send()
+      : res.status(404).send(`Restaurant with id: ${id} not found`);
+  },
+];
+
+DELETE.apiDoc = {
+  description: "Delete Restaurant",
+  operationId: "deleteRestaurant",
+  tags: ["restaurants"],
+  parameters: [
+    {
+      name: "id",
+      in: "path",
+      required: true,
+      schema: {
+        type: "string",
+      },
+      description: "Restaurant ID",
+    },
+  ],
+  responses: {
+    204: {
+      description: "Deleted Restaurant",
     },
   },
 };

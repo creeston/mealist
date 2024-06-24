@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { RestaurantsComponent } from './components/restaurants/restaurants.component';
+import { RestaurantsComponent } from './restaurants/restaurants/restaurants.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
 import { MenusComponent } from './components/menus/menus.component';

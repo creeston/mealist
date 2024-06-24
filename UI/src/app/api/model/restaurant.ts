@@ -12,7 +12,7 @@
 
 
 export interface Restaurant { 
-    id?: number;
+    id?: string;
     name: string;
     address: string;
     city?: string;

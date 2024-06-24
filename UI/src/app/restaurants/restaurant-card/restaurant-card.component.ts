@@ -1,19 +1,19 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
-import { CreateRestaurantDialog } from '../create-restaurant/create-restaurant.component';
+import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
+import { RestaurantFormDialog } from '../restaurant-form/restaurant-form.component';
 import { RestaurantService } from '../../services/restaurant.service';
 import { ScreenService } from '../../services/screen.service';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
 import { Restaurant } from '../../api/model/models';
 
 @Component({
-  selector: 'rest-item',
-  templateUrl: './rest-item.html',
-  styleUrls: ['./rest-item.css'],
+  selector: 'app-restaurant-card',
+  templateUrl: './restaurant-card.component.html',
+  styleUrls: ['./restaurant-card.component.css'],
 })
-export class RestItemComponent implements OnInit {
+export class RestaurantCardComponent implements OnInit {
   @Input()
   public rest!: Restaurant;
 
@@ -31,7 +31,12 @@ export class RestItemComponent implements OnInit {
     public translateHelper: TranslateHelperClass
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // TEMPORARY FIX TO DISPLAY MAPS IMAGE
+    if (!this.rest.mapsView) {
+      this.rest.mapsView = 'https://telegra.ph/file/27d697f51e3814e47ea7e.png';
+    }
+  }
 
   deleteRestaurant(rest: Restaurant) {
     this.translate.get('rest.delete_confirmation').subscribe((text) => {
@@ -41,23 +46,17 @@ export class RestItemComponent implements OnInit {
         data: { message: text + ' "' + rest.name + '"?' },
       });
 
-      dialogRef.componentInstance.callback.subscribe((e) => {
-        this.service.deleteRestaurant(rest.id + '').subscribe(
-          (r: any) => {
-            dialogRef.componentInstance.close();
-            this.onRestDeleted.emit();
-          },
-          (error: any) => {
-            // this.notify.error(JSON.stringify(error));
-          }
-        );
+      dialogRef.componentInstance.callback.subscribe(async (e) => {
+        await this.service.deleteRestaurant(rest.id!);
+        dialogRef.componentInstance.close();
+        this.onRestDeleted.emit();
       });
     });
   }
 
-  editRest(rest: Restaurant) {
-    const dialogRef = this.dialog.open(CreateRestaurantDialog, {
-      width: Math.min(450, screen.height) + 'px',
+  editRestaurant(rest: Restaurant) {
+    const dialogRef = this.dialog.open(RestaurantFormDialog, {
+      width: Math.min(550, screen.width) + 'px',
       data: rest,
     });
     dialogRef.afterClosed().subscribe((result: Restaurant) => {

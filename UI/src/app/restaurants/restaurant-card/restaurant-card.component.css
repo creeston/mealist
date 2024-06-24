@@ -1,4 +1,9 @@
-.menu-title {
+.menu-metadata {
+    width: calc(100% - 65px);
+    overflow: hidden;
+}
+
+.menu-main-info {
     color: #797d80;
     border-color: transparent;
     overflow: hidden;
@@ -6,7 +11,27 @@
     white-space: nowrap;
     font-size: 24px;
     margin-bottom: 10px;
+    margin-top: 10px;
     cursor: default;
+    p {
+        display: inline-block;
+        margin-left: 5px;
+    }
+}
+
+.menu-secondary-info {
+    font-size: 14px;
+    color: #a4a6a8;
+    white-space: nowrap;
+    cursor: default;
+    margin-bottom: 5px;
+    height: 28px;
+
+    p {
+        margin-bottom: 0px;
+        display: inline-block;
+        margin-left: 5px;
+    }
 }
 
 .rest-address {
@@ -23,44 +48,21 @@
     border: 1px solid #d4d4d4;
 }
 
-.menu-date {
-    font-size: 14px;
-    color: #a4a6a8;
-    white-space: nowrap;
-    position: relative;
-    cursor: default;
-    margin-bottom: 5px;
-}
-
 .menu-social {
     top: -5px;
 }
 
 
-.menu-metadata {
-    width: calc(100% - 65px);
-    height: 100%;
-    padding-top: 65px;
-    padding-left: 65px;
-    overflow: hidden;
-}
 
-.menu-title-icon {
+.title-icon {
     font-size: 25px;
     color: #797d80;
-    position: absolute;
-    left: 33px;
-    top: 25px;
 }
 
-.date-icon {
+.secondary-icon {
     font-size: 22px;
     color: #d4d4d4;
-    position: absolute;
-    left: -30px;
-    top: -2px;
 }
-
 
 .menu-button {
     color: #797d80;

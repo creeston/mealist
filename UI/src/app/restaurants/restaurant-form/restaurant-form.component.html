@@ -1,0 +1,196 @@
+<form [formGroup]="restaurantForm" (ngSubmit)="submit()">
+  <div [style.maxHeight.px]="screen.height - 30" class="form">
+    <mat-form-field class="field">
+      <mat-label [translate]="'rest.name'"></mat-label>
+      <input formControlName="name" matInput />
+      <mat-icon matSuffix>create</mat-icon>
+      <mat-error
+        *ngIf="triedToSend"
+        [translate]="'rest.name_error'"
+      ></mat-error>
+    </mat-form-field>
+    <div class="two-inputs-containe">
+      <mat-form-field class="small-field left-field">
+        <mat-label [translate]="'rest.city'"></mat-label>
+        <input formControlName="city" matInput />
+        <mat-icon matSuffix>create</mat-icon>
+        <mat-error
+          *ngIf="triedToSend"
+          [translate]="'rest.city_error'"
+        ></mat-error>
+      </mat-form-field>
+      <mat-form-field class="large-field right-field">
+        <mat-label [translate]="'rest.address'"></mat-label>
+        <input formControlName="address" matInput />
+        <mat-icon matSuffix>create</mat-icon>
+        <mat-error
+          *ngIf="triedToSend"
+          [translate]="'rest.address_error'"
+        ></mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="field">
+      <mat-label [translate]="'rest.description'"></mat-label>
+      <input formControlName="description" matInput />
+      <mat-icon matSuffix>create</mat-icon>
+      <mat-error [translate]="'rest.description_error'"></mat-error>
+    </mat-form-field>
+    <div class="two-inputs-containe">
+      <mat-form-field class="field left-field">
+        <mat-label [translate]="'rest.wifi.name'"></mat-label>
+        <input formControlName="wifiName" matInput />
+        <mat-icon matSuffix>create</mat-icon>
+      </mat-form-field>
+      <mat-form-field class="field right-field">
+        <mat-label [translate]="'rest.wifi.pass'"></mat-label>
+        <input formControlName="wifiPassword" matInput />
+        <mat-icon matSuffix>create</mat-icon>
+      </mat-form-field>
+    </div>
+    <div class="social-icons-container flex-container">
+      <button
+        mat-button
+        (click)="showFacebook = true"
+        [matTooltip]="'rest.fb.add' | translate"
+        *ngIf="!showFacebook"
+      >
+        <span
+          class="iconify"
+          data-icon="mdi-facebook"
+          data-inline="false"
+        ></span>
+        <mat-icon class="icon-in-corner">add</mat-icon>
+      </button>
+      <button
+        mat-button
+        (click)="showFacebook = false"
+        [matTooltip]="'rest.fb.remove' | translate"
+        *ngIf="showFacebook"
+      >
+        <span
+          class="iconify"
+          data-icon="mdi-facebook"
+          data-inline="false"
+        ></span>
+        <mat-icon class="icon-in-corner">remove</mat-icon>
+      </button>
+
+      <button
+        mat-button
+        (click)="showInstagram = true"
+        [matTooltip]="'rest.insta.add' | translate"
+        *ngIf="!showInstagram"
+      >
+        <span
+          class="iconify"
+          data-icon="mdi-instagram"
+          data-inline="false"
+        ></span>
+        <mat-icon class="icon-in-corner">add</mat-icon>
+      </button>
+      <button
+        mat-button
+        (click)="showInstagram = false"
+        [matTooltip]="'rest.insta.remove' | translate"
+        *ngIf="showInstagram"
+      >
+        <span
+          class="iconify"
+          data-icon="mdi-instagram"
+          data-inline="false"
+        ></span>
+        <mat-icon class="icon-in-corner">remove</mat-icon>
+      </button>
+
+      <button
+        mat-button
+        (click)="showVk = true"
+        [matTooltip]="'rest.vk.add' | translate"
+        *ngIf="!showVk"
+      >
+        <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
+        <mat-icon class="icon-in-corner">add</mat-icon>
+      </button>
+      <button
+        mat-button
+        (click)="showVk = false"
+        [matTooltip]="'rest.vk.remove' | translate"
+        *ngIf="showVk"
+      >
+        <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
+        <mat-icon class="icon-in-corner">remove</mat-icon>
+      </button>
+
+      <button
+        mat-button
+        (click)="showTripAdvisor = true"
+        [matTooltip]="'rest.ta.add' | translate"
+        *ngIf="!showTripAdvisor"
+      >
+        <span
+          class="iconify"
+          data-icon="fa:tripadvisor"
+          data-inline="false"
+        ></span>
+        <mat-icon class="icon-in-corner">add</mat-icon>
+      </button>
+      <button
+        mat-button
+        (click)="showTripAdvisor = false"
+        [matTooltip]="'rest.ta.remove' | translate"
+        *ngIf="showTripAdvisor"
+      >
+        <span
+          class="iconify"
+          data-icon="fa:tripadvisor"
+          data-inline="false"
+        ></span>
+        <mat-icon class="icon-in-corner">remove</mat-icon>
+      </button>
+    </div>
+    <div class="flex-container">
+      <mat-form-field class="field" *ngIf="showFacebook">
+        <mat-label [translate]="'rest.fb.name'"></mat-label>
+        <input formControlName="facebookUrl" matInput />
+        <span
+          class="iconify"
+          data-icon="mdi-facebook"
+          data-inline="false"
+          matSuffix
+        ></span>
+      </mat-form-field>
+      <mat-form-field class="field" *ngIf="showInstagram">
+        <mat-label [translate]="'rest.insta.name'"></mat-label>
+        <input formControlName="instagramUrl" matInput />
+        <span
+          class="iconify"
+          data-icon="mdi-instagram"
+          data-inline="false"
+          matSuffix
+        ></span>
+      </mat-form-field>
+      <mat-form-field class="field" *ngIf="showVk">
+        <mat-label [translate]="'rest.vk.name'"></mat-label>
+        <input formControlName="vkUrl" matInput />
+        <span
+          class="iconify"
+          data-icon="mdi-vk"
+          data-inline="false"
+          matSuffix
+        ></span>
+      </mat-form-field>
+      <mat-form-field class="field" *ngIf="showTripAdvisor">
+        <mat-label [translate]="'rest.ta.name'"></mat-label>
+        <input formControlName="tripAdvisorUrl" matInput />
+        <img src="assets/tripadvisor.svg" class="iconify" matSuffix />
+      </mat-form-field>
+    </div>
+    <div class="flex-container submit">
+      <button mat-raised-button [disabled]="disabled" type="submit">
+        <span *ngIf="!data" [translate]="'create'"></span>
+        <span *ngIf="data" [translate]="'update'"></span>
+      </button>
+    </div>
+  </div>
+</form>

@@ -24,35 +24,35 @@
       <span class="manage-label" [translate]="'rest.title'"></span>
       <span *ngIf="globals.restsCount >= 0">({{ globals.restsCount }})</span>
     </div>
+    <!-- TODO: Add tooltip with "Create restaurant label"-->
     <div class="manage-bar-right">
       <button
-        mat-raised-button
+        mat-icon-button
         (click)="createRestaurant()"
         [class.smallbutton]="screen.width < 800"
       >
         <mat-icon class="icon-add">add</mat-icon>
-        <span *ngIf="screen.width > 800" [translate]="'rest.add'"></span>
       </button>
     </div>
     <div class="manage-bar-right">
       <button
-        mat-button
+        mat-icon-button
         (click)="forceRefresh()"
         [class.smallbutton]="screen.width < 800"
         class="icon-button"
       >
-        <mat-icon class="icon-add">refresh</mat-icon>
+        <mat-icon>refresh</mat-icon>
       </button>
     </div>
   </div>
   <mat-spinner *ngIf="!dataLoaded" class="loading-spinner"></mat-spinner>
   <div *ngIf="dataLoaded">
     <div *ngFor="let rest of restaurants" class="menu-row">
-      <rest-item
+      <app-restaurant-card
         [rest]="rest"
         (loading)="loading = $event"
-        (onRestDeleted)="onRestDeleted(rest)"
-      ></rest-item>
+        (onRestDeleted)="onRestaurantDeleted(rest)"
+      ></app-restaurant-card>
     </div>
   </div>
 </div>

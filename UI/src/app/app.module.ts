@@ -20,7 +20,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Globals } from './globals';
 
-import { ClipboardModule } from '@angular/cdk/clipboard';
 import { AuthenticationService } from './services/auth.service';
 import { RestaurantService } from './services/restaurant.service';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -54,9 +53,6 @@ import { OnlyNumbersAndLetters } from './directives/only-numbers-and-letters';
 import { ContactUsDialog } from './components/contact-us/contact-us';
 import { AngularMaterialModule } from './angular-material.module';
 import { ConfirmationDialog } from './components/confirmation-dialog/confirmation-dialog';
-import { CreateRestaurantDialog } from './components/create-restaurant/create-restaurant.component';
-import { RestItemComponent } from './components/rest-item/rest-item';
-import { RestaurantsComponent } from './components/restaurants/restaurants.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MenuItemComponent } from './components/menu-item/menu-item.component';
 import { MenuComponent } from './components/menu/menu.component';
@@ -75,6 +71,9 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ApiModule } from './api/api.module';
 import { Configuration, ConfigurationParameters } from './api/configuration';
+import { TopToolbarComponent } from './components/top-toolbar/top-toolbar.component';
+import { DrawerContentComponent } from './components/drawer-content/drawer-content.component';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);
@@ -98,9 +97,6 @@ export function apiConfigFactory(): Configuration {
     OnlyNumbersAndLetters,
     ContactUsDialog,
     ConfirmationDialog,
-    CreateRestaurantDialog,
-    RestItemComponent,
-    RestaurantsComponent,
     MenuItemComponent,
     MenuComponent,
     CreateMenuDialog,
@@ -110,6 +106,8 @@ export function apiConfigFactory(): Configuration {
     QrMenuComponent,
     SmartMenuComponent,
     LogInComponent,
+    TopToolbarComponent,
+    DrawerContentComponent,
     RegisterComponent,
     EditMealsComponent,
     SearchFilterPipe,
@@ -118,6 +116,7 @@ export function apiConfigFactory(): Configuration {
     // https://www.kevinboosten.dev/how-i-use-an-openapi-spec-in-my-angular-projects
     ApiModule.forRoot(apiConfigFactory),
     AngularMaterialModule,
+    RestaurantsModule,
     ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,

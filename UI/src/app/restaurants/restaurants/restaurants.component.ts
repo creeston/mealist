@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { CreateRestaurantDialog } from '../create-restaurant/create-restaurant.component';
+import { RestaurantFormDialog } from '../restaurant-form/restaurant-form.component';
 import { RestaurantService } from '../../services/restaurant.service';
 import { Globals } from '../../globals';
 import { ScreenService } from '../../services/screen.service';
@@ -51,7 +51,7 @@ export class RestaurantsComponent implements OnInit {
   }
 
   createRestaurant() {
-    const dialogRef = this.dialog.open(CreateRestaurantDialog, {
+    const dialogRef = this.dialog.open(RestaurantFormDialog, {
       width: '550px',
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -61,7 +61,7 @@ export class RestaurantsComponent implements OnInit {
     });
   }
 
-  onRestDeleted(rest: Restaurant) {
+  onRestaurantDeleted(rest: Restaurant) {
     const index = this.restaurants.indexOf(rest, 0);
     this.restaurants.splice(index, 1);
     this.silentRefresh();

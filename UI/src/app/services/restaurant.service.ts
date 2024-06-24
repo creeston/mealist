@@ -1,11 +1,10 @@
-import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { Globals } from '../globals';
-import { environment } from '../../environments/environment';
 import { RestaurantsService } from '../api/api/restaurants.service';
-import { Restaurant } from '../api';
+import { CreateRestaurantRequest, Restaurant } from '../api';
 
 @Injectable()
 export class RestaurantService {
@@ -20,25 +19,21 @@ export class RestaurantService {
     private api: RestaurantsService
   ) {}
 
-  createRestaurant(rest: Restaurant) {
-    return this.api.createRestaurant({
-      address: rest.address,
-      city: rest.city,
-      description: rest.description,
-      facebookUrl: rest.facebookUrl,
-      instagramUrl: rest.instagramUrl,
-      vkUrl: rest.vkUrl,
-      tripAdvisorUrl: rest.tripAdvisorUrl,
-      name: rest.name,
-      wifiName: rest.wifiName ?? '',
-      wifiPassword: rest.wifiPassword,
-    });
-
-    // return this.http.post(
-    //   environment.apiUrl + '/api/restaurants',
-    //   rest,
-    //   this.createHttpOptions()
-    // );
+  createRestaurant(rest: CreateRestaurantRequest) {
+    return firstValueFrom(
+      this.api.createRestaurant({
+        address: rest.address,
+        city: rest.city,
+        description: rest.description,
+        facebookUrl: rest.facebookUrl,
+        instagramUrl: rest.instagramUrl,
+        vkUrl: rest.vkUrl,
+        tripAdvisorUrl: rest.tripAdvisorUrl,
+        name: rest.name,
+        wifiName: rest.wifiName ?? '',
+        wifiPassword: rest.wifiPassword,
+      })
+    );
   }
 
   getRestaurantImage(rest: Restaurant) {
@@ -50,24 +45,13 @@ export class RestaurantService {
     // );
   }
 
-  updateRestaurant(rest: Restaurant) {
-    if (!rest.id) throw new Error('Restaurant ID is required');
-    return this.api.updateRestaurant(rest.id, rest);
+  updateRestaurant(rest: Restaurant, id: string) {
+    return firstValueFrom(this.api.updateRestaurant(id, rest));
   }
 
   listRestaurants() {
     if (!this.restaurants$) {
       this.restaurants$ = this.api.getRestaurants();
-
-      // this.restaurants$ = this.http
-      //   .get<Restaurant[]>(
-      //     environment.apiUrl + '/api/restaurants',
-      //     this.createHttpOptions()
-      //   )
-      //   .pipe(
-      //     tap((data) => data),
-      //     catchError(() => of([]))
-      //   );
 
       this.restaurants$.subscribe((rests) => {
         this.restaurantValues = rests as Restaurant[];
@@ -77,17 +61,9 @@ export class RestaurantService {
     return this.restaurants$;
   }
 
-  clearCache() {
-    this.restaurants$ = null;
-  }
-
-  deleteRestaurant(restId: string) {
+  async deleteRestaurant(id: string) {
+    await firstValueFrom(this.api.deleteRestaurant(id));
     this.clearCache();
-    return new Observable<{}>();
-    // return this.http.delete(
-    //   environment.apiUrl + '/api/restaurants/' + restId,
-    //   this.createHttpOptions()
-    // );
   }
 
   createHttpOptions(): any {
@@ -102,5 +78,9 @@ export class RestaurantService {
     } else {
       throw new Error('JWT token not found in cookies');
     }
+  }
+
+  clearCache() {
+    this.restaurants$ = null;
   }
 }

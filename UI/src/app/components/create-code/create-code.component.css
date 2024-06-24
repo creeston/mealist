@@ -22,21 +22,6 @@
   display: block;
 }
 
-.restCard {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  width: 350px;
-}
-
-
-.flexContainer {
-  display: -webkit-box;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
 .menuPreviewContainer {
   width: 100px;
 }

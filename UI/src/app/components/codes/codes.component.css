@@ -11,13 +11,6 @@
     margin-top: 30px;
 }
 
-.flexContainer {
-    display: -webkit-box;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-}
-
 .loadingSpinner {
     margin: 0;
     position: absolute;

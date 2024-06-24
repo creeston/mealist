@@ -17,6 +17,7 @@ app.use(express.json());
 
 initialize({
   apiDoc: "./src/api-doc.yaml",
+  // apiDoc: "./API/src/api-doc.yaml",
   app: app,
   promiseMode: true,
   paths: resolve(__dirname, "routes"),

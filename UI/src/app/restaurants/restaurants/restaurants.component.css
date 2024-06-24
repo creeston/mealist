@@ -1,22 +1,3 @@
-.restCard {
-    margin-top: 20px;
-    width: 350px;
-    padding: 20px 30px;
-}
-
-.addRestButton {
-    margin: 0 auto;
-    display:block;
-    margin-top: 30px;
-}
-
-.flexContainer {
-    display: -webkit-box;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-}
-
 .field {
     width: 350px;
 }
@@ -26,18 +7,6 @@
     border: 1px solid #eaeaea;
     border-radius: 2px;
     margin-bottom: 10px;
-}
-
-.qr-code-stat-icon {
-    font-size: 30px;
-}
-
-.qr-code-stat {
-    font-size: 14px;
-    color: #a4a6a8;
-    width: 100%;
-    text-align: center;
-    border-right: 1px solid #f7f7f7;
 }
 
 ::ng-deep .mat-progress-bar-fill::after {
@@ -50,11 +19,10 @@
 
 
 .icon-button {
-    min-width: 40px;
     margin-right: 10px;
-    padding: 0px;
+    /* height: 36px;
+    width: 36px; */
 }
-
 
 .empty-placeholder {
     position: absolute;
