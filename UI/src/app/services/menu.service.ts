@@ -1,20 +1,21 @@
-import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Globals } from '../globals';
 import { environment } from '../../environments/environment';
+import { MenusService } from '../api/api/menus.service';
+import { Menu } from '../api/model/menu';
 
 @Injectable()
 export class MenuService {
   jwt: string | null = null;
-  menus: Observable<Menu[] | HttpEvent<Menu[]>> | null = null;
-  menuValues: Menu[] | null = null;
 
   constructor(
     public globals: Globals,
     private http: HttpClient,
-    private cookie: CookieService
+    private cookie: CookieService,
+    private api: MenusService
   ) {}
 
   createMenu(file: any, menu: Menu) {
@@ -48,27 +49,11 @@ export class MenuService {
     );
   }
 
-  listMenus() {
-    if (!this.menus) {
-      this.menus = this.http.get<Menu[]>(
-        environment.apiUrl + '/api/menus',
-        this.createHttpOptions()
-      );
-      this.menus.subscribe((menus) => {
-        this.menuValues = menus as Menu[];
-        this.globals.menusCount = this.menuValues.length;
-      });
-    }
-    return this.menus;
-  }
-
-  clearCache() {
-    this.menus = null;
-    this.menuValues = null;
+  async listMenus() {
+    return await firstValueFrom(this.api.getMenus());
   }
 
   deleteMenu(menuId: string) {
-    this.clearCache();
     return this.http.post(
       environment.apiUrl + '/api/DeleteMenu/' + menuId,
       {},
@@ -140,56 +125,6 @@ export class MenuService {
     } else {
       throw new Error('JWT token not found in cookies');
     }
-  }
-}
-
-export class Menu {
-  public id: string = '';
-  public ownerId: string = '';
-  public name: string = '';
-  public images: string[] = [];
-  public menuCompressed: boolean = false;
-  public markups: MenuLine[][] = [];
-  public creationDate: Date = new Date();
-  public dishesCount: number = 0;
-  public pagesCount: number = 0;
-  public state: number = 0;
-  public parsingProgress: number = 0;
-  public previewImageUrl: string = '';
-  public originalFileUrl: string = '';
-  public stopStyle: string = '';
-  public stopColor: string = '';
-  public stopListEnabled: boolean = false;
-}
-
-export class MenuLine {
-  public text: string;
-  public tag: string;
-  public box: number[][];
-
-  public x1: number;
-  public y1: number;
-  public x2: number;
-  public y2: number;
-  public editSelected: boolean;
-  public viewSelected: boolean;
-  public hover: boolean;
-  public children: MenuLine[] = [];
-
-  constructor(line: MenuLine) {
-    this.text = line.text;
-    this.tag = line.tag;
-    this.x1 = line.x1;
-    this.x2 = line.x2;
-    this.y1 = line.y1;
-    this.y2 = line.y2;
-    this.editSelected = line.editSelected;
-    this.viewSelected = line.viewSelected;
-    this.hover = line.hover;
-    this.box = [
-      [this.x1, this.y1],
-      [this.x2, this.y2],
-    ];
   }
 }
 

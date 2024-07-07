@@ -3,11 +3,9 @@ import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
-import { Menu } from './menu.service';
-
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
-import { Restaurant } from '../api/model/models';
+import { Menu, Restaurant } from '../api/model/models';
 
 @Injectable()
 export class QrMenuService {

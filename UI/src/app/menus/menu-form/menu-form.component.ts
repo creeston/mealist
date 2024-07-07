@@ -3,14 +3,15 @@ import { FormControl, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { merge } from 'rxjs';
-import { Menu, MenuService } from '../../services/menu.service';
+import { MenuService } from '../../services/menu.service';
+import { Menu } from '../../api';
 
 @Component({
-  selector: 'create-menu-dialog',
-  templateUrl: './create-menu.component.html',
-  styleUrls: ['./create-menu.component.css'],
+  selector: 'app-menu-form-dialog',
+  templateUrl: './menu-form.component.html',
+  styleUrls: ['./menu-form.component.css'],
 })
-export class CreateMenuDialog {
+export class MenuFormDialog {
   public fileControl = new FormControl([] as any[], [Validators.required]);
   public menuNameControl = new FormControl('', []);
   public disabled = true;
@@ -21,7 +22,7 @@ export class CreateMenuDialog {
   accept: string = 'application/pdf,image/png';
 
   constructor(
-    public dialogRef: MatDialogRef<CreateMenuDialog>,
+    public dialogRef: MatDialogRef<MenuFormDialog>,
     private service: MenuService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -43,7 +44,7 @@ export class CreateMenuDialog {
       this.fileControl.markAsTouched();
     }
 
-    this.service.listMenus().subscribe((menus: any) => {
+    this.service.listMenus().then((menus: any) => {
       this.menuNames = menus.map((m: Menu) => m.name);
       this.disabled = false;
     });
@@ -94,8 +95,9 @@ export class CreateMenuDialog {
     this.disabled = true;
     let requests: any[] = [];
     files.forEach((f) => {
-      let menu = new Menu();
-      menu.name = this.createNameForMenu(f, files, menuName);
+      let menu = {
+        name: this.createNameForMenu(f, files, menuName),
+      };
       let request = this.service.createMenu(f, menu);
       requests.push(request);
     });

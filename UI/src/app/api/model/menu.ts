@@ -9,11 +9,24 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { MenuLine } from './menuLine';
 
 
 export interface Menu { 
-    id?: number;
+    id?: string;
     name: string;
-    description?: string;
+    images?: Array<string>;
+    menuCompressed?: boolean;
+    dishesCount?: number;
+    pagesCount?: number;
+    state?: number;
+    parsingProgress?: number;
+    previewImageUrl?: string;
+    originalFileUrl?: string;
+    stopListEnabled?: boolean;
+    stopColor?: string;
+    stopStyle?: string;
+    creationDate?: string;
+    markups?: Array<Array<MenuLine>>;
 }
 

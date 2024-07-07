@@ -91,7 +91,7 @@ export class SelectionProvider {
     }
     let y: any[] = [];
     let texts = [];
-    selection.forEach((l) => {
+    selection.forEach((l: MenuLine) => {
       y.push(l.y1);
       y.push(l.y2);
       texts.push(l.text);
@@ -115,7 +115,7 @@ export class SelectionProvider {
     }
     return (
       this.menu.value.markups[this.page.current].findIndex(
-        (l) => l.editSelected
+        (l: MenuLine) => l.editSelected
       ) >= 0
     );
   }

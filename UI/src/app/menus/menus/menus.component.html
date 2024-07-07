@@ -58,11 +58,11 @@
     <mat-spinner *ngIf="!dataLoaded" class="loading-spinner"></mat-spinner>
     <div *ngIf="dataLoaded">
       <div *ngFor="let menu of menus; let i = index">
-        <menu-item
+        <app-menu-card
           [menu]="menu"
           (loading)="loading = $event"
           (onMenuDeleted)="onMenuDeleted(menu)"
-        ></menu-item>
+        ></app-menu-card>
       </div>
     </div>
   </div>

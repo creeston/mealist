@@ -3,21 +3,25 @@ import { MatDialog } from '@angular/material/dialog';
 import { getDocument } from 'pdfjs-dist';
 import { MenuComponent } from '../menu/menu.component';
 import { Router } from '@angular/router';
-import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { TutorialComponent, TutorialResponse } from '../tutorial/tutorial';
-import { Menu, MenuService } from '../../services/menu.service';
+import { MenuService } from '../../services/menu.service';
 import { ScreenService } from '../../services/screen.service';
 import { Globals } from '../../globals';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
 import { AuthenticationService } from '../../services/auth.service';
+import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
+import {
+  TutorialComponent,
+  TutorialResponse,
+} from '../../components/tutorial/tutorial';
+import { Menu } from '../../api/model/menu';
 
 @Component({
-  selector: 'menu-item',
-  templateUrl: './menu-item.component.html',
-  styleUrls: ['./menu-item.component.css'],
+  selector: 'app-menu-card',
+  templateUrl: './menu-card.component.html',
+  styleUrls: ['./menu-card.component.css'],
 })
-export class MenuItemComponent implements OnInit {
+export class MenuCardComponent implements OnInit {
   @Input()
   public menu!: Menu;
 
@@ -49,6 +53,16 @@ export class MenuItemComponent implements OnInit {
   async showPdfGallery(menu: Menu) {
     this.loading.emit(true);
     let images = [];
+    if (!menu.images || menu.images.length == 0) {
+      this.loading.emit(false);
+      return;
+    }
+
+    if (!menu.originalFileUrl) {
+      this.loading.emit(false);
+      return;
+    }
+
     let pagesCount = menu.images.length;
     let pdfDoc = await getDocument(menu.originalFileUrl).promise;
     for (let i = 0; i < pagesCount; i++) {
@@ -92,6 +106,9 @@ export class MenuItemComponent implements OnInit {
   }
 
   showGallery(menu: Menu) {
+    if (!menu.images || menu.images.length == 0) {
+      return;
+    }
     let images = menu.images.map((i: string) => {
       return { path: i, height: this.screen.height };
     });
@@ -104,6 +121,12 @@ export class MenuItemComponent implements OnInit {
   }
 
   deleteMenu(menu: Menu) {
+    const id = this.menu.id;
+
+    if (!id) {
+      return;
+    }
+
     this.translate.get('menu.delete_confirmation').subscribe((text) => {
       const dialogRef = this.dialog.open(ConfirmationDialog, {
         width: '350px',
@@ -112,7 +135,7 @@ export class MenuItemComponent implements OnInit {
       });
 
       dialogRef.componentInstance.callback.subscribe((e) => {
-        this.menuService.deleteMenu(this.menu.id).subscribe(
+        this.menuService.deleteMenu(id).subscribe(
           (r: any) => {
             dialogRef.close(true);
             this.onMenuDeleted.emit();
@@ -128,37 +151,43 @@ export class MenuItemComponent implements OnInit {
   enableStopList(e: any) {
     this.loading.emit(true);
     e.source.checked = false;
-    this.menuService
-      .triggerFeature(this.menu.id, this.StopListFeature)
-      .subscribe(
-        (menu: any) => {
-          this.loading.emit(false);
-          this.menu.stopListEnabled = (menu as Menu).stopListEnabled;
-          e.source.checked = this.menu.stopListEnabled;
-        },
-        (e) => {
-          this.loading.emit(false);
-          // this.notify.error(JSON.stringify(e));
-        }
-      );
+    const id = this.menu.id;
+
+    if (!id) {
+      return;
+    }
+    this.menuService.triggerFeature(id, this.StopListFeature).subscribe(
+      (menu: any) => {
+        this.loading.emit(false);
+        this.menu.stopListEnabled = (menu as Menu).stopListEnabled;
+        e.source.checked = this.menu.stopListEnabled;
+      },
+      (e) => {
+        this.loading.emit(false);
+        // this.notify.error(JSON.stringify(e));
+      }
+    );
   }
 
   disableStopList(e: any) {
+    const id = this.menu.id;
+
+    if (!id) {
+      return;
+    }
     this.loading.emit(true);
     e.source.checked = true;
-    this.menuService
-      .triggerFeature(this.menu.id, this.StopListFeature)
-      .subscribe(
-        (menu: any) => {
-          this.loading.emit(false);
-          this.menu.stopListEnabled = (menu as Menu).stopListEnabled;
-          e.source.checked = this.menu.stopListEnabled;
-        },
-        (e) => {
-          this.loading.emit(false);
-          // this.notify.error(JSON.stringify(e));
-        }
-      );
+    this.menuService.triggerFeature(id, this.StopListFeature).subscribe(
+      (menu: any) => {
+        this.loading.emit(false);
+        this.menu.stopListEnabled = (menu as Menu).stopListEnabled;
+        e.source.checked = this.menu.stopListEnabled;
+      },
+      (e) => {
+        this.loading.emit(false);
+        // this.notify.error(JSON.stringify(e));
+      }
+    );
   }
 
   change(e: any) {
@@ -203,19 +232,23 @@ export class MenuItemComponent implements OnInit {
   }
 
   onStopListFeatureChanged() {
+    const id = this.menu.id;
+
+    if (!id) {
+      return;
+    }
+
     this.loading.emit(true);
-    this.menuService
-      .triggerFeature(this.menu.id, this.StopListFeature)
-      .subscribe(
-        (menu: any) => {
-          this.loading.emit(false);
-          this.menu = menu as Menu;
-        },
-        (e) => {
-          this.loading.emit(false);
-          // this.notify.error(JSON.stringify(e));
-        }
-      );
+    this.menuService.triggerFeature(id, this.StopListFeature).subscribe(
+      (menu: any) => {
+        this.loading.emit(false);
+        this.menu = menu as Menu;
+      },
+      (e) => {
+        this.loading.emit(false);
+        // this.notify.error(JSON.stringify(e));
+      }
+    );
   }
 
   viewMenu(menu: Menu) {
@@ -227,10 +260,16 @@ export class MenuItemComponent implements OnInit {
   }
 
   refreshState() {
+    const id = this.menu.id;
+
+    if (!id) {
+      return;
+    }
+
     this.refreshDisabled = true;
     this.opacity = 0.5;
 
-    this.menuService.getMenuState(this.menu.id).subscribe(
+    this.menuService.getMenuState(id).subscribe(
       (menu: any) => {
         this.menu = menu;
         this.opacity = 1;
@@ -245,14 +284,16 @@ export class MenuItemComponent implements OnInit {
   }
 
   openSmartMenu(menu: Menu) {
-    if (this.globals.role === 'reviewer') {
-      this.router.navigate(['menus', menu.ownerId, menu.id]);
-    } else {
-      this.router.navigate(['menus', menu.id]);
-    }
+    this.router.navigate(['menus', menu.id]);
   }
 
   requestReview() {
+    const id = this.menu.id;
+
+    if (!id) {
+      return;
+    }
+
     this.translate.get('menu.review_confirmation').subscribe((text) => {
       let lines = text
         .replace('%NUM%', 2 - this.globals.userProfile!.humanReviewCount)
@@ -262,7 +303,7 @@ export class MenuItemComponent implements OnInit {
         data: { message: lines[0], secondary_message: lines[1] },
       });
       dialogRef.componentInstance.callback.subscribe(() => {
-        this.menuService.requestMenuReview(this.menu.id).subscribe(
+        this.menuService.requestMenuReview(id).subscribe(
           (r: any) => {
             this.menu.state = r.state;
             dialogRef.componentInstance.close();

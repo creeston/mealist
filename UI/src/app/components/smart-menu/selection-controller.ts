@@ -1,4 +1,4 @@
-import { MenuLine } from '../../services/menu.service';
+import { MenuLine } from '../../api';
 import { CanvasController } from './canvas-controller';
 import { CanvasDrawer } from './canvas-drawer';
 import { MenuProvider, PageProvider } from './providers';
@@ -23,7 +23,7 @@ export class SelectionController {
     }
     let line = selection[0];
     let newValue = (line.x1 -= 1);
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.x1 = Math.round(newValue);
     });
     this.redrawCanvas();
@@ -41,7 +41,7 @@ export class SelectionController {
     }
     let line = selection[0];
     let newValue = (line.x1 += 1);
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.x1 = Math.round(newValue);
     });
     this.redrawCanvas();
@@ -57,7 +57,7 @@ export class SelectionController {
     if (selection.length == 0) {
       return;
     }
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.y1 -= 1;
     });
     this.redrawCanvas();
@@ -73,7 +73,7 @@ export class SelectionController {
     if (selection.length == 0) {
       return;
     }
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.y1 += 1;
     });
     this.redrawCanvas();
@@ -91,7 +91,7 @@ export class SelectionController {
     }
     let line = selection[0];
     let newValue = (line.x2 -= 1);
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.x2 = Math.round(newValue);
     });
     this.redrawCanvas();
@@ -109,7 +109,7 @@ export class SelectionController {
     }
     let line = selection[0];
     let newValue = (line.x2 += 1);
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.x2 = Math.round(newValue);
     });
     this.redrawCanvas();
@@ -125,7 +125,7 @@ export class SelectionController {
     if (selection.length == 0) {
       return;
     }
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.y2 -= 1;
     });
     this.redrawCanvas();
@@ -141,7 +141,7 @@ export class SelectionController {
     if (selection.length == 0) {
       return;
     }
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       l.y2 += 1;
     });
     this.redrawCanvas();

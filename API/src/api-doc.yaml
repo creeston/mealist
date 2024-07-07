@@ -65,13 +65,75 @@ components:
       type: "object"
       properties:
         id:
-          type: integer
+          type: string
         name:
           type: string
-        description:
+        images:
+          type: array
+          items:
+            type: string
+        menuCompressed:
+          type: boolean
+        dishesCount:
+          type: integer
+        pagesCount:
+          type: integer
+        state:
+          type: integer
+        parsingProgress:
+          type: integer
+        previewImageUrl:
           type: string
+        originalFileUrl:
+          type: string
+        stopListEnabled:
+          type: boolean
+        stopColor:
+          type: string
+        stopStyle:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        markups:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/MenuLine"
       required:
         - name
+    MenuLine:
+      type: "object"
+      properties:
+        text:
+          type: string
+        tag:
+          type: string
+        box:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+        x1:
+          type: number
+        y1:
+          type: number
+        x2:
+          type: number
+        y2:
+          type: number
+        editSelected:
+          type: boolean
+        viewSelected:
+          type: boolean
+        hover:
+          type: boolean
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/MenuLine"
     Code:
       type: "object"
       properties:

@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { Menu, MenuService } from '../../services/menu.service';
+import { MenuService } from '../../services/menu.service';
+import { Menu } from '../../api';
 
 @Component({
   selector: 'app-menu',
@@ -21,7 +22,7 @@ export class MenuComponent implements OnInit {
   ) {
     this.menu = data;
     this.pageEvent.pageIndex = 0;
-    this.currentImage = this.menu.images[0];
+    this.currentImage = this.menu.images ? this.menu.images[0] : '';
   }
 
   ngAfterViewInit() {
@@ -29,6 +30,8 @@ export class MenuComponent implements OnInit {
   }
 
   changePage(event: PageEvent) {
+    if (!this.menu.images) return;
+    if (!this.menu.markups) return;
     this.currentImage = this.menu.images[event.pageIndex];
     let currentMarkup = this.menu.markups[event.pageIndex];
     let canvas = this.canvasRef.nativeElement;
@@ -44,7 +47,10 @@ export class MenuComponent implements OnInit {
       if (currentMarkup) {
         for (let menuLine of currentMarkup) {
           let text = menuLine.text;
-          let box = menuLine.box;
+          let box = menuLine.box ?? [
+            [0, 0],
+            [0, 0],
+          ];
           context.beginPath();
           context.strokeStyle = 'green';
           let x = box[0][0];

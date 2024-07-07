@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { MatDialog } from '@angular/material/dialog';
-import { CreateMenuDialog } from '../create-menu/create-menu.component';
-import { Menu, MenuService } from '../../services/menu.service';
+import { Menu } from '../../api';
 import { Globals } from '../../globals';
+import { MenuService } from '../../services/menu.service';
 import { ScreenService } from '../../services/screen.service';
 import { SidenavService } from '../../services/sidenav.service';
+import { MenuFormDialog } from '../menu-form/menu-form.component';
 
 @Component({
   selector: 'app-menus',
@@ -50,32 +51,21 @@ export class MenusComponent implements OnInit {
   }
 
   forceRefresh() {
-    this.service.clearCache();
     this.refresh();
   }
 
-  silentRefresh() {
-    this.service.listMenus().subscribe((r: any) => {
-      this.menus = r;
-      this.menus = this.menus.sort((a, b) =>
-        a.creationDate > b.creationDate ? -1 : 1
-      );
-    });
+  async silentRefresh() {
+    this.menus = await this.service.listMenus();
   }
 
-  refresh() {
+  async refresh() {
     this.dataLoaded = false;
-    this.service.listMenus().subscribe((r: any) => {
-      this.menus = r;
-      this.menus = this.menus.sort((a, b) =>
-        a.creationDate > b.creationDate ? -1 : 1
-      );
-      this.dataLoaded = true;
-    });
+    this.menus = await this.service.listMenus();
+    this.dataLoaded = true;
   }
 
   createMenu() {
-    const dialogRef = this.dialog.open(CreateMenuDialog, { width: '350px' });
+    const dialogRef = this.dialog.open(MenuFormDialog, { width: '350px' });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.forceRefresh();
@@ -84,7 +74,7 @@ export class MenusComponent implements OnInit {
   }
 
   onDrop(event: any) {
-    const dialogRef = this.dialog.open(CreateMenuDialog, {
+    const dialogRef = this.dialog.open(MenuFormDialog, {
       width: '350px',
       data: event,
     });

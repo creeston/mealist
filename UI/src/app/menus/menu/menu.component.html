@@ -2,7 +2,7 @@
   <mat-spinner *ngIf="!menu" class="loadingSpinner"></mat-spinner>
   <div *ngIf="menu">
     <mat-paginator
-      [length]="menu.images.length"
+      [length]="menu.images!.length"
       [pageSize]="1"
       (page)="changePage($event)"
     >

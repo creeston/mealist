@@ -18,9 +18,10 @@ import { CanvasController } from './canvas-controller';
 import { SelectionController } from './selection-controller';
 import { LineController } from './line-controller';
 import { TutorialComponent } from '../tutorial/tutorial';
-import { Menu, MenuLine, MenuService } from '../../services/menu.service';
+import { MenuService } from '../../services/menu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
+import { Menu, MenuLine } from '../../api';
 
 const ZOOM_INCREMENT = 25;
 
@@ -35,7 +36,7 @@ export class SmartMenuComponent implements OnInit {
   menu: Menu | null = null;
   menuId: string | null = null;
   userId: string | null = null;
-  originalMenu: Menu = new Menu();
+  originalMenu: Menu = {} as Menu;
   pages: PDFPageProxy[] = [];
 
   menuProvider: MenuProvider = new MenuProvider();
@@ -141,6 +142,10 @@ export class SmartMenuComponent implements OnInit {
         .getMenu(this.menuId!, this.userId!)
         .subscribe((menu: Menu) => {
           this.menu = this.processMenu(menu);
+
+          if (!this.menu.state) {
+            return;
+          }
           this.menuProvider.setMenu(menu);
 
           this.pages = this.initializePages(menu);
@@ -175,8 +180,11 @@ export class SmartMenuComponent implements OnInit {
   initializePages(menu: Menu) {
     let pages = Array(menu.pagesCount).fill(null);
     let promises = [];
+    if (!menu.originalFileUrl || !this.menu?.pagesCount) {
+      return pages;
+    }
     getDocument(menu.originalFileUrl).promise.then((pdf) => {
-      for (let i = 0; i < menu.pagesCount; i++) {
+      for (let i = 0; i < menu.pagesCount!; i++) {
         let promise = pdf.getPage(i + 1).then((page) => {
           this.pages[i] = page;
         });
@@ -197,12 +205,27 @@ export class SmartMenuComponent implements OnInit {
       menu.stopColor = '#ABC123';
     }
 
+    if (!menu.markups) {
+      return menu;
+    }
+
     menu.markups.forEach((markup) => {
       let originalMarkup: any[] = [];
       markup.forEach((line) => {
         line = this.lineController.initializeLine(line);
-        originalMarkup.push(new MenuLine(line));
+        originalMarkup.push({
+          x1: line.x1,
+          y1: line.y1,
+          x2: line.x2,
+          y2: line.y2,
+          text: line.text,
+          tag: line.tag,
+          children: line.children,
+        } as MenuLine);
       });
+      if (!this.originalMenu.markups) {
+        this.originalMenu.markups = [];
+      }
       this.originalMenu.markups.push(originalMarkup);
     });
 
@@ -234,7 +257,7 @@ export class SmartMenuComponent implements OnInit {
 
   saveMarkup() {
     var menuMarkupToUpload: any[] = [];
-    this.menu?.markups.forEach((markup) => {
+    this.menu?.markups?.forEach((markup) => {
       let lines: any[] = [];
       markup.forEach((line) => {
         let box = [
@@ -265,7 +288,6 @@ export class SmartMenuComponent implements OnInit {
           this.snackBar.open(this.markupedSavedMessage, this.closeText, {
             duration: 2 * 1000,
           });
-          this.service.clearCache();
           this.lineController.deletedLines = [];
         },
         (r: any) => {
@@ -288,7 +310,6 @@ export class SmartMenuComponent implements OnInit {
         this.service.deleteMarkup(this.menuId!).subscribe(
           (r: any) => {
             dialogRef.componentInstance.close();
-            this.service.clearCache();
             this.router.navigate(['menus']);
           },
           (e: any) => {
@@ -358,10 +379,21 @@ export class SmartMenuComponent implements OnInit {
 
   resetMarkup() {
     let originalMarkup: any[] = [];
+    if (!this.originalMenu.markups) {
+      return;
+    }
     this.originalMenu.markups[this.page.current].forEach((l: MenuLine) => {
-      originalMarkup.push(new MenuLine(l));
+      originalMarkup.push({
+        x1: l.x1,
+        y1: l.y1,
+        x2: l.x2,
+        y2: l.y2,
+        text: l.text,
+        tag: l.tag,
+        children: l.children,
+      } as MenuLine);
     });
-    this.menu!.markups[this.page.current] = originalMarkup;
+    this.menu!.markups![this.page.current] = originalMarkup;
   }
 
   rollback() {

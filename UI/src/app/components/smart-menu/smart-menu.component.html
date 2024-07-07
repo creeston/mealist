@@ -8,7 +8,7 @@
     <h1 class="menu-title">{{ menu.name }} / {{ page.current + 1 }}</h1>
   </div>
   <mat-paginator
-    [length]="menu.images.length"
+    [length]="menu.images!.length"
     [pageSize]="1"
     [hidePageSize]="true"
     (page)="changePage($event)"
@@ -301,7 +301,7 @@
       </button>
     </div>
     <div
-      *ngFor="let line of menu.markups[page.current]; let i = index"
+      *ngFor="let line of menu.markups![page.current]; let i = index"
       (mouseover)="line.hover = true; redrawCanvas()"
       (mouseleave)="line.hover = false; redrawCanvas()"
       [id]="'line_' + i"
@@ -345,7 +345,7 @@
     *ngIf="menu && mode.isView()"
     [style.height.vh]="canvasHeight"
   >
-    <table mat-table [dataSource]="menu.markups[page.current]">
+    <table mat-table [dataSource]="menu.markups![page.current]">
       <ng-container matColumnDef="position">
         <th mat-header-cell *matHeaderCellDef>№</th>
         <td mat-cell *matCellDef="let line; let i = index">{{ i + 1 }}.</td>

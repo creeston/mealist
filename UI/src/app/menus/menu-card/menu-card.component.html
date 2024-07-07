@@ -20,12 +20,12 @@
         <div *ngIf="menu.stopListEnabled">
           <div
             class="menu-date"
-            *ngIf="menu.state < 10 && menu.state >= 4"
+            *ngIf="menu.state && menu.state < 10 && menu.state >= 4"
             [matTooltip]="'menu.not_processed' | translate"
           >
             <mat-icon class="date-icon">brunch_dining</mat-icon
             ><span [translate]="'menu.dishes_count'"></span>: ? ({{
-              menu.parsingProgress * 100
+              menu.parsingProgress
             }}%) <span class="warning-asterisk">*</span>
           </div>
           <div
@@ -96,7 +96,7 @@
               mat-button
               (click)="refreshState()"
               class="menu-phone-button"
-              *ngIf="menu.state < 10"
+              *ngIf="menu.state && menu.state < 10"
               [disabled]="refreshDisabled"
             >
               <span [translate]="'refresh'"></span>
@@ -197,7 +197,7 @@
             (click)="refreshState()"
             [matTooltip]="'menu.refresh_state' | translate"
             [class.smallbutton]="screen.width < 800"
-            *ngIf="globals.role == 'client' && menu.state < 10"
+            *ngIf="globals.role == 'client' && menu.state && menu.state < 10"
             class="menu-button"
             [disabled]="refreshDisabled"
           >

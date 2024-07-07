@@ -54,10 +54,6 @@ import { ContactUsDialog } from './components/contact-us/contact-us';
 import { AngularMaterialModule } from './angular-material.module';
 import { ConfirmationDialog } from './components/confirmation-dialog/confirmation-dialog';
 import { AppRoutingModule } from './app-routing.module';
-import { MenuItemComponent } from './components/menu-item/menu-item.component';
-import { MenuComponent } from './components/menu/menu.component';
-import { CreateMenuDialog } from './components/create-menu/create-menu.component';
-import { MenusComponent } from './components/menus/menus.component';
 import { CreateCodeComponent } from './components/create-code/create-code.component';
 import { CodesComponent } from './components/codes/codes.component';
 import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
@@ -74,6 +70,7 @@ import { Configuration, ConfigurationParameters } from './api/configuration';
 import { TopToolbarComponent } from './components/top-toolbar/top-toolbar.component';
 import { DrawerContentComponent } from './components/drawer-content/drawer-content.component';
 import { RestaurantsModule } from './restaurants/restaurants.module';
+import { MenusModule } from './menus/menus.module';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);
@@ -97,10 +94,6 @@ export function apiConfigFactory(): Configuration {
     OnlyNumbersAndLetters,
     ContactUsDialog,
     ConfirmationDialog,
-    MenuItemComponent,
-    MenuComponent,
-    CreateMenuDialog,
-    MenusComponent,
     CreateCodeComponent,
     CodesComponent,
     QrMenuComponent,
@@ -117,6 +110,7 @@ export function apiConfigFactory(): Configuration {
     ApiModule.forRoot(apiConfigFactory),
     AngularMaterialModule,
     RestaurantsModule,
+    MenusModule,
     ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,
