@@ -28,7 +28,7 @@ export class CanvasDrawer {
     private page: PageProvider,
     private menu: MenuProvider,
     private pages: PagesProvider
-  ) {}
+  ) { }
 
   incrementScale() {
     this.scaleValue += SCALE_INCREMENET;
@@ -71,7 +71,7 @@ export class CanvasDrawer {
   }
 
   drawViewCanvas(context: any) {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     context.lineWidth = 3;
@@ -93,15 +93,15 @@ export class CanvasDrawer {
           y,
           w,
           h,
-          this.menu.value.stopStyle,
-          this.menu.value.stopColor
+          this.menu.value.stopStyle ?? 'underline',
+          this.menu.value.stopColor ?? 'black'
         );
       }
     }
   }
 
   drawEditCanvas(context: any, selectionBox: any) {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     for (

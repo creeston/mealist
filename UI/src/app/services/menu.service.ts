@@ -16,9 +16,9 @@ export class MenuService {
     private http: HttpClient,
     private cookie: CookieService,
     private api: MenusService
-  ) {}
+  ) { }
 
-  createMenu(file: any, menu: Menu) {
+  async createMenu(file: any, menu: Menu) {
     const options = {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + this.jwt,
@@ -27,11 +27,11 @@ export class MenuService {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('menu', JSON.stringify(menu));
-    return this.http.post(
+    return await firstValueFrom(this.http.post(
       environment.pythonUrl + '/api/CreateMenu',
       formData,
       options
-    );
+    ));
   }
 
   getMenuState(menuId: string) {

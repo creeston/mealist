@@ -61,6 +61,16 @@ components:
       required:
         - name
         - address
+    CreateMenuRequest:
+      type: "object"
+      properties:
+        name:
+          type: string
+        file:
+          type: string
+          format: binary
+      required:
+        - file
     Menu:
       type: "object"
       properties:
@@ -134,6 +144,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MenuLine"
+      required:
+        - x1
+        - x2
+        - y1
+        - y2
     Code:
       type: "object"
       properties:

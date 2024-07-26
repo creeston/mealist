@@ -36,10 +36,41 @@ export interface components {
       facebookUrl?: string;
       tripAdvisorUrl?: string;
     };
+    CreateMenuRequest: {
+      name?: string;
+      /** Format: binary */
+      file: string;
+    };
     Menu: {
-      id?: number;
+      id?: string;
       name: string;
-      description?: string;
+      images?: string[];
+      menuCompressed?: boolean;
+      dishesCount?: number;
+      pagesCount?: number;
+      state?: number;
+      parsingProgress?: number;
+      previewImageUrl?: string;
+      originalFileUrl?: string;
+      stopListEnabled?: boolean;
+      stopColor?: string;
+      stopStyle?: string;
+      /** Format: date-time */
+      creationDate?: string;
+      markups?: components["schemas"]["MenuLine"][][];
+    };
+    MenuLine: {
+      text?: string;
+      tag?: string;
+      box?: number[][];
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+      editSelected?: boolean;
+      viewSelected?: boolean;
+      hover?: boolean;
+      children?: components["schemas"]["MenuLine"][];
     };
     Code: {
       menuId: number;

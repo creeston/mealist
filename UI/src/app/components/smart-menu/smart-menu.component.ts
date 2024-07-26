@@ -179,7 +179,7 @@ export class SmartMenuComponent implements OnInit {
 
   initializePages(menu: Menu) {
     let pages = Array(menu.pagesCount).fill(null);
-    let promises = [];
+    let promises: any[] = [];
     if (!menu.originalFileUrl || !this.menu?.pagesCount) {
       return pages;
     }

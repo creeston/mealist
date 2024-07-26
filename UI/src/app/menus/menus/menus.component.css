@@ -1,4 +1,4 @@
-.menuThumbnail  {
+.menuThumbnail {
     object-fit: cover;
 }
 
@@ -35,7 +35,7 @@
     background: rgba(86, 88, 233, 0.493);
 } */
 
-.drop-zone-active > .manage {
+.drop-zone-active>.manage {
     opacity: 0.2;
 }
 
@@ -44,11 +44,11 @@
     min-height: calc(100vh - 90px);
 }
 
-.drop-zone-active > .dropdown-placeholder {
+.drop-zone-active>.dropdown-placeholder {
     display: block;
 }
 
-.drop-zone-active > .empty-placeholder {
+.drop-zone-active>.empty-placeholder {
     display: none;
 }
 
@@ -62,14 +62,14 @@
     background-color: rgba(255, 255, 255, 0.425);
 }
 
-.empty-placeholder > h1 {
+.empty-placeholder>h1 {
     font-size: 55px;
     line-height: 55px;
     color: #66686950;
     font-weight: bold;
 }
 
-.empty-placeholder > p {
+.empty-placeholder>p {
     font-weight: bold;
     color: #66686950;
 }
@@ -85,14 +85,14 @@
     background-color: rgba(255, 255, 255, 0.425);
 }
 
-.dropdown-placeholder > h1 {
+.dropdown-placeholder>h1 {
     font-size: 55px;
     line-height: 55px;
     color: #666869;
     font-weight: bold;
 }
 
-.dropdown-placeholder > p {
+.dropdown-placeholder>p {
     font-weight: bold;
     color: #666869;
 }
@@ -110,16 +110,10 @@
     position: absolute !important;
 }
 
-.icon-button {
-    min-width: 40px;
-    margin-right: 10px;
-    padding: 0px;
-}
-
 ::ng-deep .mat-progress-bar-fill::after {
     background-color: #A0B454b0;
-  }
-  
-  ::ng-deep .mat-progress-bar-buffer {
+}
+
+::ng-deep .mat-progress-bar-buffer {
     background: #E4E8EB;
-  }
+}

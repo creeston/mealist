@@ -27,21 +27,13 @@ export class MenusComponent implements OnInit {
     public globals: Globals,
     public dialog: MatDialog,
     public screen: ScreenService,
-    private cookie: CookieService,
     private service: MenuService,
-    private router: Router,
     private sidenavService: SidenavService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.jwt = this.cookie.get('ApiJwt');
-    if (this.jwt) {
-      this.sidenavService.openIfNeeded();
-      this.refresh();
-    } else {
-      this.router.navigate(['/login']);
-      return;
-    }
+    this.sidenavService.openIfNeeded();
+    this.refresh();
   }
 
   onMenuDeleted(menu: Menu) {

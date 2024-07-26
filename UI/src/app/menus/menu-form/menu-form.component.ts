@@ -2,21 +2,18 @@ import { Component, Inject } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { merge } from 'rxjs';
 import { MenuService } from '../../services/menu.service';
-import { Menu } from '../../api';
 
 @Component({
   selector: 'app-menu-form-dialog',
   templateUrl: './menu-form.component.html',
-  styleUrls: ['./menu-form.component.css'],
+  styleUrls: ['./menu-form.component.scss'],
 })
 export class MenuFormDialog {
   public fileControl = new FormControl([] as any[], [Validators.required]);
   public menuNameControl = new FormControl('', []);
-  public disabled = true;
-  public menuNames: string[] | undefined;
-  public duplicatedMenuName: string | undefined;
+  public disabled = false;
+  fileName = '';
 
   color: ThemePalette = 'primary';
   accept: string = 'application/pdf,image/png';
@@ -25,91 +22,50 @@ export class MenuFormDialog {
     public dialogRef: MatDialogRef<MenuFormDialog>,
     private service: MenuService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
-  ngOnInit() {
-    this.fileControl.registerOnChange((e: any) => {
-      console.log(e);
-    });
-    this.fileControl.valueChanges.subscribe((v: any) => {
+
+  onFileSelected(event: any) {
+    console.log(event);
+    const file: File = event.target.files[0];
+
+    if (file) {
+      this.fileName = file.name;
       if (!this.menuNameControl.value) {
-        if (v.length == 1) {
-          this.menuNameControl.setValue(v[0].name);
-        }
+        this.menuNameControl.setValue(file.name);
       }
-    });
-
-    if (this.data) {
-      this.fileControl.setValue(this.data);
-      this.fileControl.markAsTouched();
-    }
-
-    this.service.listMenus().then((menus: any) => {
-      this.menuNames = menus.map((m: Menu) => m.name);
-      this.disabled = false;
-    });
-  }
-
-  createNameForMenu(file: any, files: any[], menuName: string) {
-    if (files.length > 1) {
-      return menuName + ' ' + file.name;
-    } else {
-      return menuName;
     }
   }
 
-  isMenuNameUnique(files: any[], menuName: string) {
-    this.duplicatedMenuName = '';
-    let isMenuNameValid = true;
-    if (this.menuNames === undefined) {
-      return isMenuNameValid;
-    }
-    files.forEach((f) => {
-      let name = this.createNameForMenu(f, files, menuName);
-      if (this.menuNames!.indexOf(name) >= 0) {
-        isMenuNameValid = false;
-        this.duplicatedMenuName = name;
-      }
-    });
-    return isMenuNameValid;
-  }
-
-  createMenu() {
-    if (this.fileControl.invalid || this.menuNameControl.invalid) {
+  async createMenu() {
+    if (this.fileControl.invalid) {
       return;
     }
 
     const menuName = this.menuNameControl.value;
-    const files = this.fileControl.value as any[] | null;
+    const files = this.fileControl.value as any[];
 
-    if (!files || !menuName) {
+    if (!files) {
       return;
     }
+    const file = files[0];
 
-    let isMenuNameValid = this.isMenuNameUnique(files, menuName);
-    if (!isMenuNameValid) {
-      this.menuNameControl.setErrors({ duplicate: true });
+    if (!file) {
       return;
     }
 
     this.disabled = true;
-    let requests: any[] = [];
-    files.forEach((f) => {
-      let menu = {
-        name: this.createNameForMenu(f, files, menuName),
-      };
-      let request = this.service.createMenu(f, menu);
-      requests.push(request);
-    });
+    const menu = {
+      name: menuName
+    }
 
-    merge(...requests).subscribe(
-      (r: any) => {
-        this.dialogRef.close(true);
-      },
-      (error: any) => {
-        // this.notify.error(JSON.stringify(error));
-        this.disabled = false;
-      }
-    );
+    try {
+      await this.service.createMenu(file, menu);
+      this.dialogRef.close(true);
+
+    }
+    finally {
+      this.disabled = false;
+    }
   }
 }

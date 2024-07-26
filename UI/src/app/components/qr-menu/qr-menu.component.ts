@@ -257,8 +257,8 @@ export class QrMenuComponent implements OnInit {
         y,
         w,
         h,
-        this.selectedMenu!.menu!.stopStyle,
-        this.selectedMenu!.menu!.stopColor
+        this.selectedMenu!.menu!.stopStyle!,
+        this.selectedMenu!.menu!.stopColor!
       );
     });
     imageElement.src = canvas.toDataURL();
@@ -302,8 +302,8 @@ export class QrMenuComponent implements OnInit {
         y,
         w,
         h,
-        this.selectedMenu!.menu!.stopStyle,
-        this.selectedMenu!.menu!.stopColor
+        this.selectedMenu!.menu!.stopStyle!,
+        this.selectedMenu!.menu!.stopColor!
       );
     });
   }

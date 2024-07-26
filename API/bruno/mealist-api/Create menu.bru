@@ -1,0 +1,16 @@
+meta {
+  name: Create menu
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/menus
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  menuName: test-menu
+  file: @file(/Users/rchorny/Downloads/Bilety.pdf)
+}

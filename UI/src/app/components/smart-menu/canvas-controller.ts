@@ -1,4 +1,4 @@
-import { MenuLine } from '../../services/menu.service';
+import { MenuLine } from '../../api/model/menuLine';
 import { CanvasDrawer } from './canvas-drawer';
 import { MenuProvider, ModeProvider, PageProvider } from './providers';
 
@@ -21,7 +21,7 @@ export class CanvasController {
     private page: PageProvider,
     private canvasDrawer: CanvasDrawer,
     private menu: MenuProvider
-  ) {}
+  ) { }
 
   setCanvas(canvasRef: any) {
     this.canvasRef = canvasRef;
@@ -33,7 +33,7 @@ export class CanvasController {
   }
 
   releaseEventHandler() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     this.mousePressed = false;
@@ -80,7 +80,7 @@ export class CanvasController {
   }
 
   public pressEventHandler(e: MouseEvent | TouchEvent) {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let canvas = this.canvasRef.nativeElement;
@@ -136,7 +136,7 @@ export class CanvasController {
   }
 
   dragEventHandler(e: MouseEvent) {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let canvas = this.canvasRef.nativeElement;

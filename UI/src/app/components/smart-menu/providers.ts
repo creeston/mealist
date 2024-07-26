@@ -1,5 +1,6 @@
 import { PDFPageProxy } from 'pdfjs-dist';
-import { Menu, MenuLine } from '../../services/menu.service';
+import { Menu } from '../../api/model/menu';
+import { MenuLine } from '../../api/model/menuLine';
 
 const PDF_SCALE_FACTOR = 150 / 72;
 
@@ -47,10 +48,10 @@ export class SelectionProvider {
     private page: PageProvider,
     private menu: MenuProvider,
     private pages: PagesProvider
-  ) {}
+  ) { }
 
   getLeftSelection(canvas: any) {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return 0;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -61,7 +62,7 @@ export class SelectionProvider {
     }
     let x: any[] = [];
     let texts = [];
-    selection.forEach((l) => {
+    selection.forEach((l: any) => {
       x.push(l.x1);
       x.push(l.x2);
       texts.push(l.text);
@@ -80,7 +81,7 @@ export class SelectionProvider {
   }
 
   getTopSelection(canvas: any) {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return 0;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -110,7 +111,7 @@ export class SelectionProvider {
   }
 
   isAnySelected() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return false;
     }
     return (

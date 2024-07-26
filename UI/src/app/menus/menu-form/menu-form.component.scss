@@ -1,0 +1,30 @@
+.add-menu-button {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: 20px;
+}
+
+.field {
+    width: 100%;
+}
+
+.container {
+    padding: 20px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-upload {
+    height: 40px;
+    display: flex;
+    align-items: center;
+
+    .upload-placeholder {
+        margin-left: 10px;
+        cursor: default;
+        line-height: 100%;
+    }
+}

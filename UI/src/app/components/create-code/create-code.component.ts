@@ -5,12 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { getDocument } from 'pdfjs-dist';
 import { TranslateService } from '@ngx-translate/core';
 import { RestaurantService } from '../../services/restaurant.service';
-import { Menu, MenuService } from '../../services/menu.service';
+import { MenuService } from '../../services/menu.service';
 import { QrItem, QrMenu, QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
-import { Restaurant } from '../../api/model/models';
+import { Menu, Restaurant } from '../../api/model/models';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
@@ -94,18 +94,17 @@ export class CreateCodeComponent {
     private route: ActivatedRoute,
     private draw: DrawService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     let restPromise = this.restService.listRestaurants();
-    this.menuService.clearCache();
     let menusPromise = this.menuService.listMenus();
 
     restPromise?.subscribe((data: any) => {
       this.rests = data;
       this.restsLoaded = true;
     });
-    menusPromise.subscribe((data: any) => {
+    menusPromise.then((data: any) => {
       this.menus = data;
       this.menusLoaded = true;
     });
@@ -159,7 +158,7 @@ export class CreateCodeComponent {
               let menuItem = this.menus[menuIdx];
               let qrItem = new QrItem(item.menuId, title, item.thumbnailIndex);
               qrItem.images = item.images;
-              qrItem.originalFileUrl = menuItem.originalFileUrl;
+              qrItem.originalFileUrl = menuItem.originalFileUrl ?? '';
               qrItem.entity = menuItem;
               this.qrmenu.menuItems.push(qrItem);
               this.loading = false;
@@ -241,12 +240,12 @@ export class CreateCodeComponent {
 
   async getMenuImages(menu: Menu) {
     if (menu.menuCompressed) {
-      return menu.images;
+      return menu.images ?? [];
     }
     let images = [];
     let i = this.menus.indexOf(menu);
-    let pagesCount = menu.images.length;
-    let pdfDoc = await getDocument(menu.originalFileUrl).promise;
+    let pagesCount = menu.images?.length ?? 0;
+    let pdfDoc = await getDocument(menu.originalFileUrl!).promise;
     for (let j = 0; j < pagesCount; j++) {
       let page = await pdfDoc.getPage(j + 1);
       var viewport = page.getViewport({ scale: 1 });
@@ -476,10 +475,10 @@ export class CreateCodeComponent {
     let menu = event.value as Menu;
     menuItem.images = await this.getMenuImages(menu);
     menuItem.thumbnailIndex = 0;
-    menuItem.menuId = menu.id;
-    menuItem.menuCompressed = menu.menuCompressed;
-    menuItem.originalFileUrl = menu.originalFileUrl;
-    menuItem.pagesCount = menu.pagesCount;
+    menuItem.menuId = menu.id!;
+    menuItem.menuCompressed = menu.menuCompressed!;
+    menuItem.originalFileUrl = menu.originalFileUrl!;
+    menuItem.pagesCount = menu.pagesCount!;
   }
 
   onPreviewSelected(menuIndex: number) {

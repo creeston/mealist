@@ -9,10 +9,10 @@ export class SelectionController {
     private page: PageProvider,
     private controller: CanvasController,
     private menu: MenuProvider
-  ) {}
+  ) { }
 
   moveLeft() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -30,7 +30,7 @@ export class SelectionController {
   }
 
   moveRight() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -48,7 +48,7 @@ export class SelectionController {
   }
 
   moveUp() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -64,7 +64,7 @@ export class SelectionController {
   }
 
   moveDown() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -80,7 +80,7 @@ export class SelectionController {
   }
 
   moveLeft2() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -98,7 +98,7 @@ export class SelectionController {
   }
 
   moveRight2() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -116,7 +116,7 @@ export class SelectionController {
   }
 
   moveUp2() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(
@@ -132,7 +132,7 @@ export class SelectionController {
   }
 
   moveDown2() {
-    if (!this.menu.value) {
+    if (!this.menu.value || !this.menu.value.markups) {
       return;
     }
     let selection = this.menu.value.markups[this.page.current].filter(

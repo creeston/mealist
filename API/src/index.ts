@@ -3,6 +3,7 @@ import cors from "cors";
 import { initialize } from "express-openapi";
 import { resolve } from "path";
 import swaggerUi from "swagger-ui-express";
+import multer from "multer";
 import { connectToDatabase } from "./db/connection";
 
 const app = express();
@@ -16,13 +17,27 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 initialize({
-  apiDoc: "./src/api-doc.yaml",
-  // apiDoc: "./API/src/api-doc.yaml",
+  //apiDoc: "./src/api-doc.yaml",
+  apiDoc: "./API/src/api-doc.yaml",
   app: app,
   promiseMode: true,
   paths: resolve(__dirname, "routes"),
+  // paths: "./src/routes",
   routesGlob: "**/*.{ts,js}",
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
+  consumesMiddleware: {
+    'multipart/form-data': function (req, res, next) {
+      multer().any()(req, res, function (err) {
+        if (err) return next(err);
+        if (req.files) {
+          (req.files as any).forEach(function (f: any) {
+            req.body[f.fieldname] = ''; // Set to empty string to satisfy OpenAPI spec validation
+          });
+        }
+        return next();
+      });
+    }
+  }
 });
 
 app.get("/", (req: Request, res: Response) => {
