@@ -1,133 +1,63 @@
-<mat-toolbar
-  color="primary"
-  class="app-header"
-  *ngIf="globals.role !== 'guest' && router.url.indexOf('menu/') === -1"
->
+<mat-toolbar color="primary" class="app-header" *ngIf="globals.role !== 'guest' && router.url.indexOf('menu/') === -1">
   <div class="nav-tool-items">
-    <img
-      src="assets/logo_beta.svg"
-      class="logo navbar-element"
-      [style.width.px]="
+    <img src="assets/logo_beta.svg" class="logo navbar-element" [style.width.px]="
         screen.width > 800 ? 224 : 224 - 200 * (1 - screen.width / 800)
-      "
-    />
+      " />
     <div class="navbar-element">
       <div class="navbar-separator"></div>
     </div>
-    <div
-      class="navbar-element"
-      *ngIf="globals.isLogged && globals.role !== 'guest'"
-    >
-      <button
-        class="navbar-button"
-        mat-icon-button
-        (click)="toggleSidenav()"
-        [disabled]="globals.navbarDisabled"
-      >
+    <div class="navbar-element" *ngIf="globals.isLogged && globals.role !== 'guest'">
+      <button class="navbar-button" mat-icon-button (click)="toggleSidenav()" [disabled]="globals.navbarDisabled">
         <mat-icon *ngIf="sidenav.opened">menu_open</mat-icon>
         <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
       </button>
     </div>
 
-    <div
-      class="navbar-element"
-      *ngIf="
+    <div class="navbar-element" *ngIf="
         router.url !== '/menus' &&
         router.url !== '/restaurants' &&
         router.url !== '/codes' &&
         globals.isLogged &&
         !globals.navbarDisabled
-      "
-    >
+      ">
       <button type="button" mat-button (click)="back()">
-        <mat-icon>west</mat-icon
-        ><span
-          *ngIf="screen.width > 570"
-          class="back-label"
-          [translate]="'back'"
-        ></span>
+        <mat-icon>west</mat-icon><span *ngIf="screen.width > 570" class="back-label" [translate]="'back'"></span>
       </button>
     </div>
 
-    <div
-      *ngIf="!globals.isLogged && screen.width > 680"
-      class="navbar-right-element"
-    >
-      <a
-        mat-button
-        routerLink="login"
-        routerLinkActive="active"
-        *ngIf="router.url === '/login'"
-        >{{ "login.enter" | translate }}</a
-      >
-      <a
-        mat-button
-        routerLink="login"
-        routerLinkActive="active"
-        *ngIf="router.url !== '/login'"
-        mat-raised-button
-        >{{ "login.enter" | translate }}</a
-      >
-      <a
-        mat-button
-        routerLink="register"
-        routerLinkActive="active"
-        *ngIf="router.url === '/register'"
-        >{{ "login.registration" | translate }}</a
-      >
-      <a
-        mat-button
-        routerLink="register"
-        routerLinkActive="active"
-        mat-raised-button
-        *ngIf="router.url !== '/register'"
-        >{{ "login.registration" | translate }}</a
-      >
+    <div *ngIf="!globals.isLogged && screen.width > 680" class="navbar-right-element">
+      <a mat-button routerLink="login" routerLinkActive="active" *ngIf="router.url === '/login'">{{ "login.enter" |
+        translate }}</a>
+      <a mat-button routerLink="login" routerLinkActive="active" *ngIf="router.url !== '/login'" mat-raised-button>{{
+        "login.enter" | translate }}</a>
+      <a mat-button routerLink="register" routerLinkActive="active" *ngIf="router.url === '/register'">{{
+        "login.registration" | translate }}</a>
+      <a mat-button routerLink="register" routerLinkActive="active" mat-raised-button
+        *ngIf="router.url !== '/register'">{{ "login.registration" | translate }}</a>
     </div>
-    <div
-      *ngIf="!globals.isLogged && screen.width <= 680"
-      class="navbar-right-element"
-    >
+    <div *ngIf="!globals.isLogged && screen.width <= 680" class="navbar-right-element">
       <button mat-icon-button [matMenuTriggerFor]="actionMenu">
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #actionMenu="matMenu">
-        <a
-          mat-button
-          routerLink="login"
-          routerLinkActive="active"
-          class="menu-button"
-          >{{ "login.enter" | translate }}</a
-        >
-        <a
-          mat-button
-          routerLink="register"
-          routerLinkActive="active"
-          class="menu-button"
-          >{{ "login.registration" | translate }}</a
-        >
+        <a mat-button routerLink="login" routerLinkActive="active" class="menu-button">{{ "login.enter" | translate
+          }}</a>
+        <a mat-button routerLink="register" routerLinkActive="active" class="menu-button">{{ "login.registration" |
+          translate }}</a>
         <button mat-button (click)="contactUs()">
           <span [translate]="'contact.contact_us'" class="menu-button"></span>
         </button>
       </mat-menu>
     </div>
-    <div
-      *ngIf="globals.isLogged && screen.width > 570"
-      class="navbar-right-element"
-    >
-      <button
-        mat-button
-        [matMenuTriggerFor]="menu"
-        [disabled]="globals.navbarDisabled"
-        class="navbar-button"
-      >
+    <div *ngIf="globals.isLogged && screen.width > 570" class="navbar-right-element">
+      <button mat-button [matMenuTriggerFor]="menu" [disabled]="globals.navbarDisabled" class="navbar-button">
         <div class="profile-button" *ngIf="globals.role === 'client'">
           <span class="profile-label">{{ "my_profile" | translate }}</span>
           <span class="profile-email">{{ globals.email }}</span>
         </div>
         <span *ngIf="globals.role === 'reviewer'">{{
           "my_profile_reviewer" | translate
-        }}</span>
+          }}</span>
       </button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="logout()">
@@ -140,46 +70,26 @@
     </div>
 
     <div class="navbar-right-element">
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="languageMenu"
-        [disabled]="globals.navbarDisabled"
-        class="navbar-button"
-      >
+      <button mat-icon-button [matMenuTriggerFor]="languageMenu" [disabled]="globals.navbarDisabled"
+        class="navbar-button">
         <i class="icon ion-android-globe language-icon"></i>
       </button>
       <mat-menu #languageMenu="matMenu">
-        <button
-          mat-menu-item
-          (click)="selectLanguage('ru')"
-          [class.selected-language]="translate.currentLang == 'ru'"
-        >
+        <button mat-menu-item (click)="selectLanguage('ru')" [class.selected-language]="translate.currentLang == 'ru'">
           Русский
         </button>
-        <button
-          mat-menu-item
-          (click)="selectLanguage('be')"
-          [class.selected-language]="translate.currentLang == 'be'"
-        >
+        <button mat-menu-item (click)="selectLanguage('be')" [class.selected-language]="translate.currentLang == 'be'">
           Беларуская
         </button>
       </mat-menu>
     </div>
     <div class="navbar-right-element help_button" *ngIf="screen.width > 300">
-      <a mat-icon-button href="https://www.meal.ist" target="_blank">
+      <a mat-icon-button [href]="helpUrl" target="_blank">
         <mat-icon>help_outline</mat-icon>
       </a>
     </div>
-    <div
-      class="navbar-right-element contact-us-button"
-      *ngIf="screen.width > 680"
-    >
-      <button
-        mat-flat-button
-        (click)="contactUs()"
-        [disabled]="globals.navbarDisabled"
-        class="navbar-button"
-      >
+    <div class="navbar-right-element contact-us-button" *ngIf="screen.width > 680">
+      <button mat-flat-button (click)="contactUs()" [disabled]="globals.navbarDisabled" class="navbar-button">
         <span [translate]="'contact.contact_us'"></span>
       </button>
     </div>

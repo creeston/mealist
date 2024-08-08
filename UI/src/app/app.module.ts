@@ -34,7 +34,6 @@ import localeRu from '@angular/common/locales/ru';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { SidenavService } from './services/sidenav.service';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DrawService } from './services/draw.service';
 import { ScreenService } from './services/screen.service';
 import {
@@ -117,7 +116,6 @@ export function apiConfigFactory(): Configuration {
     HttpClientModule,
     BrowserModule,
     BrowserAnimationsModule,
-    MatSlideToggleModule,
     MatSliderModule,
     MatStepperModule,
     MatProgressBarModule,
@@ -161,4 +159,4 @@ export function apiConfigFactory(): Configuration {
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule {}
+export class AppModule { }

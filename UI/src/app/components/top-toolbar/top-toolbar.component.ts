@@ -9,6 +9,7 @@ import { ContactUsDialog } from '../contact-us/contact-us';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CookieService } from 'ngx-cookie-service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-top-toolbar',
@@ -21,6 +22,7 @@ export class TopToolbarComponent {
   supportedLanguges = ['ru', 'be'];
   languageMapping = { ru: 'рус', be: 'бел' };
   selectedLanguage = this.supportedLanguges[0];
+  helpUrl = environment.helpUrl;
 
   constructor(
     public globals: Globals,

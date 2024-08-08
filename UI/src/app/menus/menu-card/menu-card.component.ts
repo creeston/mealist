@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { getDocument } from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions, PDFDocumentProxy } from 'pdfjs-dist';
 import { MenuComponent } from '../menu/menu.component';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,10 @@ import {
   TutorialResponse,
 } from '../../components/tutorial/tutorial';
 import { Menu } from '../../api/model/menu';
+import { PageEvent } from '@angular/material/paginator';
+
+
+GlobalWorkerOptions.workerSrc = 'pdf.worker.mjs';
 
 @Component({
   selector: 'app-menu-card',
@@ -34,6 +38,10 @@ export class MenuCardComponent implements OnInit {
   Arr = Array;
   opacity = 1;
   refreshDisabled = false;
+  displayMenu = false;
+  currentMenuPage: number = 0;
+  openedPdf: PDFDocumentProxy | null = null;
+  renderedImages: string[] = [];
 
   StopListFeature = 'stop_list';
 
@@ -46,29 +54,35 @@ export class MenuCardComponent implements OnInit {
     private translate: TranslateService,
     public translateHelper: TranslateHelperClass,
     private auth: AuthenticationService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   async showPdfGallery(menu: Menu) {
-    this.loading.emit(true);
-    let images = [];
     if (!menu.images || menu.images.length == 0) {
-      this.loading.emit(false);
       return;
     }
 
     if (!menu.originalFileUrl) {
-      this.loading.emit(false);
+      return;
+    }
+
+    if (this.displayMenu) {
+      this.displayMenu = false;
       return;
     }
 
     let pagesCount = menu.images.length;
-    let pdfDoc = await getDocument(menu.originalFileUrl).promise;
+    this.renderedImages = []
+    if (this.openedPdf == null) {
+      const getDocumentTaskPromise = getDocument(menu.originalFileUrl).promise;
+      this.openedPdf = await getDocumentTaskPromise;
+    }
+
     for (let i = 0; i < pagesCount; i++) {
-      let page = await pdfDoc.getPage(i + 1);
+      let page = await this.openedPdf.getPage(i + 1);
       var viewport = page.getViewport({ scale: 1 });
-      var canvas = document.getElementById('canvas' + i) as any;
+      var canvas = document.getElementById('canvas' + menu.id + '_' + i) as any;
       var context = canvas.getContext('2d');
       let rate = this.screen.width / viewport.width;
       if (viewport.height * rate > this.screen.height) {
@@ -80,29 +94,25 @@ export class MenuCardComponent implements OnInit {
         canvas.width = this.screen.width;
       }
       viewport = page.getViewport({ scale: rate });
-      await page.render({ canvasContext: context, viewport: viewport }).promise;
-      images.push(canvas.toDataURL('image/jpeg'));
+      const renderTaskPromise = page.render({ canvasContext: context, viewport: viewport }).promise;
+      await renderTaskPromise;
+      this.renderedImages.push(canvas.toDataURL('image/jpeg'));
     }
-    images = images.map((i: string) => {
-      return { path: i };
-    });
-    let prop = {
-      images: images,
-      index: 0,
-      counter: true,
-    };
-    this.loading.emit(false);
-    // this.gallery.load(prop);
-
     for (let i = 0; i < pagesCount; i++) {
-      var canvas = document.getElementById('canvas' + i) as any;
+      var canvas = document.getElementById('canvas' + menu.id + '_' + i) as any;
       canvas.height = 0;
       canvas.width = 0;
     }
+
+    this.displayMenu = true;
   }
 
   openPdf(menu: Menu) {
     window.open(menu.originalFileUrl, '_blank');
+  }
+
+  handlePageChange(event: PageEvent) {
+    this.currentMenuPage = event.pageIndex;
   }
 
   showGallery(menu: Menu) {
@@ -192,11 +202,12 @@ export class MenuCardComponent implements OnInit {
 
   change(e: any) {
     let features = this.globals.userProfile!.featuresToLearn;
+    e.source.checked = false;
+
     if (
-      !this.menu.stopListEnabled &&
-      features.indexOf(this.StopListFeature) >= 0
+      !this.menu.stopListEnabled
+      // && features.indexOf(this.StopListFeature) >= 0
     ) {
-      e.source.checked = false;
       let dialogRef = this.dialog.open(TutorialComponent, {
         width: '650px',
         data: { tutorial_id: this.StopListFeature },
@@ -212,7 +223,7 @@ export class MenuCardComponent implements OnInit {
           this.auth
             .setFeaturesToLearn(this.globals.userProfile!.featuresToLearn)
             .subscribe(
-              (r) => {},
+              (r) => { },
               (e) => {
                 // this.notify.error(JSON.stringify(e));
               }

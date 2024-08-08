@@ -26,7 +26,7 @@
     "colorthief": "^2.4.0",
     "ngx-cookie-service": "^17.1.0",
     "ngx-markdown": "^17.2.1",
-    "pdfjs-dist": "^4.3.136",
+    "pdfjs-dist": "^4.5.136",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
@@ -35,6 +35,7 @@
     "@angular-devkit/build-angular": "^17.3.8",
     "@angular/cli": "^17.3.8",
     "@angular/compiler-cli": "^17.3.0",
+    "@openapitools/openapi-generator-cli": "^2.13.4",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
@@ -42,7 +43,6 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.4.2",
-    "@openapitools/openapi-generator-cli": "^2.13.4"
+    "typescript": "~5.4.2"
   }
 }

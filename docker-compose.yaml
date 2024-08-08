@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   mongodb:
     image: mongo
@@ -41,3 +40,34 @@ services:
       - ../files:/files
     entrypoint: >
       /bin/sh -c " /usr/bin/mc config host add myminio http://minio-service:9000 minioadmin minioadmin; /usr/bin/mc mb myminio/mealist --ignore-existing; exit 0; "
+
+  rabbitmq:
+    # Add user for each service
+    # Define roles for accessing queues
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./RabbitMQ/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./RabbitMQ/definitions.json:/etc/rabbitmq/definitions.json:ro
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  menuparser:
+    build:
+      context: MenuParser
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_USER: admin
+      MONGO_PASS: admin

@@ -1,0 +1,91 @@
+{
+    "queues": [
+        {
+            "name": "menu-parsing-queue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "menu-parsing-status-queue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "menu-parsing-exchange",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "menu-parsing-status-exchange",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "menu-parsing-exchange",
+            "vhost": "/",
+            "destination": "menu-parsing-queue",
+            "destination_type": "queue",
+            "routing_key": "menu-parsing-queue",
+            "arguments": {}
+        },
+        {
+            "source": "menu-parsing-status-exchange",
+            "vhost": "/",
+            "destination": "menu-parsing-status-queue",
+            "routing_key": "menu-parsing-status-queue",
+            "destination_type": "queue",
+            "arguments": {}
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "users": [
+        {
+            "name": "admin",
+            "password_hash": "gDFp8Wr8jFC+wtvGC2sM40nGDPqB/uylXdxE8ks7I+6F8Bcf",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "administrator"
+        },
+        {
+            "name": "menu-parser",
+            "password_hash": "KEUEOyBsAwo9yUB3xExLwn1TL/cxbPAYboXWEoiOQgyu/FgI",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "service"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "admin",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        },
+        {
+            "user": "menu-parser",
+            "vhost": "/",
+            "configure": ".*",
+            "write": "menu-parsing-status-exchange",
+            "read": "menu-parsing-queue"
+        }
+    ]
+}

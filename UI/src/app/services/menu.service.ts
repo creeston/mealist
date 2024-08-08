@@ -18,20 +18,8 @@ export class MenuService {
     private api: MenusService
   ) { }
 
-  async createMenu(file: any, menu: Menu) {
-    const options = {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + this.jwt,
-      }),
-    };
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('menu', JSON.stringify(menu));
-    return await firstValueFrom(this.http.post(
-      environment.pythonUrl + '/api/CreateMenu',
-      formData,
-      options
-    ));
+  async createMenu(file: Blob, menuName: string | undefined) {
+    await firstValueFrom(this.api.createMenu(file, menuName));
   }
 
   getMenuState(menuId: string) {
@@ -50,7 +38,9 @@ export class MenuService {
   }
 
   async listMenus() {
-    return await firstValueFrom(this.api.getMenus());
+    var menus = await firstValueFrom(this.api.getMenus());
+    this.globals.menusCount = menus.length;
+    return menus;
   }
 
   deleteMenu(menuId: string) {

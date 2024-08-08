@@ -5,6 +5,9 @@ import { resolve } from "path";
 import swaggerUi from "swagger-ui-express";
 import multer from "multer";
 import { connectToDatabase } from "./db/connection";
+import { connectoToRabbitMQ } from "./queue/connection";
+import { listenToMenuParsingStatusQueue } from "./routes/menus";
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,8 +20,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 initialize({
-  //apiDoc: "./src/api-doc.yaml",
-  apiDoc: "./API/src/api-doc.yaml",
+  apiDoc: "./src/api-doc.yaml",
+  // apiDoc: "./API/src/api-doc.yaml",
   app: app,
   promiseMode: true,
   paths: resolve(__dirname, "routes"),
@@ -66,9 +69,16 @@ app.use(
 
 connectToDatabase()
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Server running at http://localhost:${port}`);
-    });
+    connectoToRabbitMQ()
+      .then(() => {
+        app.listen(port, () => {
+          console.log(`Server running at http://localhost:${port}`);
+        });
+        listenToMenuParsingStatusQueue();
+      }).catch((error: Error) => {
+        console.error("RabbitMQ connection failed", error);
+        process.exit();
+      });
   })
   .catch((error: Error) => {
     console.error("Database connection failed", error);

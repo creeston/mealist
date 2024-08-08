@@ -1,46 +1,27 @@
-<div
-  class="empty-placeholder"
-  *ngIf="dataLoaded && (!restaurants || restaurants.length === 0)"
->
+<div class="empty-placeholder" *ngIf="dataLoaded && (!restaurants || restaurants.length === 0)">
   <h1 [translate]="'rest.placeholder.title'"></h1>
   <p [translate]="'rest.placeholder.description'"></p>
 </div>
+
 <div class="manage">
   <div class="manage-bar">
     <div class="manager-bar-left">
       <mat-icon aria-hidden="false">restaurant_menu</mat-icon>
       <div class="description-container">
-        <span
-          class="manage-description"
-          *ngIf="screen.width > 800"
-          [translate]="'rest.full_description'"
-        ></span>
-        <span
-          class="manage-description"
-          *ngIf="screen.width <= 800"
-          [translate]="'rest.short_description'"
-        ></span>
+        <span class="manage-description" *ngIf="screen.width > 800" [translate]="'rest.full_description'"></span>
+        <span class="manage-description" *ngIf="screen.width <= 800" [translate]="'rest.short_description'"></span>
       </div>
       <span class="manage-label" [translate]="'rest.title'"></span>
       <span *ngIf="globals.restsCount >= 0">({{ globals.restsCount }})</span>
     </div>
     <!-- TODO: Add tooltip with "Create restaurant label"-->
     <div class="manage-bar-right">
-      <button
-        mat-icon-button
-        (click)="createRestaurant()"
-        [class.smallbutton]="screen.width < 800"
-      >
+      <button mat-icon-button (click)="createRestaurant()" [class.smallbutton]="screen.width < 800">
         <mat-icon class="icon-add">add</mat-icon>
       </button>
     </div>
     <div class="manage-bar-right">
-      <button
-        mat-icon-button
-        (click)="forceRefresh()"
-        [class.smallbutton]="screen.width < 800"
-        class="icon-button"
-      >
+      <button mat-icon-button (click)="forceRefresh()" [class.smallbutton]="screen.width < 800" class="icon-button">
         <mat-icon>refresh</mat-icon>
       </button>
     </div>
@@ -48,11 +29,8 @@
   <mat-spinner *ngIf="!dataLoaded" class="loading-spinner"></mat-spinner>
   <div *ngIf="dataLoaded">
     <div *ngFor="let rest of restaurants" class="menu-row">
-      <app-restaurant-card
-        [rest]="rest"
-        (loading)="loading = $event"
-        (onRestDeleted)="onRestaurantDeleted(rest)"
-      ></app-restaurant-card>
+      <app-restaurant-card [rest]="rest" (loading)="loading = $event"
+        (onRestDeleted)="onRestaurantDeleted(rest)"></app-restaurant-card>
     </div>
   </div>
 </div>

@@ -1,4 +1,5 @@
 import { Collection, Db, MongoClient } from "mongodb";
+
 const connectionString = "mongodb://admin:admin@host.docker.internal:27017";
 const dbName = "mealistdb";
 const restaurantCollection = "restaurants";

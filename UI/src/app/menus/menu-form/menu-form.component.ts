@@ -14,6 +14,7 @@ export class MenuFormDialog {
   public menuNameControl = new FormControl('', []);
   public disabled = false;
   fileName = '';
+  selectedFile: Blob | null = null;
 
   color: ThemePalette = 'primary';
   accept: string = 'application/pdf,image/png';
@@ -26,7 +27,6 @@ export class MenuFormDialog {
 
 
   onFileSelected(event: any) {
-    console.log(event);
     const file: File = event.target.files[0];
 
     if (file) {
@@ -34,6 +34,7 @@ export class MenuFormDialog {
       if (!this.menuNameControl.value) {
         this.menuNameControl.setValue(file.name);
       }
+      this.selectedFile = file;
     }
   }
 
@@ -50,17 +51,14 @@ export class MenuFormDialog {
     }
     const file = files[0];
 
-    if (!file) {
+    if (!file || !this.selectedFile) {
       return;
     }
 
     this.disabled = true;
-    const menu = {
-      name: menuName
-    }
 
     try {
-      await this.service.createMenu(file, menu);
+      await this.service.createMenu(this.selectedFile, menuName ? menuName : undefined);
       this.dialogRef.close(true);
 
     }
