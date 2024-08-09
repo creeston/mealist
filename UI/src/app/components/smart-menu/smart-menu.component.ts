@@ -143,7 +143,7 @@ export class SmartMenuComponent implements OnInit {
         .subscribe((menu: Menu) => {
           this.menu = this.processMenu(menu);
 
-          if (!this.menu.state) {
+          if (!this.menu.status) {
             return;
           }
           this.menuProvider.setMenu(menu);
@@ -151,12 +151,12 @@ export class SmartMenuComponent implements OnInit {
           this.pages = this.initializePages(menu);
           this.pagesProvider.setPages(this.pages);
 
-          if (this.menu.state == 12) {
+          if (this.menu.status == "reviewed") {
             // Reviewed
             this.mode.switchToView();
           }
 
-          if (this.menu.state < 10) {
+          if (this.menu.status == "processed") {
             this.translate
               .get('menu.edit.not_processed_warning')
               .subscribe((message) => {
@@ -165,7 +165,7 @@ export class SmartMenuComponent implements OnInit {
                 //   data: message,
                 // });
               });
-          } else if (this.menu.state == 10) {
+          } else if (this.menu.status == "parsing") {
             this.translate.get('menu.edit.processed').subscribe((message) => {
               // this.dialog.open(NotificationDialog, {
               //   width: '350px',

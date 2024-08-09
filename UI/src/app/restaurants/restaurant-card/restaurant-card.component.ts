@@ -59,10 +59,6 @@ export class RestaurantCardComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: Restaurant) => {
       if (result) {
         this.restaurant = result;
-        if (this.restaurant.mapsView) {
-          this.restaurant.mapsView =
-            this.restaurant.mapsView + '&ts=' + new Date().getTime();
-        }
       }
     });
   }

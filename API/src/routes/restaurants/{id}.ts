@@ -84,7 +84,7 @@ PUT.apiDoc = {
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/CreateRestaurantRequest",
+          $ref: "#/components/schemas/Restaurant",
         },
       },
     },

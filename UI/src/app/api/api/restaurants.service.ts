@@ -19,8 +19,6 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { CreateRestaurantRequest } from '../model/createRestaurantRequest';
-// @ts-ignore
 import { Restaurant } from '../model/restaurant';
 
 // @ts-ignore
@@ -96,14 +94,14 @@ export class RestaurantsService {
 
     /**
      * Create Restaurant
-     * @param createRestaurantRequest 
+     * @param restaurant 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createRestaurant(createRestaurantRequest?: CreateRestaurantRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Restaurant>;
-    public createRestaurant(createRestaurantRequest?: CreateRestaurantRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Restaurant>>;
-    public createRestaurant(createRestaurantRequest?: CreateRestaurantRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Restaurant>>;
-    public createRestaurant(createRestaurantRequest?: CreateRestaurantRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createRestaurant(restaurant?: Restaurant, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Restaurant>;
+    public createRestaurant(restaurant?: Restaurant, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Restaurant>>;
+    public createRestaurant(restaurant?: Restaurant, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Restaurant>>;
+    public createRestaurant(restaurant?: Restaurant, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -154,7 +152,7 @@ export class RestaurantsService {
         return this.httpClient.request<Restaurant>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: createRestaurantRequest,
+                body: restaurant,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -355,14 +353,14 @@ export class RestaurantsService {
     /**
      * Update Restaurant
      * @param id Restaurant ID
-     * @param createRestaurantRequest 
+     * @param restaurant 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateRestaurant(id: string, createRestaurantRequest?: CreateRestaurantRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Restaurant>;
-    public updateRestaurant(id: string, createRestaurantRequest?: CreateRestaurantRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Restaurant>>;
-    public updateRestaurant(id: string, createRestaurantRequest?: CreateRestaurantRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Restaurant>>;
-    public updateRestaurant(id: string, createRestaurantRequest?: CreateRestaurantRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updateRestaurant(id: string, restaurant?: Restaurant, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Restaurant>;
+    public updateRestaurant(id: string, restaurant?: Restaurant, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Restaurant>>;
+    public updateRestaurant(id: string, restaurant?: Restaurant, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Restaurant>>;
+    public updateRestaurant(id: string, restaurant?: Restaurant, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling updateRestaurant.');
         }
@@ -416,7 +414,7 @@ export class RestaurantsService {
         return this.httpClient.request<Restaurant>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: createRestaurantRequest,
+                body: restaurant,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

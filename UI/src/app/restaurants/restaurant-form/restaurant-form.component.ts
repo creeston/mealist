@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RestaurantService } from '../../services/restaurant.service';
 import { ScreenService } from '../../services/screen.service';
-import { CreateRestaurantRequest, Restaurant } from '../../api/model/models';
+import { Restaurant } from '../../api/model/models';
 
 @Component({
   selector: 'app-restaurant-form',
@@ -108,24 +108,5 @@ export class RestaurantFormDialog {
         ? this.restaurantForm.get('tripAdvisorUrl')?.value
         : '',
     };
-  }
-
-  updatePreview() {
-    let createRequest: CreateRestaurantRequest = this.getRestaurantModel();
-    // this.loadMapPreview(createRequest);
-  }
-
-  loadMapPreview(createRequest: CreateRestaurantRequest) {
-    // this.disabled = true;
-    // this.service.getRestaurantImage(createRequest).subscribe(
-    //   (r: any) => {
-    //     this.mapUrl = r.mapsUrl + '&rand=' + new Date().getTime();
-    //     this.disabled = false;
-    //   },
-    //   (error: any) => {
-    //     // this.notify.error(JSON.stringify(error));
-    //     this.disabled = false;
-    //   }
-    // );
   }
 }

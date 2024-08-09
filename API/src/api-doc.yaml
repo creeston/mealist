@@ -55,13 +55,13 @@ components:
           type: array
           items:
             type: string
+        status:
+          type: string
         menuCompressed:
           type: boolean
         dishesCount:
           type: integer
         pagesCount:
-          type: integer
-        state:
           type: integer
         parsingProgress:
           type: integer

@@ -16,10 +16,10 @@ export interface Menu {
     id?: string;
     name: string;
     images?: Array<string>;
+    status?: string;
     menuCompressed?: boolean;
     dishesCount?: number;
     pagesCount?: number;
-    state?: number;
     parsingProgress?: number;
     previewImageUrl?: string;
     originalFileUrl?: string;

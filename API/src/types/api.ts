@@ -10,25 +10,12 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    CreateRestaurantRequest: {
-      name: string;
-      address: string;
-      city?: string;
-      description?: string;
-      wifiName?: string;
-      wifiPassword?: string;
-      instagramUrl?: string;
-      vkUrl?: string;
-      facebookUrl?: string;
-      tripAdvisorUrl?: string;
-    };
     Restaurant: {
       id?: string;
       name: string;
       address: string;
-      city?: string;
+      city: string;
       description?: string;
-      mapsView?: string;
       wifiName?: string;
       wifiPassword?: string;
       instagramUrl?: string;
@@ -45,10 +32,10 @@ export interface components {
       id?: string;
       name: string;
       images?: string[];
+      status?: string;
       menuCompressed?: boolean;
       dishesCount?: number;
       pagesCount?: number;
-      state?: number;
       parsingProgress?: number;
       previewImageUrl?: string;
       originalFileUrl?: string;

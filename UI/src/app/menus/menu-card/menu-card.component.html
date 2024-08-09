@@ -13,23 +13,10 @@
           }}
         </div>
         <div *ngIf="menu.stopListEnabled">
-          <div class="menu-date" *ngIf="menu.state && menu.state < 10 && menu.state >= 4"
-            [matTooltip]="'menu.not_processed' | translate">
+          <div class="menu-date" [matTooltip]="'menu.not_processed' | translate">
             <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>: ? ({{
             menu.parsingProgress
             }}%) <span class="warning-asterisk">*</span>
-          </div>
-          <div class="menu-date" *ngIf="menu.state == 11 && globals.role == 'client'"
-            [matTooltip]="'menu.not_reviewed' | translate">
-            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>: ?
-          </div>
-          <div class="menu-date" *ngIf="menu.state == 12 || globals.role == 'reviewer'">
-            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>:
-            {{ menu.dishesCount }}
-          </div>
-          <div class="menu-date" *ngIf="menu.state == 10" [matTooltip]="'menu.please_review' | translate">
-            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>:
-            {{ menu.dishesCount }} <span class="warning-asterisk">*</span>
           </div>
         </div>
       </div>
@@ -46,8 +33,7 @@
             <span [translate]="'download'"></span>
           </button>
           <div *ngIf="menu.stopListEnabled">
-            <button mat-button (click)="openSmartMenu(menu)" class="menu-phone-button"
-              *ngIf="menu.state == 10 || menu.state == 12" [disabled]="true">
+            <button mat-button (click)="openSmartMenu(menu)" class="menu-phone-button" [disabled]="true">
               <span [translate]="'edit'"></span>
             </button>
             <!-- <button mat-button (click)=requestReview() class="menu-phone-button" *ngIf="globals.userProfile.humanReviewCount < 2 && menu.state != 11">
@@ -56,8 +42,7 @@
             <button mat-button (click)=requestReview() class="menu-phone-button" *ngIf="globals.userProfile.humanReviewCount >= 2 && menu.state != 11" disabled>
               <span [translate]="'menu.ask_review'"></span>
             </button> -->
-            <button mat-button (click)="refreshState()" class="menu-phone-button" *ngIf="menu.state && menu.state < 10"
-              [disabled]="refreshDisabled">
+            <button mat-button (click)="refreshState()" class="menu-phone-button" [disabled]="refreshDisabled">
               <span [translate]="'refresh'"></span>
             </button>
           </div>
@@ -68,12 +53,11 @@
       </div>
     </mat-grid-tile>
 
-    <!-- Menu features to enable -->
     <mat-grid-tile [colspan]="1" [rowspan]="1" class="grid-cell" *ngIf="screen.width > 800">
-      <div class="menu-features">
-        <mat-slide-toggle [ngModel]="menu.stopListEnabled" (change)="change($event)" class="menu-feature">
-          <span [translate]="'menu.stop_list'" class="menu-feature-label"></span>
-        </mat-slide-toggle>
+      <div class="menu-status" *ngIf="menu.status">
+        <p class="status-title">Статус</p>
+        <p class="status-value">{{getStatus(menu.status)}}</p>
+        <mat-spinner *ngIf="shouldShowSpinner(menu.status)" diameter="32"></mat-spinner>
       </div>
     </mat-grid-tile>
 
@@ -110,17 +94,8 @@
             [matTooltip]="'menu.edit_markup' | translate">
             <mat-icon>edit</mat-icon>
           </button>
-          <!-- <button mat-icon-button (click)=requestReview() [matTooltip]="'menu.ask_review' | translate" class="menu-button" *ngIf="menu.state != 11 && globals.userProfile.humanReviewCount < 2">
-            <mat-icon>engineering</mat-icon>
-          </button>
-          <div [matTooltip]="'errors.human_review_exceeded' | translate" [matTooltipDisabled]="false" *ngIf="menu.state != 11 && globals.userProfile.humanReviewCount >= 2" class="menu-button" >
-            <button mat-icon-button disabled>
-              <mat-icon>engineering</mat-icon>
-            </button>
-          </div> -->
           <button mat-icon-button (click)="refreshState()" [matTooltip]="'menu.refresh_state' | translate"
-            [class.smallbutton]="screen.width < 800" *ngIf="globals.role == 'client' && menu.state && menu.state < 10"
-            class="menu-button" [disabled]="refreshDisabled">
+            [class.smallbutton]="screen.width < 800" class="menu-button" [disabled]="refreshDisabled">
             <mat-icon>refresh</mat-icon>
           </button>
         </div>

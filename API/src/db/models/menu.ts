@@ -5,4 +5,5 @@ export interface MenuModel {
     creationDate: string;
     modifiedDate?: string;
     images?: string[];
+    status: string;
 }

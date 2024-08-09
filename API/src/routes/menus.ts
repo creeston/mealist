@@ -13,6 +13,14 @@ type CreateMenuRequest = components["schemas"]["CreateMenuRequest"]
 
 let menus: MenuModel[] = [];
 
+const client = new S3Client({
+  endpoint: "http://127.0.0.1:9000",
+  credentials: {
+    accessKeyId: "minioadmin",
+    secretAccessKey: "minioadmin",
+  },
+  region: "europe-west1"
+})
 
 export const listenToMenuParsingStatusQueue = () => {
   if (rabbitMQ.channel) {
@@ -30,6 +38,7 @@ export const listenToMenuParsingStatusQueue = () => {
         if (menu) {
           menu.modifiedDate = new Date().toISOString();
           menu.images = data.paths;
+          menu.status = "parsed";
         }
 
         logger.log({
@@ -45,15 +54,6 @@ export const listenToMenuParsingStatusQueue = () => {
 
 export const GET: Operation = [
   async (req: Request, res: Response): Promise<void> => {
-    let client = new S3Client({
-      endpoint: "http://127.0.0.1:9000",
-      credentials: {
-        accessKeyId: "minioadmin",
-        secretAccessKey: "minioadmin",
-      },
-      region: "europe-west1"
-    })
-
     const menusReponse: MenuResponseModel[] = await Promise.all(menus.map(async (menu) => {
       const command = new GetObjectCommand({
         Bucket: "mealist",
@@ -68,6 +68,7 @@ export const GET: Operation = [
         originalFileUrl: url,
         creationDate: menu.creationDate,
         moodifiedDate: menu.modifiedDate,
+        status: menu.status
       } as MenuResponseModel;
 
       if (menu.images && menu.images.length > 0) {
@@ -123,15 +124,6 @@ export const POST: Operation = [
 
     const files = req.files as Express.Multer.File[];
 
-    let client = new S3Client({
-      endpoint: "http://127.0.0.1:9000",
-      credentials: {
-        accessKeyId: "minioadmin",
-        secretAccessKey: "minioadmin",
-      },
-      region: "europe-west1"
-    })
-
     if (!files || files.length === 0) {
       res.status(400).json({ error: "No file uploaded" });
     }
@@ -161,6 +153,7 @@ export const POST: Operation = [
         name: menuName,
         menuKey: key,
         creationDate: new Date().toISOString(),
+        status: "parsing"
       };
 
       menus.push(newMenu);

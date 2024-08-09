@@ -4,7 +4,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { Observable, firstValueFrom } from 'rxjs';
 import { Globals } from '../globals';
 import { RestaurantsService } from '../api/api/restaurants.service';
-import { CreateRestaurantRequest, Restaurant } from '../api';
+import { Restaurant } from '../api';
 
 @Injectable()
 export class RestaurantService {
@@ -17,22 +17,11 @@ export class RestaurantService {
     public globals: Globals,
     private cookie: CookieService,
     private api: RestaurantsService
-  ) {}
+  ) { }
 
-  createRestaurant(rest: CreateRestaurantRequest) {
+  createRestaurant(rest: Restaurant) {
     return firstValueFrom(
-      this.api.createRestaurant({
-        address: rest.address,
-        city: rest.city,
-        description: rest.description,
-        facebookUrl: rest.facebookUrl,
-        instagramUrl: rest.instagramUrl,
-        vkUrl: rest.vkUrl,
-        tripAdvisorUrl: rest.tripAdvisorUrl,
-        name: rest.name,
-        wifiName: rest.wifiName ?? '',
-        wifiPassword: rest.wifiPassword,
-      })
+      this.api.createRestaurant(rest)
     );
   }
 

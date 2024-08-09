@@ -50,7 +50,7 @@ export class MenusComponent implements OnInit {
 
   async refresh() {
     this.dataLoaded = false;
-    this.menus = await this.service.listMenus();
+    await this.silentRefresh();
     this.dataLoaded = true;
   }
 

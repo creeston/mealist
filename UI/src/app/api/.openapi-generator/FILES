@@ -10,7 +10,6 @@ encoder.ts
 git_push.sh
 index.ts
 model/code.ts
-model/createRestaurantRequest.ts
 model/menu.ts
 model/menuLine.ts
 model/models.ts

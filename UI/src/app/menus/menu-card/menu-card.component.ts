@@ -10,10 +10,6 @@ import { Globals } from '../../globals';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
 import { AuthenticationService } from '../../services/auth.service';
 import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
-import {
-  TutorialComponent,
-  TutorialResponse,
-} from '../../components/tutorial/tutorial';
 import { Menu } from '../../api/model/menu';
 import { PageEvent } from '@angular/material/paginator';
 
@@ -115,19 +111,18 @@ export class MenuCardComponent implements OnInit {
     this.currentMenuPage = event.pageIndex;
   }
 
-  showGallery(menu: Menu) {
-    if (!menu.images || menu.images.length == 0) {
-      return;
+  getStatus(status: string) {
+    if (status === "parsing") {
+      return "Разбор PDF файла"
+    } else if (status === "parsed") {
+      return "PDF файл разобран"
     }
-    let images = menu.images.map((i: string) => {
-      return { path: i, height: this.screen.height };
-    });
-    let prop = {
-      images: images,
-      index: 0,
-      counter: true,
-    };
-    // this.gallery.load(prop);
+
+    return "";
+  }
+
+  shouldShowSpinner(status: string) {
+    return status === "parsing";
   }
 
   deleteMenu(menu: Menu) {
@@ -179,89 +174,6 @@ export class MenuCardComponent implements OnInit {
     );
   }
 
-  disableStopList(e: any) {
-    const id = this.menu.id;
-
-    if (!id) {
-      return;
-    }
-    this.loading.emit(true);
-    e.source.checked = true;
-    this.menuService.triggerFeature(id, this.StopListFeature).subscribe(
-      (menu: any) => {
-        this.loading.emit(false);
-        this.menu.stopListEnabled = (menu as Menu).stopListEnabled;
-        e.source.checked = this.menu.stopListEnabled;
-      },
-      (e) => {
-        this.loading.emit(false);
-        // this.notify.error(JSON.stringify(e));
-      }
-    );
-  }
-
-  change(e: any) {
-    let features = this.globals.userProfile!.featuresToLearn;
-    e.source.checked = false;
-
-    if (
-      !this.menu.stopListEnabled
-      // && features.indexOf(this.StopListFeature) >= 0
-    ) {
-      let dialogRef = this.dialog.open(TutorialComponent, {
-        width: '650px',
-        data: { tutorial_id: this.StopListFeature },
-      });
-      dialogRef.afterClosed().subscribe((r: TutorialResponse) => {
-        if (!r) {
-          return;
-        }
-        if (r.stopTutorial) {
-          this.globals.userProfile!.featuresToLearn = features.filter(
-            (f) => f != this.StopListFeature
-          );
-          this.auth
-            .setFeaturesToLearn(this.globals.userProfile!.featuresToLearn)
-            .subscribe(
-              (r) => { },
-              (e) => {
-                // this.notify.error(JSON.stringify(e));
-              }
-            );
-        }
-        this.enableStopList(e);
-      });
-
-      return;
-    }
-
-    if (!this.menu.stopListEnabled) {
-      this.enableStopList(e);
-    } else {
-      this.disableStopList(e);
-    }
-  }
-
-  onStopListFeatureChanged() {
-    const id = this.menu.id;
-
-    if (!id) {
-      return;
-    }
-
-    this.loading.emit(true);
-    this.menuService.triggerFeature(id, this.StopListFeature).subscribe(
-      (menu: any) => {
-        this.loading.emit(false);
-        this.menu = menu as Menu;
-      },
-      (e) => {
-        this.loading.emit(false);
-        // this.notify.error(JSON.stringify(e));
-      }
-    );
-  }
-
   viewMenu(menu: Menu) {
     this.dialog.open(MenuComponent, {
       width: '700px',
@@ -296,35 +208,5 @@ export class MenuCardComponent implements OnInit {
 
   openSmartMenu(menu: Menu) {
     this.router.navigate(['menus', menu.id]);
-  }
-
-  requestReview() {
-    const id = this.menu.id;
-
-    if (!id) {
-      return;
-    }
-
-    this.translate.get('menu.review_confirmation').subscribe((text) => {
-      let lines = text
-        .replace('%NUM%', 2 - this.globals.userProfile!.humanReviewCount)
-        .split('\n');
-      const dialogRef = this.dialog.open(ConfirmationDialog, {
-        width: '350px',
-        data: { message: lines[0], secondary_message: lines[1] },
-      });
-      dialogRef.componentInstance.callback.subscribe(() => {
-        this.menuService.requestMenuReview(id).subscribe(
-          (r: any) => {
-            this.menu.state = r.state;
-            dialogRef.componentInstance.close();
-          },
-          (e: any) => {
-            // this.notify.error(e.message);
-            dialogRef.componentInstance.close();
-          }
-        );
-      });
-    });
   }
 }

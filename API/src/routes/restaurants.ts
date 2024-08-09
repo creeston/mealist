@@ -5,8 +5,7 @@ import { Response } from "express";
 import { collections } from "../db/connection";
 import { RestaurantModel } from "../db/models/restaurant";
 
-type Restaurant = components["schemas"]["Restaurant"];
-type CreateRestaurantRequest = components["schemas"]["CreateRestaurantRequest"];
+type RestaurantApiModel = components["schemas"]["Restaurant"];
 
 export const GET: Operation = [
   async (req: Request, res: Response) => {
@@ -31,7 +30,7 @@ export const GET: Operation = [
         vkUrl: rest.vkUrl,
         facebookUrl: rest.facebookUrl,
         tripAdvisorUrl: rest.tripAdvisorUrl,
-      } as Restaurant;
+      } as RestaurantApiModel;
     });
     res.json(restaurantsModels);
   },
@@ -60,8 +59,8 @@ GET.apiDoc = {
 
 export const POST: Operation = [
   async (req: Request, res: Response) => {
-    const createRestaurantRequest = req.body as CreateRestaurantRequest;
-    const restaurant: Restaurant = {
+    const createRestaurantRequest = req.body as RestaurantApiModel;
+    const restaurant: RestaurantModel = {
       name: createRestaurantRequest.name,
       address: createRestaurantRequest.address,
       description: createRestaurantRequest.description,
@@ -90,7 +89,7 @@ POST.apiDoc = {
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/CreateRestaurantRequest",
+          $ref: "#/components/schemas/Restaurant",
         },
       },
     },
