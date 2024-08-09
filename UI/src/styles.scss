@@ -1,4 +1,5 @@
 @import "@angular/cdk/overlay-prebuilt.css";
+
 html,
 body {
   height: 100%;
@@ -31,6 +32,7 @@ html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -40,6 +42,7 @@ html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -136,10 +139,7 @@ body {
   justify-content: space-around;
 }
 
-::ng-deep
-  .mat-checkbox-checked.mat-accent
-  .mat-checkbox-ripple
-  .mat-ripple-element {
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
   opacity: 0.03 !important;
   background-color: #a0b454b0 !important;
 }
@@ -149,7 +149,7 @@ body {
   background-color: #a0b454b0;
 }
 
-::ng-deep .mat-checkbox-checked > * .mat-checkbox-frame {
+::ng-deep .mat-checkbox-checked>* .mat-checkbox-frame {
   border: none !important;
 }
 
@@ -274,5 +274,12 @@ body {
   padding: 0px;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

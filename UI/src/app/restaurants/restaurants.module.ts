@@ -8,12 +8,14 @@ import { HttpLoaderFactory } from '../app.module';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RestaurantMapComponent } from './restaurant-map/restaurant-map.component';
 
 @NgModule({
   declarations: [
     RestaurantCardComponent,
     RestaurantsComponent,
     RestaurantFormDialog,
+    RestaurantMapComponent
   ],
   imports: [
     CommonModule,
@@ -30,4 +32,4 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     }),
   ],
 })
-export class RestaurantsModule {}
+export class RestaurantsModule { }

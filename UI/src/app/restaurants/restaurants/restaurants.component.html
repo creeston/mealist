@@ -28,9 +28,9 @@
   </div>
   <mat-spinner *ngIf="!dataLoaded" class="loading-spinner"></mat-spinner>
   <div *ngIf="dataLoaded">
-    <div *ngFor="let rest of restaurants" class="menu-row">
-      <app-restaurant-card [rest]="rest" (loading)="loading = $event"
-        (onRestDeleted)="onRestaurantDeleted(rest)"></app-restaurant-card>
+    <div *ngFor="let restaurant of restaurants" class="menu-row">
+      <app-restaurant-card [restaurant]="restaurant" (loading)="loading = $event"
+        (onRestDeleted)="onRestaurantDeleted(restaurant)"></app-restaurant-card>
     </div>
   </div>
 </div>

@@ -72,7 +72,7 @@ export class RestaurantFormDialog {
       return;
     }
 
-    let model: CreateRestaurantRequest = this.getRestaurantModel();
+    let model: Restaurant = this.getRestaurantModel();
     let result = null;
     this.disabled = true;
     try {
@@ -89,7 +89,7 @@ export class RestaurantFormDialog {
     }
   }
 
-  getRestaurantModel(): CreateRestaurantRequest {
+  getRestaurantModel(): Restaurant {
     return {
       name: this.restaurantForm.get('name')?.value,
       address: this.restaurantForm.get('address')?.value,
@@ -111,21 +111,21 @@ export class RestaurantFormDialog {
   }
 
   updatePreview() {
-    let restModel: Restaurant = this.getRestaurantModel();
-    this.loadMapPreview(restModel);
+    let createRequest: CreateRestaurantRequest = this.getRestaurantModel();
+    // this.loadMapPreview(createRequest);
   }
 
-  loadMapPreview(restModel: Restaurant) {
-    this.disabled = true;
-    this.service.getRestaurantImage(restModel).subscribe(
-      (r: any) => {
-        this.mapUrl = r.mapsUrl + '&rand=' + new Date().getTime();
-        this.disabled = false;
-      },
-      (error: any) => {
-        // this.notify.error(JSON.stringify(error));
-        this.disabled = false;
-      }
-    );
+  loadMapPreview(createRequest: CreateRestaurantRequest) {
+    // this.disabled = true;
+    // this.service.getRestaurantImage(createRequest).subscribe(
+    //   (r: any) => {
+    //     this.mapUrl = r.mapsUrl + '&rand=' + new Date().getTime();
+    //     this.disabled = false;
+    //   },
+    //   (error: any) => {
+    //     // this.notify.error(JSON.stringify(error));
+    //     this.disabled = false;
+    //   }
+    // );
   }
 }

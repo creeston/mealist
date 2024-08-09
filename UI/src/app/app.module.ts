@@ -70,6 +70,7 @@ import { TopToolbarComponent } from './components/top-toolbar/top-toolbar.compon
 import { DrawerContentComponent } from './components/drawer-content/drawer-content.component';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { MenusModule } from './menus/menus.module';
+import { GeocodingService } from './services/geocoding.service';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);
@@ -136,6 +137,7 @@ export function apiConfigFactory(): Configuration {
     CookieService,
     Globals,
     AuthenticationService,
+    GeocodingService,
     RestaurantService,
     MenuService,
     QrMenuService,

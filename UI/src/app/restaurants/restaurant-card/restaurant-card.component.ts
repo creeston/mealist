@@ -7,6 +7,7 @@ import { RestaurantService } from '../../services/restaurant.service';
 import { ScreenService } from '../../services/screen.service';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
 import { Restaurant } from '../../api/model/models';
+import { GeocodingService } from '../../services/geocoding.service';
 
 @Component({
   selector: 'app-restaurant-card',
@@ -15,7 +16,7 @@ import { Restaurant } from '../../api/model/models';
 })
 export class RestaurantCardComponent implements OnInit {
   @Input()
-  public rest!: Restaurant;
+  public restaurant!: Restaurant;
 
   @Output()
   public loading = new EventEmitter<boolean>();
@@ -28,14 +29,10 @@ export class RestaurantCardComponent implements OnInit {
     public screen: ScreenService,
     private service: RestaurantService,
     private translate: TranslateService,
-    public translateHelper: TranslateHelperClass
-  ) {}
+    public translateHelper: TranslateHelperClass,
+  ) { }
 
   ngOnInit(): void {
-    // TEMPORARY FIX TO DISPLAY MAPS IMAGE
-    if (!this.rest.mapsView) {
-      this.rest.mapsView = 'https://telegra.ph/file/27d697f51e3814e47ea7e.png';
-    }
   }
 
   deleteRestaurant(rest: Restaurant) {
@@ -61,10 +58,10 @@ export class RestaurantCardComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: Restaurant) => {
       if (result) {
-        this.rest = result;
-        if (this.rest.mapsView) {
-          this.rest.mapsView =
-            this.rest.mapsView + '&ts=' + new Date().getTime();
+        this.restaurant = result;
+        if (this.restaurant.mapsView) {
+          this.restaurant.mapsView =
+            this.restaurant.mapsView + '&ts=' + new Date().getTime();
         }
       }
     });

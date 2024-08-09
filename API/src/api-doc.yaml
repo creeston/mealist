@@ -5,32 +5,6 @@ info:
 paths: {}
 components:
   schemas:
-    CreateRestaurantRequest:
-      type: "object"
-      properties:
-        name:
-          type: string
-        address:
-          type: string
-        city:
-          type: string
-        description:
-          type: string
-        wifiName:
-          type: string
-        wifiPassword:
-          type: string
-        instagramUrl:
-          type: string
-        vkUrl:
-          type: string
-        facebookUrl:
-          type: string
-        tripAdvisorUrl:
-          type: string
-      required:
-        - name
-        - address
     Restaurant:
       type: "object"
       properties:
@@ -44,8 +18,6 @@ components:
           type: string
         description:
           type: string
-        mapsView:
-          type: string
         wifiName:
           type: string
         wifiPassword:
@@ -61,6 +33,7 @@ components:
       required:
         - name
         - address
+        - city
     CreateMenuRequest:
       type: "object"
       properties:

@@ -25,7 +25,7 @@ export class RestaurantsComponent implements OnInit {
     private service: RestaurantService,
     private cookie: CookieService,
     public screen: ScreenService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     let jwt = this.cookie.get('ApiJwt');
