@@ -22,7 +22,7 @@ export class MenuComponent implements OnInit {
   ) {
     this.menu = data;
     this.pageEvent.pageIndex = 0;
-    this.currentImage = this.menu.images ? this.menu.images[0] : '';
+    this.currentImage = this.menu.pages ? this.menu.pages[0].imageUrl : '';
   }
 
   ngAfterViewInit() {
@@ -30,10 +30,9 @@ export class MenuComponent implements OnInit {
   }
 
   changePage(event: PageEvent) {
-    if (!this.menu.images) return;
-    if (!this.menu.markups) return;
-    this.currentImage = this.menu.images[event.pageIndex];
-    let currentMarkup = this.menu.markups[event.pageIndex];
+    if (!this.menu.pages) return;
+    this.currentImage = this.menu.pages[event.pageIndex].imageUrl;
+    let currentMarkup = this.menu.pages[event.pageIndex].markup;
     let canvas = this.canvasRef.nativeElement;
     let context = canvas.getContext('2d');
 
@@ -47,9 +46,9 @@ export class MenuComponent implements OnInit {
       if (currentMarkup) {
         for (let menuLine of currentMarkup) {
           let text = menuLine.text;
-          let box = menuLine.box ?? [
-            [0, 0],
-            [0, 0],
+          let box = [
+            [menuLine.x1, menuLine.x2],
+            [menuLine.y1, menuLine.y2],
           ];
           context.beginPath();
           context.strokeStyle = 'green';

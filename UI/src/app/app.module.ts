@@ -56,7 +56,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CreateCodeComponent } from './components/create-code/create-code.component';
 import { CodesComponent } from './components/codes/codes.component';
 import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
-import { SmartMenuComponent } from './components/smart-menu/smart-menu.component';
+import { MenuMarkupComponent } from './components/menu-markup/menu-markup.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
 import {
@@ -97,7 +97,7 @@ export function apiConfigFactory(): Configuration {
     CreateCodeComponent,
     CodesComponent,
     QrMenuComponent,
-    SmartMenuComponent,
+    MenuMarkupComponent,
     LogInComponent,
     TopToolbarComponent,
     DrawerContentComponent,

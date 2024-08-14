@@ -51,26 +51,21 @@ components:
           type: string
         name:
           type: string
-        images:
-          type: array
-          items:
-            type: string
         status:
           type: string
-        menuCompressed:
-          type: boolean
+          enum:
+            - "NOT_PARSED"
+            - "PARSING_IN_PROGRESS"
+            - "PARSING_FAILED"
+            - "PARSING_COMPLETED"
+            - "OCR_IN_PROGRESS"
+            - "OCR_FAILED"
+            - "OCR_COMPLETED"
+            - "REVIEWED"
         dishesCount:
           type: integer
-        pagesCount:
-          type: integer
-        parsingProgress:
-          type: integer
-        previewImageUrl:
-          type: string
         originalFileUrl:
           type: string
-        stopListEnabled:
-          type: boolean
         stopColor:
           type: string
         stopStyle:
@@ -78,27 +73,34 @@ components:
         creationDate:
           type: string
           format: date-time
-        markups:
+        modificationDate:
+          type: string
+          format: date-time
+        pages:
           type: array
           items:
-            type: array
-            items:
-              $ref: "#/components/schemas/MenuLine"
+            $ref: "#/components/schemas/MenuPage"
       required:
         - name
+    MenuPage:
+      type: "object"
+      properties:
+        pageNumber:
+          type: integer
+        imageUrl:
+          type: string
+        markup:
+          type: array
+          items:
+            $ref: "#/components/schemas/MenuLine"
+      required:
+        - pageNumber
+        - imageUrl
     MenuLine:
       type: "object"
       properties:
         text:
           type: string
-        tag:
-          type: string
-        box:
-          type: array
-          items:
-            type: array
-            items:
-              type: number
         x1:
           type: number
         y1:
@@ -107,16 +109,6 @@ components:
           type: number
         y2:
           type: number
-        editSelected:
-          type: boolean
-        viewSelected:
-          type: boolean
-        hover:
-          type: boolean
-        children:
-          type: array
-          items:
-            $ref: "#/components/schemas/MenuLine"
       required:
         - x1
         - x2

@@ -13,16 +13,19 @@ from .rabbitmq_sender import RabbitMQSender
 
 rabbitmq_listener = RabbitMQListener("menu-parsing-queue", "menu-parser", "menu-parser")
 rabbitmq_sender = RabbitMQSender("host.docker.internal", "menu-parser", "menu-parser")
-file_repository = FileRepository("http://host.docker.internal:9000", "minioadmin", "minioadmin")
+file_repository = FileRepository(
+    "http://host.docker.internal:9000", "minioadmin", "minioadmin"
+)
 pdf_parser = PDFParser()
+
 
 async def callback(message: AbstractIncomingMessage):
     body = message.body
     print(f"Received message from RabbitMQ: {body}")
     menu = json.loads(body)
-    file_path = menu["menuKey"]
+    file_path = menu["menuPath"]
     menu_id = menu["id"]
-    
+
     pdf_file = file_repository.read_file("mealist", file_path)
     parsed_data = pdf_parser.parse_pdf(pdf_file)
 
@@ -33,9 +36,14 @@ async def callback(message: AbstractIncomingMessage):
         files_paths.append(path)
 
     message_id = str(uuid.uuid4())
-    rabbitmq_sender.send_message({"status": "success", "menuId": menu_id, "paths": files_paths}, "menu-parsing-status-exchange", "menu-parsing-status-queue")
+    rabbitmq_sender.send_message(
+        {"status": "success", "menuId": menu_id, "paths": files_paths},
+        "menu-parsing-status-exchange",
+        "menu-parsing-status-queue",
+    )
     print(f"Message sent to RabbitMQ: {message_id}")
     await message.ack()
+
 
 async def lifespan(_: FastAPI):
     loop = asyncio.get_running_loop()
@@ -43,13 +51,15 @@ async def lifespan(_: FastAPI):
     await task
 
     yield
-    
+
+
 app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/healthcheck")
 async def healthcheck():
     return {"status": "OK"}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -239,12 +239,9 @@ export class CreateCodeComponent {
   }
 
   async getMenuImages(menu: Menu) {
-    if (menu.menuCompressed) {
-      return menu.images ?? [];
-    }
     let images = [];
     let i = this.menus.indexOf(menu);
-    let pagesCount = menu.images?.length ?? 0;
+    let pagesCount = menu.pages?.length ?? 0;
     let pdfDoc = await getDocument(menu.originalFileUrl!).promise;
     for (let j = 0; j < pagesCount; j++) {
       let page = await pdfDoc.getPage(j + 1);
@@ -476,9 +473,8 @@ export class CreateCodeComponent {
     menuItem.images = await this.getMenuImages(menu);
     menuItem.thumbnailIndex = 0;
     menuItem.menuId = menu.id!;
-    menuItem.menuCompressed = menu.menuCompressed!;
     menuItem.originalFileUrl = menu.originalFileUrl!;
-    menuItem.pagesCount = menu.pagesCount!;
+    menuItem.pagesCount = menu.pages?.length!;
   }
 
   onPreviewSelected(menuIndex: number) {

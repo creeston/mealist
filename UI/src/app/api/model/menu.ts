@@ -9,24 +9,33 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuLine } from './menuLine';
+import { MenuPage } from './menuPage';
 
 
 export interface Menu { 
     id?: string;
     name: string;
-    images?: Array<string>;
-    status?: string;
-    menuCompressed?: boolean;
+    status?: Menu.StatusEnum;
     dishesCount?: number;
-    pagesCount?: number;
-    parsingProgress?: number;
-    previewImageUrl?: string;
     originalFileUrl?: string;
-    stopListEnabled?: boolean;
     stopColor?: string;
     stopStyle?: string;
     creationDate?: string;
-    markups?: Array<Array<MenuLine>>;
+    modificationDate?: string;
+    pages?: Array<MenuPage>;
 }
+export namespace Menu {
+    export type StatusEnum = 'NOT_PARSED' | 'PARSING_IN_PROGRESS' | 'PARSING_FAILED' | 'PARSING_COMPLETED' | 'OCR_IN_PROGRESS' | 'OCR_FAILED' | 'OCR_COMPLETED' | 'REVIEWED';
+    export const StatusEnum = {
+        NotParsed: 'NOT_PARSED' as StatusEnum,
+        ParsingInProgress: 'PARSING_IN_PROGRESS' as StatusEnum,
+        ParsingFailed: 'PARSING_FAILED' as StatusEnum,
+        ParsingCompleted: 'PARSING_COMPLETED' as StatusEnum,
+        OcrInProgress: 'OCR_IN_PROGRESS' as StatusEnum,
+        OcrFailed: 'OCR_FAILED' as StatusEnum,
+        OcrCompleted: 'OCR_COMPLETED' as StatusEnum,
+        Reviewed: 'REVIEWED' as StatusEnum
+    };
+}
+
 

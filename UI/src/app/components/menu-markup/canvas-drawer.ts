@@ -1,4 +1,3 @@
-import { RenderTask } from 'pdfjs-dist';
 import {
   MenuProvider,
   ModeProvider,
@@ -7,11 +6,9 @@ import {
 } from './providers';
 import { DrawService } from '../../services/draw.service';
 
-const SCALE_INCREMENET = 0.5;
-const PDF_SCALE_FACTOR = 150 / 72;
+const SCALE_INCREMENT = 0.5;
 
 export class CanvasDrawer {
-  renderOperation: RenderTask | null = null;
   canvasPainted: boolean = false;
   scaleValue = 1;
   private canvasRef: any;
@@ -31,57 +28,49 @@ export class CanvasDrawer {
   ) { }
 
   incrementScale() {
-    this.scaleValue += SCALE_INCREMENET;
+    this.scaleValue += SCALE_INCREMENT;
   }
 
   decrementScale() {
-    this.scaleValue -= SCALE_INCREMENET;
+    this.scaleValue -= SCALE_INCREMENT;
   }
 
   redrawCanvas(selectionBox: any, changePage: boolean = false) {
-    let page = this.pages.value[this.page.current];
-    if (changePage) {
-      var viewport = page.getViewport({ scale: this.scaleValue });
-      if (this.renderOperation) {
-        this.renderOperation.cancel();
-        this.renderOperation = null;
-      }
+    let canvas = this.canvasRef.nativeElement;
+    let imageCanvas = this.imageCanvasRef.nativeElement;
 
-      let canvas = this.imageCanvasRef.nativeElement;
-      let context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      this.renderOperation = page.render({
-        canvasContext: context,
-        viewport: viewport,
-      });
+    let page = this.pages.value[this.page.current];
+    const image = page.imageElement;
+
+    if (changePage || !this.canvasPainted) {
+      let context = imageCanvas.getContext('2d');
+      imageCanvas.height = image.height;
+      imageCanvas.width = image.width;
+
+      canvas.height = image.height;
+      canvas.width = image.width;
+      context.drawImage(image, 0, 0);
+      this.canvasPainted = true;
     }
 
-    var viewport = page.getViewport({ scale: PDF_SCALE_FACTOR });
-    let canvas = this.canvasRef.nativeElement;
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
     let context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
     if (this.mode.isView()) {
       this.drawViewCanvas(context);
     } else {
       this.drawEditCanvas(context, selectionBox);
     }
-    this.canvasPainted = true;
   }
 
   drawViewCanvas(context: any) {
-    if (!this.menu.value || !this.menu.value.markups) {
-      return;
-    }
     context.lineWidth = 3;
-    context.strokeStyle = this.menu.value.stopColor;
+    context.strokeStyle = this.menu.value!.stopColor;
     for (
       let i = 0;
-      i < this.menu.value.markups[this.page.current].length;
+      i < this.menu.value!.pages[this.page.current].markup.length;
       i++
     ) {
-      let line = this.menu.value.markups[this.page.current][i];
+      let line = this.menu.value!.pages[this.page.current].markup[i];
       let x = line.x1;
       let y = line.y1;
       let w = line.x2 - x;
@@ -93,36 +82,24 @@ export class CanvasDrawer {
           y,
           w,
           h,
-          this.menu.value.stopStyle ?? 'underline',
-          this.menu.value.stopColor ?? 'black'
+          this.menu.value!.stopStyle ?? 'underline',
+          this.menu.value!.stopColor ?? 'black'
         );
       }
     }
   }
 
   drawEditCanvas(context: any, selectionBox: any) {
-    if (!this.menu.value || !this.menu.value.markups) {
-      return;
-    }
-    for (
-      let i = 0;
-      i < this.menu.value.markups[this.page.current].length;
-      i++
-    ) {
-      let line = this.menu.value.markups[this.page.current][i];
+    const page = this.menu.value!.pages[this.page.current];
+    for (let i = 0; i < page.markup.length; i++) {
+      let line = page.markup[i];
       let x = line.x1;
       let y = line.y1;
       let w = line.x2 - x;
       let h = line.y2 - y;
       if (!line.hover && !line.editSelected) {
         context.beginPath();
-        if (line.tag == 'DISH') {
-          context.strokeStyle = '#627320';
-        } else if (line.tag == 'CATEGORY') {
-          context.strokeStyle = 'red';
-        } else {
-          context.strokeStyle = 'blue';
-        }
+        context.strokeStyle = '#627320';
         context.lineWidth = 2;
         context.rect(x - 1, y - 1, w + 2, h + 2);
         context.stroke();
@@ -134,7 +111,7 @@ export class CanvasDrawer {
       } else {
         context.beginPath();
         context.strokeStyle = '#4F4742';
-        context.lineWidth = 2;
+        context.lineWidth = 5;
         context.rect(x - 2, y - 2, w + 4, h + 4);
         context.stroke();
         context.lineWidth = 1;

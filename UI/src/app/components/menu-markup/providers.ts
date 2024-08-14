@@ -1,8 +1,6 @@
-import { PDFPageProxy } from 'pdfjs-dist';
-import { Menu } from '../../api/model/menu';
 import { MenuLine } from '../../api/model/menuLine';
+import { MarkedLine, MarkedMenu, MarkedPage } from './marked-menu';
 
-const PDF_SCALE_FACTOR = 150 / 72;
 
 export class ModeProvider {
   public value: string = 'edit';
@@ -20,17 +18,17 @@ export class ModeProvider {
 }
 
 export class MenuProvider {
-  public value: Menu | null = null;
+  public value: MarkedMenu | null = null;
 
-  public setMenu(menu: Menu) {
+  public setMenu(menu: MarkedMenu) {
     this.value = menu;
   }
 }
 
 export class PagesProvider {
-  public value: PDFPageProxy[] = [];
+  public value: MarkedPage[] = [];
 
-  public setPages(pages: PDFPageProxy[]) {
+  public setPages(pages: MarkedPage[]) {
     this.value = pages;
   }
 }
@@ -51,11 +49,11 @@ export class SelectionProvider {
   ) { }
 
   getLeftSelection(canvas: any) {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return 0;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return 0;
@@ -71,21 +69,20 @@ export class SelectionProvider {
     let left = Math.max(...x);
     let rect = canvas.getBoundingClientRect();
     let page = this.pages.value[this.page.current];
-    var viewport = page.getViewport({ scale: PDF_SCALE_FACTOR });
 
     let canvasRealHeight = rect.height;
-    let canvasHeight = viewport.height;
+    let canvasHeight = page.imageElement.height;
     let ratio = canvasHeight / canvasRealHeight;
     let leftOffset = canvas.offsetLeft;
     return left / ratio + leftOffset + 3;
   }
 
   getTopSelection(canvas: any) {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return 0;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return 0;
@@ -101,22 +98,21 @@ export class SelectionProvider {
     let top = Math.min(...y);
     let rect = canvas.getBoundingClientRect();
     let page = this.pages.value[this.page.current];
-    var viewport = page.getViewport({ scale: PDF_SCALE_FACTOR });
 
     let canvasRealHeight = rect.height;
-    let canvasHeight = viewport.height;
+    let canvasHeight = page.imageElement.height;
     let ratio = canvasHeight / canvasRealHeight;
     let topOffset = canvas.offsetTop;
     return top / ratio + topOffset - 15;
   }
 
   isAnySelected() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return false;
     }
     return (
-      this.menu.value.markups[this.page.current].findIndex(
-        (l: MenuLine) => l.editSelected
+      this.menu.value.pages[this.page.current].markup.findIndex(
+        (l: MarkedLine) => l.editSelected
       ) >= 0
     );
   }

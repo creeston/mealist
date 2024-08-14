@@ -1,6 +1,6 @@
-import { MenuLine } from '../../api';
 import { CanvasController } from './canvas-controller';
 import { CanvasDrawer } from './canvas-drawer';
+import { MarkedLine } from './marked-menu';
 import { MenuProvider, PageProvider } from './providers';
 
 export class SelectionController {
@@ -12,11 +12,11 @@ export class SelectionController {
   ) { }
 
   moveLeft() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -30,11 +30,11 @@ export class SelectionController {
   }
 
   moveRight() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -48,11 +48,11 @@ export class SelectionController {
   }
 
   moveUp() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -64,11 +64,11 @@ export class SelectionController {
   }
 
   moveDown() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -80,11 +80,11 @@ export class SelectionController {
   }
 
   moveLeft2() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -98,11 +98,11 @@ export class SelectionController {
   }
 
   moveRight2() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -116,11 +116,11 @@ export class SelectionController {
   }
 
   moveUp2() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;
@@ -132,11 +132,11 @@ export class SelectionController {
   }
 
   moveDown2() {
-    if (!this.menu.value || !this.menu.value.markups) {
+    if (!this.menu.value) {
       return;
     }
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
     if (selection.length == 0) {
       return;

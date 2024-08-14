@@ -12,6 +12,7 @@ index.ts
 model/code.ts
 model/menu.ts
 model/menuLine.ts
+model/menuPage.ts
 model/models.ts
 model/restaurant.ts
 param.ts

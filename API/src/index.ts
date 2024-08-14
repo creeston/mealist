@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import multer from "multer";
 import { connectToDatabase } from "./db/connection";
 import { connectoToRabbitMQ } from "./queue/connection";
-import { listenToMenuParsingStatusQueue } from "./routes/menus";
+import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from "./routes/menus";
 
 
 const app = express();
@@ -75,6 +75,7 @@ connectToDatabase()
           console.log(`Server running at http://localhost:${port}`);
         });
         listenToMenuParsingStatusQueue();
+        listenToMenuOcrStatusQueue();
       }).catch((error: Error) => {
         console.error("RabbitMQ connection failed", error);
         process.exit();

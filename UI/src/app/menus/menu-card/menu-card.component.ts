@@ -38,8 +38,7 @@ export class MenuCardComponent implements OnInit {
   currentMenuPage: number = 0;
   openedPdf: PDFDocumentProxy | null = null;
   renderedImages: string[] = [];
-
-  StopListFeature = 'stop_list';
+  previewImageUrl: string | null = null;
 
   constructor(
     public dialog: MatDialog,
@@ -52,10 +51,12 @@ export class MenuCardComponent implements OnInit {
     private auth: AuthenticationService
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.previewImageUrl = this.menu.pages && this.menu.pages.length > 0 ? this.menu.pages[0].imageUrl : null;
+  }
 
   async showPdfGallery(menu: Menu) {
-    if (!menu.images || menu.images.length == 0) {
+    if (!menu.pages || menu.pages.length == 0) {
       return;
     }
 
@@ -68,7 +69,7 @@ export class MenuCardComponent implements OnInit {
       return;
     }
 
-    let pagesCount = menu.images.length;
+    let pagesCount = menu.pages.length;
     this.renderedImages = []
     if (this.openedPdf == null) {
       const getDocumentTaskPromise = getDocument(menu.originalFileUrl).promise;
@@ -111,14 +112,32 @@ export class MenuCardComponent implements OnInit {
     this.currentMenuPage = event.pageIndex;
   }
 
-  getStatus(status: string) {
-    if (status === "parsing") {
+  getDishCount() {
+    let dishCount = 0;
+    if (this.menu.pages) {
+      this.menu.pages.forEach((page) => {
+        if (page.markup) {
+          dishCount += page.markup.length;
+        }
+      });
+    }
+    return dishCount;
+  }
+
+  getStatus(status: Menu.StatusEnum) {
+    if (status === "PARSING_IN_PROGRESS") {
       return "Разбор PDF файла"
-    } else if (status === "parsed") {
+    } else if (status === "PARSING_COMPLETED") {
       return "PDF файл разобран"
+    } else if (status === "PARSING_FAILED") {
+      return "Ошибка разбора PDF файла"
+    } else if (status === "OCR_IN_PROGRESS") {
+      return "OCR в процессе"
+    } else if (status === "OCR_COMPLETED") {
+      return "OCR завершен"
     }
 
-    return "";
+    return status;
   }
 
   shouldShowSpinner(status: string) {
@@ -151,27 +170,6 @@ export class MenuCardComponent implements OnInit {
         );
       });
     });
-  }
-
-  enableStopList(e: any) {
-    this.loading.emit(true);
-    e.source.checked = false;
-    const id = this.menu.id;
-
-    if (!id) {
-      return;
-    }
-    this.menuService.triggerFeature(id, this.StopListFeature).subscribe(
-      (menu: any) => {
-        this.loading.emit(false);
-        this.menu.stopListEnabled = (menu as Menu).stopListEnabled;
-        e.source.checked = this.menu.stopListEnabled;
-      },
-      (e) => {
-        this.loading.emit(false);
-        // this.notify.error(JSON.stringify(e));
-      }
-    );
   }
 
   viewMenu(menu: Menu) {

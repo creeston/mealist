@@ -38,6 +38,12 @@
     color: #797d80;
     font-size: 25px;
     display: inline-block;
+
+    .warning-asterisk {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
 }
 
 .menu-date {

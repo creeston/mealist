@@ -13,6 +13,20 @@
             "durable": true,
             "auto_delete": false,
             "arguments": {}
+        },
+        {
+            "name": "menu-ocr-queue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "menu-ocr-status-queue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
         }
     ],
     "exchanges": [
@@ -27,6 +41,24 @@
         },
         {
             "name": "menu-parsing-status-exchange",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "menu-ocr-exchange",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "menu-ocr-status-exchange",
             "vhost": "/",
             "type": "direct",
             "durable": true,
@@ -51,6 +83,22 @@
             "routing_key": "menu-parsing-status-queue",
             "destination_type": "queue",
             "arguments": {}
+        },
+        {
+            "source": "menu-ocr-exchange",
+            "vhost": "/",
+            "destination": "menu-ocr-queue",
+            "routing_key": "menu-ocr-queue",
+            "destination_type": "queue",
+            "arguments": {}
+        },
+        {
+            "source": "menu-ocr-status-exchange",
+            "vhost": "/",
+            "destination": "menu-ocr-status-queue",
+            "routing_key": "menu-ocr-status-queue",
+            "destination_type": "queue",
+            "arguments": {}
         }
     ],
     "vhosts": [
@@ -70,6 +118,12 @@
             "password_hash": "KEUEOyBsAwo9yUB3xExLwn1TL/cxbPAYboXWEoiOQgyu/FgI",
             "hashing_algorithm": "rabbit_password_hashing_sha256",
             "tags": "service"
+        },
+        {
+            "name": "menu-ocr",
+            "password_hash": "dO7UI+k0j2uCCcfSeUJrggwUOB/0w1gpv2qYVynKxKBHS26U",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "service"
         }
     ],
     "permissions": [
@@ -86,6 +140,13 @@
             "configure": ".*",
             "write": "menu-parsing-status-exchange",
             "read": "menu-parsing-queue"
+        },
+        {
+            "user": "menu-ocr",
+            "vhost": "/",
+            "configure": ".*",
+            "write": "menu-ocr-status-exchange",
+            "read": "menu-ocr-queue"
         }
     ]
 }

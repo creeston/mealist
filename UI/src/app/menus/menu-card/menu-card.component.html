@@ -12,11 +12,21 @@
           | date : "MMM d, y" : "" : translateHelper.getCurrentLang()
           }}
         </div>
-        <div *ngIf="menu.stopListEnabled">
-          <div class="menu-date" [matTooltip]="'menu.not_processed' | translate">
-            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>: ? ({{
-            menu.parsingProgress
-            }}%) <span class="warning-asterisk">*</span>
+        <div>
+          <div class="menu-date" [matTooltip]="'menu.not_processed' | translate"
+            *ngIf="menu.status != 'OCR_COMPLETED' && menu.status != 'REVIEWED'">
+            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>: ? <span
+              class="warning-asterisk">*</span>
+          </div>
+
+          <div class="menu-date" [matTooltip]="'menu.please_review' | translate" *ngIf="menu.status == 'OCR_COMPLETED'">
+            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>:
+            {{getDishCount()}} <span class="warning-asterisk">*</span>
+          </div>
+
+          <div class="menu-date" *ngIf="menu.status == 'REVIEWED'">
+            <mat-icon class="date-icon">brunch_dining</mat-icon><span [translate]="'menu.dishes_count'"></span>:
+            {{getDishCount()}}
           </div>
         </div>
       </div>
@@ -25,25 +35,15 @@
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #actionMenu="matMenu">
-          <button mat-button (click)="showPdfGallery(menu)" class="menu-phone-button"
-            [disabled]="menu.pagesCount === null">
+          <button mat-button (click)="showPdfGallery(menu)" class="menu-phone-button" [disabled]="menu.pages === null">
             <span [translate]="'show'"></span>
           </button>
-          <button mat-button (click)="openPdf(menu)" class="menu-phone-button" [disabled]="menu.pagesCount === null">
+          <button mat-button (click)="openPdf(menu)" class="menu-phone-button" [disabled]="menu.pages === null">
             <span [translate]="'download'"></span>
           </button>
-          <div *ngIf="menu.stopListEnabled">
+          <div>
             <button mat-button (click)="openSmartMenu(menu)" class="menu-phone-button" [disabled]="true">
               <span [translate]="'edit'"></span>
-            </button>
-            <!-- <button mat-button (click)=requestReview() class="menu-phone-button" *ngIf="globals.userProfile.humanReviewCount < 2 && menu.state != 11">
-              <span [translate]="'menu.ask_review'"></span>
-            </button>
-            <button mat-button (click)=requestReview() class="menu-phone-button" *ngIf="globals.userProfile.humanReviewCount >= 2 && menu.state != 11" disabled>
-              <span [translate]="'menu.ask_review'"></span>
-            </button> -->
-            <button mat-button (click)="refreshState()" class="menu-phone-button" [disabled]="refreshDisabled">
-              <span [translate]="'refresh'"></span>
             </button>
           </div>
           <button mat-button (click)="deleteMenu(menu)" class="menu-phone-button">
@@ -63,10 +63,10 @@
 
     <!-- Menu preview image -->
     <mat-grid-tile [colspan]="3" [rowspan]="1" class="grid-cell" *ngIf="screen.width > 800">
-      <div *ngIf="menu.previewImageUrl" class="menu-image-container" (click)="showPdfGallery(menu)">
-        <img class="menuThumbnail" [src]="menu.previewImageUrl" />
+      <div *ngIf="previewImageUrl" class="menu-image-container" (click)="showPdfGallery(menu)">
+        <img class="menuThumbnail" [src]="previewImageUrl" />
       </div>
-      <div *ngIf="!menu.previewImageUrl">
+      <div *ngIf="!previewImageUrl">
         <img class="menuThumbnail"
           src="https://cdn.dribbble.com/users/55871/screenshots/2158022/media/8f2a4a2c9126a9f265fb9e1023b1698a.jpg" />
       </div>
@@ -75,28 +75,30 @@
     <!-- Menu Actions -->
     <mat-grid-tile [colspan]="screen.width > 800 ? 1 : 2" *ngIf="screen.width > 600" [rowspan]="1" class="grid-cell">
       <div class="flex-container menu-buttons">
-        <button *ngIf="menu.images" mat-icon-button (click)="showPdfGallery(menu)"
-          [matTooltip]="'menu.show' | translate" class="menu-button" [disabled]="menu.pagesCount === null"
-          [disabled]="!menu.images">
+        <button *ngIf="menu.pages" mat-icon-button (click)="showPdfGallery(menu)" [matTooltip]="'menu.show' | translate"
+          class="menu-button" [disabled]="menu.pages === null" [disabled]="!menu.pages">
           <mat-icon *ngIf="!displayMenu">visibility</mat-icon>
           <mat-icon *ngIf="displayMenu">visibility_off</mat-icon>
         </button>
         <button mat-icon-button (click)="openPdf(menu)" [matTooltip]="'menu.download' | translate" class="menu-button"
-          [disabled]="menu.pagesCount === null">
+          [disabled]="menu.pages === null">
           <mat-icon>file_download</mat-icon>
         </button>
         <button mat-icon-button (click)="deleteMenu(menu)" [matTooltip]="'delete' | translate" class="menu-button"
           *ngIf="globals.role == 'client'">
           <mat-icon>clear</mat-icon>
         </button>
-        <div *ngIf="menu.stopListEnabled">
+        <div>
           <button (click)="openSmartMenu(menu)" mat-icon-button class="menu-button"
-            [matTooltip]="'menu.edit_markup' | translate">
+            [matTooltip]="'menu.edit_markup' | translate" *ngIf="menu.status == 'REVIEWED'">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button (click)="refreshState()" [matTooltip]="'menu.refresh_state' | translate"
-            [class.smallbutton]="screen.width < 800" class="menu-button" [disabled]="refreshDisabled">
-            <mat-icon>refresh</mat-icon>
+
+          <button (click)="openSmartMenu(menu)" mat-icon-button class="menu-button"
+            [matTooltip]="'menu.edit_markup' | translate" *ngIf="menu.status == 'OCR_COMPLETED'">
+            <span class="warning-asterisk">*</span>
+
+            <mat-icon>edit</mat-icon>
           </button>
         </div>
       </div>
@@ -106,13 +108,13 @@
 
 <!-- Canvas for rendering PDF -->
 
-<div *ngIf="menu.images">
-  <canvas *ngFor="let j of Arr(menu.images.length).fill(1); let i = index" [id]="'canvas' + menu.id + '_' + i"
+<div *ngIf="menu.pages">
+  <canvas *ngFor="let j of Arr(menu.pages.length).fill(1); let i = index" [id]="'canvas' + menu.id + '_' + i"
     [style.visibility]="'hidden'" [style.position]="'absolute'">
   </canvas>
 
   <div *ngIf="displayMenu" class="menu-preview">
-    <mat-paginator [length]="menu.images.length" [pageSize]="1" (page)="handlePageChange($event)">
+    <mat-paginator [length]="menu.pages.length" [pageSize]="1" (page)="handlePageChange($event)">
     </mat-paginator>
     <div class="menu-page">
       <img [src]="renderedImages[currentMenuPage]" />

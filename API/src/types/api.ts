@@ -31,33 +31,29 @@ export interface components {
     Menu: {
       id?: string;
       name: string;
-      images?: string[];
-      status?: string;
-      menuCompressed?: boolean;
+      /** @enum {string} */
+      status?: "NOT_PARSED" | "PARSING_IN_PROGRESS" | "PARSING_FAILED" | "PARSING_COMPLETED" | "OCR_IN_PROGRESS" | "OCR_FAILED" | "OCR_COMPLETED";
       dishesCount?: number;
-      pagesCount?: number;
-      parsingProgress?: number;
-      previewImageUrl?: string;
       originalFileUrl?: string;
-      stopListEnabled?: boolean;
       stopColor?: string;
       stopStyle?: string;
       /** Format: date-time */
       creationDate?: string;
-      markups?: components["schemas"]["MenuLine"][][];
+      /** Format: date-time */
+      modificationDate?: string;
+      pages?: components["schemas"]["MenuPage"][];
+    };
+    MenuPage: {
+      pageNumber: number;
+      imageUrl: string;
+      markup?: components["schemas"]["MenuLine"][];
     };
     MenuLine: {
       text?: string;
-      tag?: string;
-      box?: number[][];
       x1: number;
       y1: number;
       x2: number;
       y2: number;
-      editSelected?: boolean;
-      viewSelected?: boolean;
-      hover?: boolean;
-      children?: components["schemas"]["MenuLine"][];
     };
     Code: {
       menuId: number;

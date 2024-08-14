@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getDocument, PDFPageProxy, RenderTask } from 'pdfjs-dist';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -22,22 +21,22 @@ import { MenuService } from '../../services/menu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
 import { Menu, MenuLine } from '../../api';
+import { MarkedLine, MarkedMenu, MarkedPage } from './marked-menu';
 
 const ZOOM_INCREMENT = 25;
 
 @Component({
-  selector: 'app-smart-menu',
-  templateUrl: './smart-menu.component.html',
-  styleUrls: ['./smart-menu.component.css'],
+  selector: 'app-menu-markup',
+  templateUrl: './menu-markup.component.html',
+  styleUrls: ['./menu-markup.component.scss'],
 })
-export class SmartMenuComponent implements OnInit {
+export class MenuMarkupComponent implements OnInit {
   canvasHeight: number = 80;
 
-  menu: Menu | null = null;
+  menu: MarkedMenu | null = null;
   menuId: string | null = null;
   userId: string | null = null;
   originalMenu: Menu = {} as Menu;
-  pages: PDFPageProxy[] = [];
 
   menuProvider: MenuProvider = new MenuProvider();
   page: PageProvider = new PageProvider();
@@ -110,7 +109,6 @@ export class SmartMenuComponent implements OnInit {
       this.canvasController,
       this.menuProvider
     );
-    this.originalMenu.markups = [];
   }
 
   ngOnInit() {
@@ -137,99 +135,80 @@ export class SmartMenuComponent implements OnInit {
 
     this.route.params.subscribe((params) => {
       this.menuId = params['menuId'];
-      this.userId = params['userId'];
       this.service
-        .getMenu(this.menuId!, this.userId!)
-        .subscribe((menu: Menu) => {
-          this.menu = this.processMenu(menu);
-
-          if (!this.menu.status) {
-            return;
-          }
-          this.menuProvider.setMenu(menu);
-
-          this.pages = this.initializePages(menu);
-          this.pagesProvider.setPages(this.pages);
-
-          if (this.menu.status == "reviewed") {
-            // Reviewed
-            this.mode.switchToView();
-          }
-
-          if (this.menu.status == "processed") {
-            this.translate
-              .get('menu.edit.not_processed_warning')
-              .subscribe((message) => {
-                // this.dialog.open(NotificationDialog, {
-                //   width: '350px',
-                //   data: message,
-                // });
-              });
-          } else if (this.menu.status == "parsing") {
-            this.translate.get('menu.edit.processed').subscribe((message) => {
-              // this.dialog.open(NotificationDialog, {
-              //   width: '350px',
-              //   data: message,
-              // });
-            });
-          }
+        .getMenu(this.menuId!)
+        .then((menu: Menu) => {
+          this.originalMenu = menu;
+          this.processMenuAsync(menu).then((menu) => {
+            this.menu = menu;
+            this.menuProvider.setMenu(this.menu);
+            this.pagesProvider.setPages(this.menu.pages);
+            this.toEditMode();
+          });
         });
     });
   }
 
-  initializePages(menu: Menu) {
-    let pages = Array(menu.pagesCount).fill(null);
-    let promises: any[] = [];
-    if (!menu.originalFileUrl || !this.menu?.pagesCount) {
-      return pages;
-    }
-    getDocument(menu.originalFileUrl).promise.then((pdf) => {
-      for (let i = 0; i < menu.pagesCount!; i++) {
-        let promise = pdf.getPage(i + 1).then((page) => {
-          this.pages[i] = page;
-        });
-        promises.push(promise);
-      }
+  async processMenuAsync(menu: Menu) {
+    const markedMenu = {
+      menuId: menu.id,
+      name: menu.name,
+      pages: [],
+      stopStyle: menu.stopStyle,
+      stopColor: menu.stopColor,
+    } as MarkedMenu;
 
-      Promise.all(promises).then(() => {
-        this.pageEvent.pageIndex = 0;
-        this.changePage(this.pageEvent);
-      });
-    });
-    return pages;
-  }
-
-  processMenu(menu: Menu) {
-    if (!menu.stopStyle) {
-      menu.stopStyle = 'underline';
-      menu.stopColor = '#ABC123';
+    if (!markedMenu.stopStyle) {
+      markedMenu.stopStyle = 'underline';
+      markedMenu.stopColor = '#ABC123';
     }
 
-    if (!menu.markups) {
-      return menu;
+    if (!menu.pages) {
+      return markedMenu;
     }
 
-    menu.markups.forEach((markup) => {
-      let originalMarkup: any[] = [];
-      markup.forEach((line) => {
-        line = this.lineController.initializeLine(line);
-        originalMarkup.push({
+    for (let page of menu.pages) {
+      const pageMarkup: MarkedLine[] = [];
+
+      page.markup!.forEach((line) => {
+
+        const markedLine = {
           x1: line.x1,
           y1: line.y1,
           x2: line.x2,
           y2: line.y2,
           text: line.text,
-          tag: line.tag,
-          children: line.children,
-        } as MenuLine);
+          children: [],
+          editSelected: false,
+          viewSelected: false,
+          hover: false,
+        } as MarkedLine;
+        this.lineController.initializeLine(markedLine);
+        pageMarkup.push(markedLine);
       });
-      if (!this.originalMenu.markups) {
-        this.originalMenu.markups = [];
-      }
-      this.originalMenu.markups.push(originalMarkup);
-    });
 
-    return menu;
+      const imageUrl = page.imageUrl;
+      const image = await this.loadImageAsync(imageUrl);
+
+      markedMenu.pages.push({
+        pageNumber: page.pageNumber,
+        imageUrl: page.imageUrl,
+        markup: pageMarkup,
+        imageElement: image
+      } as MarkedPage);
+    }
+
+    return markedMenu;
+  }
+
+  async loadImageAsync(imageUrl: string): Promise<HTMLImageElement> {
+    let image = new Image();
+    image.src = imageUrl;
+    return new Promise((resolve, reject) => {
+      image.onload = () => {
+        resolve(image);
+      }
+    });
   }
 
   onColorChange(event: any) {
@@ -242,7 +221,7 @@ export class SmartMenuComponent implements OnInit {
     this.redrawCanvas(true);
   }
 
-  flatChildrenLines(line: MenuLine) {
+  flatChildrenLines(line: MarkedLine) {
     if (!line.children || line.children.length == 0) {
       return [line];
     } else {
@@ -256,47 +235,47 @@ export class SmartMenuComponent implements OnInit {
   }
 
   saveMarkup() {
-    var menuMarkupToUpload: any[] = [];
-    this.menu?.markups?.forEach((markup) => {
-      let lines: any[] = [];
-      markup.forEach((line) => {
-        let box = [
-          [line.x1, line.y1],
-          [line.x2, line.y2],
-        ];
-        let text = line.text;
-        let children = [];
-        if (line.children && line.children.length > 0) {
-          children = this.flatChildrenLines(line);
-        }
-        lines.push({ text: text, box: box, tag: line.tag, children: children });
-      });
-      menuMarkupToUpload.push(lines);
-    });
-    this.saveDisabled = true;
-    let updateRequest = {
-      markup: menuMarkupToUpload,
-      deletedLines: this.lineController.deletedLines,
-      stopStyle: this.menu!.stopStyle,
-      stopColor: this.menu!.stopColor,
-    };
-    this.service
-      .uploadMarkup(this.menuId!, this.userId!, updateRequest)
-      .subscribe(
-        (r: any) => {
-          this.saveDisabled = false;
-          this.snackBar.open(this.markupedSavedMessage, this.closeText, {
-            duration: 2 * 1000,
-          });
-          this.lineController.deletedLines = [];
-        },
-        (r: any) => {
-          this.saveDisabled = false;
-          this.snackBar.open(r, '', {
-            duration: 5 * 1000,
-          });
-        }
-      );
+    // var menuMarkupToUpload: any[] = [];
+    // this.menu?.markups?.forEach((markup) => {
+    //   let lines: any[] = [];
+    //   markup.forEach((line) => {
+    //     let box = [
+    //       [line.x1, line.y1],
+    //       [line.x2, line.y2],
+    //     ];
+    //     let text = line.text;
+    //     let children = [];
+    //     if (line.children && line.children.length > 0) {
+    //       children = this.flatChildrenLines(line);
+    //     }
+    //     lines.push({ text: text, box: box, tag: line.tag, children: children });
+    //   });
+    //   menuMarkupToUpload.push(lines);
+    // });
+    // this.saveDisabled = true;
+    // let updateRequest = {
+    //   markup: menuMarkupToUpload,
+    //   deletedLines: this.lineController.deletedLines,
+    //   stopStyle: this.menu!.stopStyle,
+    //   stopColor: this.menu!.stopColor,
+    // };
+    // this.service
+    //   .uploadMarkup(this.menuId!, this.userId!, updateRequest)
+    //   .subscribe(
+    //     (r: any) => {
+    //       this.saveDisabled = false;
+    //       this.snackBar.open(this.markupedSavedMessage, this.closeText, {
+    //         duration: 2 * 1000,
+    //       });
+    //       this.lineController.deletedLines = [];
+    //     },
+    //     (r: any) => {
+    //       this.saveDisabled = false;
+    //       this.snackBar.open(r, '', {
+    //         duration: 5 * 1000,
+    //       });
+    //     }
+    //   );
   }
 
   deleteMarkup() {
@@ -331,7 +310,7 @@ export class SmartMenuComponent implements OnInit {
     this.redrawCanvas();
   }
 
-  removeLine(line: MenuLine) {
+  removeLine(line: MarkedLine) {
     this.lineController.removeLine(line);
     this.redrawCanvas();
   }
@@ -378,22 +357,9 @@ export class SmartMenuComponent implements OnInit {
   }
 
   resetMarkup() {
-    let originalMarkup: any[] = [];
-    if (!this.originalMenu.markups) {
-      return;
-    }
-    this.originalMenu.markups[this.page.current].forEach((l: MenuLine) => {
-      originalMarkup.push({
-        x1: l.x1,
-        y1: l.y1,
-        x2: l.x2,
-        y2: l.y2,
-        text: l.text,
-        tag: l.tag,
-        children: l.children,
-      } as MenuLine);
+    this.processMenuAsync(this.originalMenu).then((menu) => {
+      this.menuProvider.setMenu(menu);
     });
-    this.menu!.markups![this.page.current] = originalMarkup;
   }
 
   rollback() {

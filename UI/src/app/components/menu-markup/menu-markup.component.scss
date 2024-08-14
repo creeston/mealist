@@ -68,8 +68,8 @@ h1 {
 }
 
 .buttonBox {
-    position: relative; 
-    width: 0; 
+    position: relative;
+    width: 0;
     height: 0;
 }
 
@@ -114,27 +114,33 @@ h1 {
 
 }
 
+::ng-deep .mat-mdc-paginator-range-label {
+    display: none !important;
+}
+
 .menu-title-container {
     display: inline-block;
 }
 
 .image-canvas {
-    -webkit-box-shadow: 0px 10px 20px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
-    box-shadow: 0px 10px 20px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
     position: absolute;
     z-index: 1;
     left: 0px;
+    border: 1px solid #7474744a;
 }
 
-.markup-canvas-x-resize:hover, .image-canvas-x-resize:hover{
+.markup-canvas-x-resize:hover,
+.image-canvas-x-resize:hover {
     cursor: e-resize;
 }
 
-.markup-canvas-y-resize:hover, .image-canvas-y-resize:hover {
+.markup-canvas-y-resize:hover,
+.image-canvas-y-resize:hover {
     cursor: n-resize;
-}   
+}
 
-.markup-canvas-move:hover, .image-canvas-move:hover {
+.markup-canvas-move:hover,
+.image-canvas-move:hover {
     cursor: move;
 }
 
@@ -143,8 +149,6 @@ h1 {
 }
 
 .markup-canvas {
-    -webkit-box-shadow: 0px 10px 20px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
-    box-shadow: 0px 10px 20px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
     position: absolute;
     z-index: 2;
     left: 0px;
@@ -153,41 +157,41 @@ h1 {
 /* custom scrollbar */
 ::-webkit-scrollbar {
     width: 20px;
-  }
-  
-  ::-webkit-scrollbar-track {
+}
+
+::-webkit-scrollbar-track {
     background-color: transparent;
-  }
-  
-  ::-webkit-scrollbar-thumb {
+}
+
+::-webkit-scrollbar-thumb {
     background-color: #d6dee1;
     border-radius: 20px;
     border: 6px solid transparent;
     background-clip: content-box;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #a8bbbf;
-  }
+}
 
-  .arrow-control {
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+.arrow-control {
     min-width: 0px;
     padding: 0px;
     line-height: 10px;
-  }
+}
 
-  .arrow-top {
-      position: absolute;
-      top: -15px;
-      left: 15px;
-  }
+.arrow-top {
+    position: absolute;
+    top: -15px;
+    left: 15px;
+}
 
-  .arrow-right {
-      position: absolute;
-      right: -30px;
-  }
+.arrow-right {
+    position: absolute;
+    right: -30px;
+}
 
-  .arrow-down {
+.arrow-down {
     position: absolute;
     bottom: -15px;
     left: 15px;
@@ -204,22 +208,31 @@ h1 {
 
 .canvas-delete-button {
     position: absolute;
-    min-width: 0px;
-    padding: 0px;
-    line-height: 15px;
     background-color: #4f4742ce;
     z-index: 3;
-}
 
-.canvas-delete-button  .mat-icon {
+    width: 20px;
+    height: 20px;
     line-height: 15px;
-    height: 15px;
-    width: 15px;
-    font-size: 15px;
-    color: white;
+    border-radius: 2px;
+    padding: 0px;
+
+    .mat-icon {
+        font-size: 15px;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+        color: white;
+    }
+
+
+    ::ng-deep .mat-mdc-button-touch-target {
+        width: 20px !important;
+        height: 20px !important;
+    }
 }
 
-table {
+.canvas-delete-button table {
     min-width: 300px;
     width: 100%;
 }
@@ -235,27 +248,32 @@ table {
 ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
     opacity: 0.03 !important;
     background-color: #A0B454b0 !important;
-  }
-  
-  ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+}
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
     background-color: #A0B454b0;
-  }
-  
-  ::ng-deep .mat-checkbox-checked > * .mat-checkbox-frame {
+}
+
+::ng-deep .mat-checkbox-checked>* .mat-checkbox-frame {
     border: none !important;
-  }
+}
 
 
-  .mode-select {
-      margin-right: 10px;
-      margin-left: 10px;
-  }
+.mode-select {
+    margin-right: 10px;
+    margin-left: 10px;
+}
 
-  .style-field {
+.style-field {
     width: 150px;
     top: 10px;
-  }
+}
 
-  .color-picker {
+.color-picker {
     margin-right: 10px;
-  }
+}
+
+.dish-line-container {
+    display: flex;
+}

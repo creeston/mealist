@@ -1,92 +1,164 @@
 import { Operation } from "express-openapi";
 import { components } from "../types/api";
 import { Response, Request } from "express";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { MenuModel } from "../db/models/menu";
+import { MenuModel, MenuPageModel } from "../db/models/menu";
 import { rabbitMQ } from "../queue/connection";
 import { logger } from "../logging/logger";
+import { collections } from "../db/connection";
+import { client, menuToResponseModel } from "./menus/{id}";
 
 type MenuResponseModel = components["schemas"]["Menu"];
 type CreateMenuRequest = components["schemas"]["CreateMenuRequest"]
 
-let menus: MenuModel[] = [];
-
-const client = new S3Client({
-  endpoint: "http://127.0.0.1:9000",
-  credentials: {
-    accessKeyId: "minioadmin",
-    secretAccessKey: "minioadmin",
-  },
-  region: "europe-west1"
-})
 
 export const listenToMenuParsingStatusQueue = () => {
-  if (rabbitMQ.channel) {
+  const channel = rabbitMQ.channel;
+  if (!channel) {
     logger.log({
-      level: 'info', message: 'Subscribing to menu-parsing-status-queue',
-    })
-    rabbitMQ.channel.consume("menu-parsing-status-queue", (msg) => {
-      logger.log({
-        level: 'info', message: 'Received message from menu-parsing-status-queue'
-      })
-
-      if (msg) {
-        const data = JSON.parse(msg.content.toString());
-        const menu = menus.find((menu) => menu.id === data.menuId);
-        if (menu) {
-          menu.modifiedDate = new Date().toISOString();
-          menu.images = data.paths;
-          menu.status = "parsed";
-        }
-
-        logger.log({
-          level: 'info', message: 'Menu updated with image urls'
-        });
-
-        rabbitMQ.channel!.ack(msg);
-      }
+      level: 'error', message: 'Channel not found'
     });
+
+    return;
   }
+
+  logger.log({
+    level: 'info', message: 'Subscribing to menu-parsing-status-queue',
+  })
+  channel.consume("menu-parsing-status-queue", (msg) => {
+    logger.log({
+      level: 'info', message: 'Received message from menu-parsing-status-queue'
+    })
+
+    if (!msg) {
+      logger.log({
+        level: 'error', message: 'Message not found'
+      });
+      return;
+    }
+
+    const data = JSON.parse(msg.content.toString());
+    const menu = collections.menus!.find((menu) => menu.id === data.menuId);
+
+    if (!menu) {
+      logger.log({
+        level: 'error', message: 'Menu not found'
+      });
+      channel!.ack(msg);
+      return;
+    }
+
+    if (!data.paths) {
+      logger.log({
+        level: 'error', message: 'Paths not found'
+      });
+      channel!.ack(msg);
+      return;
+    }
+
+    menu.modifiedDate = new Date().toISOString();
+    menu.pages = data.paths.map((path: string, i: number) => {
+      return {
+        pageNumber: i,
+        imagePath: path
+      };
+    });
+    menu.status = "PARSING_COMPLETED";
+
+    logger.log({
+      level: 'info', message: 'Menu updated with image urls'
+    });
+
+    channel.ack(msg);
+
+    menu.pages!.forEach((page: MenuPageModel) => {
+      var ocrRequest = JSON.stringify({
+        menuId: menu.id,
+        menuPage: page.pageNumber,
+        imagePath: page.imagePath
+      });
+      channel.sendToQueue('menu-ocr-queue', Buffer.from(ocrRequest));
+    });
+
+    logger.log({
+      level: 'info', message: 'Sent ocr requests to menu-ocr-queue'
+    });
+
+    menu.status = "OCR_IN_PROGRESS";
+  });
 };
 
+export const listenToMenuOcrStatusQueue = () => {
+  const channel = rabbitMQ.channel;
+  if (!channel) {
+    logger.log({
+      level: 'error', message: 'Channel not found'
+    });
+
+    return;
+  }
+
+  logger.log({
+    level: 'info', message: 'Subscribing to menu-ocr-status-queue',
+  })
+
+  channel.consume("menu-ocr-status-queue", (msg) => {
+    logger.log({
+      level: 'info', message: 'Received message from menu-ocr-status-queue'
+    })
+
+    if (!msg) {
+      logger.log({
+        level: 'error', message: 'Message not found'
+      });
+      return;
+    }
+
+    const data = JSON.parse(msg.content.toString());
+    const menu = collections.menus!.find((menu) => menu.id === data.menuId);
+    const pageNumber = data.menuPage;
+
+    if (!menu) {
+      logger.log({
+        level: 'error', message: 'Menu not found'
+      });
+      rabbitMQ.channel!.ack(msg);
+      return;
+    }
+
+    if (!menu.pages || pageNumber > menu.pages.length) {
+      logger.log({
+        level: 'error', message: 'Pages not found'
+      });
+      rabbitMQ.channel!.ack(msg);
+      return;
+    }
+
+    menu.modifiedDate = new Date().toISOString();
+    menu.pages[pageNumber].markup = data.data.map((block: any) => {
+      return {
+        blockId: block.blockId,
+        text: block.text,
+        box: block.box
+      };
+    });
+
+    if (menu.pages.every((page) => page.markup)) {
+      menu.status = "OCR_COMPLETED";
+    }
+
+    logger.log({
+      level: 'info', message: `Menu page ${pageNumber} updated with ocr data`
+    });
+
+    rabbitMQ.channel!.ack(msg);
+  });
+}
 
 export const GET: Operation = [
   async (req: Request, res: Response): Promise<void> => {
-    const menusReponse: MenuResponseModel[] = await Promise.all(menus.map(async (menu) => {
-      const command = new GetObjectCommand({
-        Bucket: "mealist",
-        Key: menu.menuKey,
-      });
-
-      const url = await getSignedUrl(client, command, { expiresIn: 3600 });
-
-      const response = {
-        id: menu.id,
-        name: menu.name,
-        originalFileUrl: url,
-        creationDate: menu.creationDate,
-        moodifiedDate: menu.modifiedDate,
-        status: menu.status
-      } as MenuResponseModel;
-
-      if (menu.images && menu.images.length > 0) {
-        const imageUrls = [];
-        for (let image of menu.images) {
-          const getImageCommand = new GetObjectCommand({
-            Bucket: "mealist",
-            Key: image,
-          });
-
-          const imageUrl = await getSignedUrl(client, getImageCommand, { expiresIn: 3600 });
-          imageUrls.push(imageUrl);
-        }
-
-        response.images = imageUrls;
-        response.previewImageUrl = imageUrls[0];
-      }
-
+    const menusReponse: MenuResponseModel[] = await Promise.all(collections.menus!.map(async (menu) => {
+      const response = await menuToResponseModel(menu);
       return response;
     }));
     res.json(menusReponse);
@@ -133,7 +205,7 @@ export const POST: Operation = [
     const menu = body as CreateMenuRequest;
 
     if (files && files.length > 0) {
-      const menuId = menus.length + 1;
+      const menuId = collections.menus!.length + 1;
       const menuName = menu.name ? menu.name : file.originalname;
       const key = "RawMenus/" + menuId + "/" + file.originalname;
       const bucket = "mealist";
@@ -151,12 +223,12 @@ export const POST: Operation = [
       const newMenu: MenuModel = {
         id: menuId + '',
         name: menuName,
-        menuKey: key,
+        menuPath: key,
         creationDate: new Date().toISOString(),
-        status: "parsing"
+        status: "NOT_PARSED",
       };
 
-      menus.push(newMenu);
+      collections.menus!.push(newMenu);
 
       const channel = rabbitMQ.channel;
 
@@ -164,6 +236,12 @@ export const POST: Operation = [
         var data = JSON.stringify(newMenu);
         channel.sendToQueue('menu-parsing-queue', Buffer.from(data));
       }
+
+      logger.log({
+        level: 'info', message: 'Menu created and sent to menu-parsing-queue'
+      });
+
+      newMenu.status = "PARSING_IN_PROGRESS";
 
       res.status(201).json(newMenu);
     }

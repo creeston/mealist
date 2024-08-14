@@ -1,5 +1,5 @@
-import { MenuLine } from '../../api/model/menuLine';
 import { CanvasDrawer } from './canvas-drawer';
+import { MarkedLine } from './marked-menu';
 import { MenuProvider, ModeProvider, PageProvider } from './providers';
 
 export class CanvasController {
@@ -33,9 +33,6 @@ export class CanvasController {
   }
 
   releaseEventHandler() {
-    if (!this.menu.value || !this.menu.value.markups) {
-      return;
-    }
     this.mousePressed = false;
     this.yPressed = -1;
     this.xPressed = -1;
@@ -54,7 +51,7 @@ export class CanvasController {
         y2 = temp;
       }
 
-      this.menu.value.markups[this.page.current].forEach((l: MenuLine) => {
+      this.menu.value!.pages[this.page.current].markup.forEach((l: MarkedLine) => {
         if (
           l.x1 >= x1 &&
           l.x1 <= x2 &&
@@ -80,9 +77,6 @@ export class CanvasController {
   }
 
   public pressEventHandler(e: MouseEvent | TouchEvent) {
-    if (!this.menu.value || !this.menu.value.markups) {
-      return;
-    }
     let canvas = this.canvasRef.nativeElement;
 
     let x = (e as TouchEvent).changedTouches
@@ -115,10 +109,10 @@ export class CanvasController {
     ) {
       for (
         let i = 0;
-        i < this.menu.value.markups[this.page.current].length;
+        i < this.menu.value!.pages[this.page.current].markup.length;
         i++
       ) {
-        let line = this.menu.value.markups[this.page.current][i];
+        let line = this.menu.value!.pages[this.page.current].markup[i];
         if (line.hover) {
           line.editSelected = true;
           // SCROLLING FUNCTIONALITY
@@ -136,9 +130,6 @@ export class CanvasController {
   }
 
   dragEventHandler(e: MouseEvent) {
-    if (!this.menu.value || !this.menu.value.markups) {
-      return;
-    }
     let canvas = this.canvasRef.nativeElement;
     let x = (e as MouseEvent).pageX;
     let y = (e as MouseEvent).pageY;
@@ -152,8 +143,8 @@ export class CanvasController {
     x = x * ratio;
     y = y * ratio;
 
-    let selection = this.menu.value.markups[this.page.current].filter(
-      (l: MenuLine) => l.editSelected
+    let selection = this.menu.value!.pages[this.page.current].markup.filter(
+      (l: MarkedLine) => l.editSelected
     );
 
     if (this.mousePressed) {
@@ -213,10 +204,10 @@ export class CanvasController {
     if (this.mode.value == 'edit') {
       for (
         let i = 0;
-        i < this.menu.value.markups[this.page.current].length;
+        i < this.menu.value!.pages[this.page.current].markup.length;
         i++
       ) {
-        let line = this.menu.value.markups[this.page.current][i];
+        let line = this.menu.value!.pages[this.page.current].markup[i];
         if (x > line.x1 && x < line.x2 && y > line.y1 && y < line.y2) {
           line.hover = true;
           if (line.editSelected) {

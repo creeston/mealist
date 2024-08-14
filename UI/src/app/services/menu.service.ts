@@ -51,18 +51,9 @@ export class MenuService {
     );
   }
 
-  getMenu(menuId: string, userId: string) {
-    if (!userId) {
-      return this.http.get<Menu>(
-        environment.apiUrl + '/api/ShowMenu/' + menuId,
-        <Object>this.createHttpOptions()
-      );
-    } else {
-      return this.http.get<Menu>(
-        environment.apiUrl + '/api/ShowMenuForReview/' + userId + '/' + menuId,
-        <Object>this.createHttpOptions()
-      );
-    }
+  async getMenu(menuId: string) {
+    const menu = await firstValueFrom(this.api.getMenu(menuId));
+    return menu;
   }
 
   uploadMarkup(menuId: string, userId: string, menuMarkup: any) {
