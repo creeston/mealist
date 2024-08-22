@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { CookieService } from 'ngx-cookie-service';
 import { Globals } from '../globals';
 import { environment } from '../../environments/environment';
 
@@ -18,11 +17,7 @@ export class UserProfile {
 
 @Injectable()
 export class AuthenticationService {
-  constructor(
-    public globals: Globals,
-    private http: HttpClient,
-    private cookie: CookieService
-  ) {}
+  constructor(public globals: Globals, private http: HttpClient) {}
 
   register(email: string, password: string, confirmCode: string) {
     return this.http.post(
@@ -81,7 +76,7 @@ export class AuthenticationService {
   }
 
   createHttpOptions(): any {
-    let jwt = this.cookie.get('ApiJwt');
+    let jwt = 'JWT';
     if (jwt) {
       return {
         headers: new HttpHeaders({ Authorization: 'Bearer ' + jwt }),

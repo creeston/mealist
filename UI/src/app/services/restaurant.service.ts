@@ -1,6 +1,5 @@
 import { HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { Observable, firstValueFrom } from 'rxjs';
 import { Globals } from '../globals';
 import { RestaurantsService } from '../api/api/restaurants.service';
@@ -8,21 +7,15 @@ import { Restaurant } from '../api';
 
 @Injectable()
 export class RestaurantService {
-  jwt: string | null = null;
+  jwt: string | null = 'JWT';
   restaurants$: Observable<Restaurant[] | HttpEvent<Restaurant[]>> | null =
     null;
   restaurantValues: Restaurant[] | null = null;
 
-  constructor(
-    public globals: Globals,
-    private cookie: CookieService,
-    private api: RestaurantsService
-  ) { }
+  constructor(public globals: Globals, private api: RestaurantsService) {}
 
   createRestaurant(rest: Restaurant) {
-    return firstValueFrom(
-      this.api.createRestaurant(rest)
-    );
+    return firstValueFrom(this.api.createRestaurant(rest));
   }
 
   getRestaurantImage(rest: Restaurant) {
@@ -56,7 +49,6 @@ export class RestaurantService {
   }
 
   createHttpOptions(): any {
-    this.jwt = this.cookie.get('ApiJwt');
     if (this.jwt) {
       return {
         headers: new HttpHeaders({

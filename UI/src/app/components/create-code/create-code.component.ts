@@ -2,7 +2,6 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatStep, MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getDocument } from 'pdfjs-dist';
 import { TranslateService } from '@ngx-translate/core';
 import { RestaurantService } from '../../services/restaurant.service';
 import { MenuService } from '../../services/menu.service';
@@ -94,7 +93,7 @@ export class CreateCodeComponent {
     private route: ActivatedRoute,
     private draw: DrawService,
     private translate: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit() {
     let restPromise = this.restService.listRestaurants();
@@ -239,22 +238,22 @@ export class CreateCodeComponent {
   }
 
   async getMenuImages(menu: Menu) {
-    let images = [];
+    let images: any[] = [];
     let i = this.menus.indexOf(menu);
     let pagesCount = menu.pages?.length ?? 0;
-    let pdfDoc = await getDocument(menu.originalFileUrl!).promise;
-    for (let j = 0; j < pagesCount; j++) {
-      let page = await pdfDoc.getPage(j + 1);
-      var viewport = page.getViewport({ scale: 1 });
-      var canvas = document.getElementById('canvas_' + i + '_' + j) as any;
-      var context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      await page.render({ canvasContext: context, viewport: viewport }).promise;
-      images.push(canvas.toDataURL('image/jpeg'));
-      canvas.width = 0;
-      canvas.height = 0;
-    }
+    // let pdfDoc = await getDocument(menu.originalFileUrl!).promise;
+    // for (let j = 0; j < pagesCount; j++) {
+    //   let page = await pdfDoc.getPage(j + 1);
+    //   var viewport = page.getViewport({ scale: 1 });
+    //   var canvas = document.getElementById('canvas_' + i + '_' + j) as any;
+    //   var context = canvas.getContext('2d');
+    //   canvas.height = viewport.height;
+    //   canvas.width = viewport.width;
+    //   await page.render({ canvasContext: context, viewport: viewport }).promise;
+    //   images.push(canvas.toDataURL('image/jpeg'));
+    //   canvas.width = 0;
+    //   canvas.height = 0;
+    // }
     return images;
   }
 

@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { getDocument, GlobalWorkerOptions, PDFDocumentProxy } from 'pdfjs-dist';
 import { MenuComponent } from '../menu/menu.component';
-import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MenuService } from '../../services/menu.service';
 import { ScreenService } from '../../services/screen.service';
@@ -12,9 +10,7 @@ import { AuthenticationService } from '../../services/auth.service';
 import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
 import { Menu } from '../../api/model/menu';
 import { PageEvent } from '@angular/material/paginator';
-
-
-GlobalWorkerOptions.workerSrc = 'pdf.worker.mjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu-card',
@@ -36,7 +32,6 @@ export class MenuCardComponent implements OnInit {
   refreshDisabled = false;
   displayMenu = false;
   currentMenuPage: number = 0;
-  openedPdf: PDFDocumentProxy | null = null;
   renderedImages: string[] = [];
   previewImageUrl: string | null = null;
 
@@ -44,15 +39,18 @@ export class MenuCardComponent implements OnInit {
     public dialog: MatDialog,
     public screen: ScreenService,
     private menuService: MenuService,
-    private router: Router,
     public globals: Globals,
     private translate: TranslateService,
     public translateHelper: TranslateHelperClass,
-    private auth: AuthenticationService
-  ) { }
+    private auth: AuthenticationService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.previewImageUrl = this.menu.pages && this.menu.pages.length > 0 ? this.menu.pages[0].imageUrl : null;
+    this.previewImageUrl =
+      this.menu.pages && this.menu.pages.length > 0
+        ? this.menu.pages[0].imageUrl
+        : null;
   }
 
   async showPdfGallery(menu: Menu) {
@@ -64,41 +62,11 @@ export class MenuCardComponent implements OnInit {
       return;
     }
 
+    this.renderedImages = menu.pages.map((page) => page.imageUrl);
+
     if (this.displayMenu) {
       this.displayMenu = false;
       return;
-    }
-
-    let pagesCount = menu.pages.length;
-    this.renderedImages = []
-    if (this.openedPdf == null) {
-      const getDocumentTaskPromise = getDocument(menu.originalFileUrl).promise;
-      this.openedPdf = await getDocumentTaskPromise;
-    }
-
-    for (let i = 0; i < pagesCount; i++) {
-      let page = await this.openedPdf.getPage(i + 1);
-      var viewport = page.getViewport({ scale: 1 });
-      var canvas = document.getElementById('canvas' + menu.id + '_' + i) as any;
-      var context = canvas.getContext('2d');
-      let rate = this.screen.width / viewport.width;
-      if (viewport.height * rate > this.screen.height) {
-        rate = this.screen.height / viewport.height;
-        canvas.height = this.screen.height;
-        canvas.width = viewport.width * rate;
-      } else {
-        canvas.height = viewport.height * rate;
-        canvas.width = this.screen.width;
-      }
-      viewport = page.getViewport({ scale: rate });
-      const renderTaskPromise = page.render({ canvasContext: context, viewport: viewport }).promise;
-      await renderTaskPromise;
-      this.renderedImages.push(canvas.toDataURL('image/jpeg'));
-    }
-    for (let i = 0; i < pagesCount; i++) {
-      var canvas = document.getElementById('canvas' + menu.id + '_' + i) as any;
-      canvas.height = 0;
-      canvas.width = 0;
     }
 
     this.displayMenu = true;
@@ -125,23 +93,23 @@ export class MenuCardComponent implements OnInit {
   }
 
   getStatus(status: Menu.StatusEnum) {
-    if (status === "PARSING_IN_PROGRESS") {
-      return "Разбор PDF файла"
-    } else if (status === "PARSING_COMPLETED") {
-      return "PDF файл разобран"
-    } else if (status === "PARSING_FAILED") {
-      return "Ошибка разбора PDF файла"
-    } else if (status === "OCR_IN_PROGRESS") {
-      return "OCR в процессе"
-    } else if (status === "OCR_COMPLETED") {
-      return "OCR завершен"
+    if (status === 'PARSING_IN_PROGRESS') {
+      return 'Разбор PDF файла';
+    } else if (status === 'PARSING_COMPLETED') {
+      return 'PDF файл разобран';
+    } else if (status === 'PARSING_FAILED') {
+      return 'Ошибка разбора PDF файла';
+    } else if (status === 'OCR_IN_PROGRESS') {
+      return 'OCR в процессе';
+    } else if (status === 'OCR_COMPLETED') {
+      return 'OCR завершен';
     }
 
     return status;
   }
 
   shouldShowSpinner(status: string) {
-    return status === "parsing";
+    return status === 'parsing';
   }
 
   deleteMenu(menu: Menu) {

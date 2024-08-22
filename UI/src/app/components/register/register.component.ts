@@ -10,7 +10,6 @@ import {
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationService } from '../../services/auth.service';
 import { ScreenService } from '../../services/screen.service';
 import { Globals } from '../../globals';
@@ -38,7 +37,6 @@ export class RegisterComponent implements OnInit {
   constructor(
     private auth: AuthenticationService,
     private formBuilder: FormBuilder,
-    private cookie: CookieService,
     public screen: ScreenService,
     private globals: Globals,
     private router: Router,
@@ -122,7 +120,7 @@ export class RegisterComponent implements OnInit {
     let code = this.codeForm.controls.code.value;
     this.auth.register(email, password, code).subscribe(
       (token: string) => {
-        this.cookie.set('ApiJwt', token);
+        // this.cookie.set('ApiJwt', token);
         this.globals.isLogged = true;
         this.auth.getUserProfile(token).subscribe((r) => {
           this.menusService.listMenus();

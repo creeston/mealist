@@ -1,29 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  MenuProvider,
-  ModeProvider,
-  PageProvider,
-  PagesProvider,
-  SelectionProvider,
-} from './providers';
-import { CanvasDrawer } from './canvas-drawer';
-import { CanvasController } from './canvas-controller';
-import { SelectionController } from './selection-controller';
-import { LineController } from './line-controller';
 import { TutorialComponent } from '../tutorial/tutorial';
 import { MenuService } from '../../services/menu.service';
 import { Globals } from '../../globals';
-import { DrawService } from '../../services/draw.service';
-import { Menu, MenuLine } from '../../api';
+import { Menu } from '../../api';
 import { MarkedLine, MarkedMenu, MarkedPage } from './marked-menu';
-
-const ZOOM_INCREMENT = 25;
+import {
+  BoundingBoxStyle,
+  OcrBox,
+  OcrDocument,
+} from 'ng-ocr-editor/lib/ocr-document';
+import { PageProvider } from './providers';
 
 @Component({
   selector: 'app-menu-markup',
@@ -37,29 +28,24 @@ export class MenuMarkupComponent implements OnInit {
   menuId: string | null = null;
   userId: string | null = null;
   originalMenu: Menu = {} as Menu;
-
-  menuProvider: MenuProvider = new MenuProvider();
   page: PageProvider = new PageProvider();
-  pagesProvider: PagesProvider = new PagesProvider();
-  selection: SelectionProvider = new SelectionProvider(
-    this.page,
-    this.menuProvider,
-    this.pagesProvider
-  );
-  mode: ModeProvider = new ModeProvider();
+  ocrDocuments: OcrDocument[] = [];
 
-  canvasDrawer: CanvasDrawer | null = null;
-  canvasController: CanvasController | null = null;
-  selectionController: SelectionController | null = null;
-  lineController: LineController = new LineController(
-    this.menuProvider,
-    this.page
-  );
+  @ViewChild('ocrEditor') ocrEditor: any;
 
   public stopModes = [
     { key: 'underline', value: '' },
     { key: 'stop', value: '' },
   ];
+
+  boxStyle: BoundingBoxStyle = {
+    width: 2,
+    color: '#000000',
+    selectedColor: '#FF0000',
+    selectedWidth: 5,
+    constastWidth: 2,
+    contrastColor: '#FFFFFF',
+  };
 
   markupedSavedMessage = '';
   closeText = '';
@@ -86,30 +72,8 @@ export class MenuMarkupComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private service: MenuService,
-    private snackBar: MatSnackBar,
-    private draw: DrawService,
     private translate: TranslateService
-  ) {
-    this.canvasDrawer = new CanvasDrawer(
-      this.draw,
-      this.mode,
-      this.page,
-      this.menuProvider,
-      this.pagesProvider
-    );
-    this.canvasController = new CanvasController(
-      this.mode,
-      this.page,
-      this.canvasDrawer,
-      this.menuProvider
-    );
-    this.selectionController = new SelectionController(
-      this.canvasDrawer,
-      this.page,
-      this.canvasController,
-      this.menuProvider
-    );
-  }
+  ) {}
 
   ngOnInit() {
     this.translate.get('markup.style.underline').subscribe((text) => {
@@ -130,22 +94,14 @@ export class MenuMarkupComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.canvasController?.setCanvas(this.canvasRef);
-    this.canvasDrawer?.setElements(this.canvasRef, this.imageCanvasRef);
-
     this.route.params.subscribe((params) => {
       this.menuId = params['menuId'];
-      this.service
-        .getMenu(this.menuId!)
-        .then((menu: Menu) => {
-          this.originalMenu = menu;
-          this.processMenuAsync(menu).then((menu) => {
-            this.menu = menu;
-            this.menuProvider.setMenu(this.menu);
-            this.pagesProvider.setPages(this.menu.pages);
-            this.toEditMode();
-          });
+      this.service.getMenu(this.menuId!).then((menu: Menu) => {
+        this.originalMenu = menu;
+        this.processMenuAsync(menu).then((menu) => {
+          this.menu = menu;
         });
+      });
     });
   }
 
@@ -167,11 +123,12 @@ export class MenuMarkupComponent implements OnInit {
       return markedMenu;
     }
 
+    this.ocrDocuments = [];
+
     for (let page of menu.pages) {
       const pageMarkup: MarkedLine[] = [];
 
       page.markup!.forEach((line) => {
-
         const markedLine = {
           x1: line.x1,
           y1: line.y1,
@@ -183,7 +140,6 @@ export class MenuMarkupComponent implements OnInit {
           viewSelected: false,
           hover: false,
         } as MarkedLine;
-        this.lineController.initializeLine(markedLine);
         pageMarkup.push(markedLine);
       });
 
@@ -194,8 +150,28 @@ export class MenuMarkupComponent implements OnInit {
         pageNumber: page.pageNumber,
         imageUrl: page.imageUrl,
         markup: pageMarkup,
-        imageElement: image
+        imageElement: image,
       } as MarkedPage);
+
+      const document = {
+        imageElement: image,
+        markup: pageMarkup.map((line) => {
+          return {
+            text: line.text,
+            x1: line.x1,
+            x2: line.x2,
+            y1: line.y1,
+            y2: line.y2,
+            highlight: false,
+            viewStyle: {
+              color: '#000000',
+              style: 'fill',
+            },
+          } as OcrBox;
+        }),
+      } as OcrDocument;
+
+      this.ocrDocuments.push(document);
     }
 
     return markedMenu;
@@ -207,18 +183,16 @@ export class MenuMarkupComponent implements OnInit {
     return new Promise((resolve, reject) => {
       image.onload = () => {
         resolve(image);
-      }
+      };
     });
   }
 
   onColorChange(event: any) {
-    this.redrawCanvas();
+    // this.redrawCanvas();
   }
 
   changePage(event: PageEvent) {
-    this.lineController.deselectAll();
     this.page.changePage(event.pageIndex);
-    this.redrawCanvas(true);
   }
 
   flatChildrenLines(line: MarkedLine) {
@@ -298,91 +272,6 @@ export class MenuMarkupComponent implements OnInit {
         );
       });
     });
-  }
-
-  toViewMode() {
-    this.mode.switchToView();
-    this.redrawCanvas();
-  }
-
-  toEditMode() {
-    this.mode.switchToEdit();
-    this.redrawCanvas();
-  }
-
-  removeLine(line: MarkedLine) {
-    this.lineController.removeLine(line);
-    this.redrawCanvas();
-  }
-
-  selectAll() {
-    this.lineController.selectAll();
-    this.redrawCanvas();
-  }
-
-  deselectAll() {
-    this.lineController.deselectAll();
-    this.redrawCanvas();
-  }
-
-  deleteSelected() {
-    this.lineController.deleteSelected();
-    this.redrawCanvas();
-  }
-
-  addLine(index: number) {
-    this.lineController.addLine(index);
-    this.redrawCanvas();
-  }
-
-  mergeSelection() {
-    this.lineController.mergeSelection();
-    this.redrawCanvas();
-  }
-
-  onLineSelected(event: any) {
-    this.redrawCanvas();
-  }
-
-  onCoordChange(event: any, line: MenuLine, lineIndex: number, prop: any) {
-    this.lineController.onCoordChange(event, line, lineIndex, prop);
-    this.redrawCanvas();
-  }
-
-  redrawCanvas(changePage: boolean = false) {
-    this.canvasDrawer?.redrawCanvas(
-      this.canvasController!.selectionBox,
-      changePage
-    );
-  }
-
-  resetMarkup() {
-    this.processMenuAsync(this.originalMenu).then((menu) => {
-      this.menuProvider.setMenu(menu);
-    });
-  }
-
-  rollback() {
-    this.lineController.rollback();
-    this.redrawCanvas();
-  }
-
-  zoomIn() {
-    if (this.canvasHeight >= 150) {
-      return;
-    }
-    this.canvasHeight += ZOOM_INCREMENT;
-    this.canvasDrawer?.incrementScale();
-    this.redrawCanvas(true);
-  }
-
-  zoomOut() {
-    if (this.canvasHeight - ZOOM_INCREMENT <= 50) {
-      return;
-    }
-    this.canvasHeight -= ZOOM_INCREMENT;
-    this.canvasDrawer?.decrementScale();
-    this.redrawCanvas(true);
   }
 
   openHelp() {

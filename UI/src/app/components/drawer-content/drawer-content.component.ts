@@ -6,7 +6,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ContactUsDialog } from '../contact-us/contact-us';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-drawer-content',
@@ -21,8 +20,7 @@ export class DrawerContentComponent {
     public router: Router,
     private translate: TranslateService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private cookie: CookieService
+    private snackBar: MatSnackBar
   ) {}
 
   goTo(path: string) {
@@ -54,7 +52,6 @@ export class DrawerContentComponent {
   logout() {
     this.globals.isLogged = false;
     this.globals.email = '';
-    this.cookie.delete('ApiJwt');
     if (this.sidenav.opened) {
       this.toggleSidenav();
     }

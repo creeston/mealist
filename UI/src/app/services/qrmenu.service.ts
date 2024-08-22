@@ -1,6 +1,5 @@
 import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { environment } from '../../environments/environment';
@@ -13,11 +12,7 @@ export class QrMenuService {
   qrMenus: Observable<QrMenu[] | HttpEvent<QrMenu[]>> | null = null;
   qrMenuValues: QrMenu[] | null = null;
 
-  constructor(
-    public globals: Globals,
-    private http: HttpClient,
-    private cookie: CookieService
-  ) {}
+  constructor(public globals: Globals, private http: HttpClient) {}
 
   create(qrMenuFormData: any) {
     this.clearCache();
@@ -111,7 +106,7 @@ export class QrMenuService {
   }
 
   createHttpOptions(): any {
-    this.jwt = this.cookie.get('ApiJwt');
+    this.jwt = 'JWT';
     if (this.jwt) {
       return {
         headers: new HttpHeaders({

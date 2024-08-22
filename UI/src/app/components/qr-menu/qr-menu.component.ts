@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getDocument } from 'pdfjs-dist';
 
 import ColorThief from 'colorthief';
 import {
@@ -140,29 +139,29 @@ export class QrMenuComponent implements OnInit {
         item.thumbnailIndex = 0;
       }
       if (item.images.length == 0) {
-        let i = this.menu!.menuItems.indexOf(item);
-        item.images = Array(item.pagesCount).fill('');
-        getDocument(item.originalFileUrl).promise.then((doc) => {
-          for (let j = 0; j < item.pagesCount; j++) {
-            doc.getPage(j + 1).then((page) => {
-              var viewport = page.getViewport({ scale: 3 });
-              var canvas = document.getElementById(
-                'viewcanvas_' + i + '_' + j
-              ) as any;
-              var context = canvas.getContext('2d');
-              canvas.height = viewport.height;
-              canvas.width = viewport.width;
-              page
-                .render({ canvasContext: context, viewport: viewport })
-                .promise.then((r) => {
-                  item.images[j] = canvas.toDataURL('image/jpeg');
-                  canvas.width = 0;
-                  canvas.height = 0;
-                  this.loading = false;
-                });
-            });
-          }
-        });
+        // let i = this.menu!.menuItems.indexOf(item);
+        // item.images = Array(item.pagesCount).fill('');
+        // getDocument(item.originalFileUrl).promise.then((doc) => {
+        //   for (let j = 0; j < item.pagesCount; j++) {
+        //     doc.getPage(j + 1).then((page) => {
+        //       var viewport = page.getViewport({ scale: 3 });
+        //       var canvas = document.getElementById(
+        //         'viewcanvas_' + i + '_' + j
+        //       ) as any;
+        //       var context = canvas.getContext('2d');
+        //       canvas.height = viewport.height;
+        //       canvas.width = viewport.width;
+        //       page
+        //         .render({ canvasContext: context, viewport: viewport })
+        //         .promise.then((r: any) => {
+        //           item.images[j] = canvas.toDataURL('image/jpeg');
+        //           canvas.width = 0;
+        //           canvas.height = 0;
+        //           this.loading = false;
+        //         });
+        //     });
+        //   }
+        // });
       } else {
         this.loading = false;
       }

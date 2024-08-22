@@ -1,6 +1,5 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { Globals } from './globals';
 import { AuthenticationService } from './services/auth.service';
 import { MenuService } from './services/menu.service';
@@ -35,7 +34,6 @@ export class AppComponent {
     private menusService: MenuService,
     private restService: RestaurantService,
     private qrMenusService: QrMenuService,
-    private cookie: CookieService,
     private sidenavService: SidenavService,
     public screen: ScreenService,
     public translate: TranslateService
@@ -54,8 +52,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.cookie.set('ApiJwt', 'JWT');
-    let jwt = this.cookie.get('ApiJwt');
+    let jwt = 'JWT';
     this.screen.set(window.innerWidth, window.innerHeight);
     this.globals.isLogged = Boolean(jwt);
     if (jwt) {

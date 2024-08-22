@@ -9,7 +9,6 @@ import { SidenavService } from '../../services/sidenav.service';
 import { MenuService } from '../../services/menu.service';
 import { RestaurantService } from '../../services/restaurant.service';
 import { QrMenuService } from '../../services/qrmenu.service';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-log-in',
@@ -32,7 +31,6 @@ export class LogInComponent implements OnInit {
     private menusService: MenuService,
     private restService: RestaurantService,
     private qrMenusService: QrMenuService,
-    private cookie: CookieService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.myForm = this.formBuilder.group({
@@ -68,7 +66,7 @@ export class LogInComponent implements OnInit {
       )
       .subscribe(
         (token: string) => {
-          this.cookie.set('ApiJwt', token);
+          // this.cookie.set('ApiJwt', token);
           this.globals.isLogged = true;
           this.auth.getUserProfile(token).subscribe((r) => {
             this.menusService.listMenus();

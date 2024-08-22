@@ -1,6 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { firstValueFrom } from 'rxjs';
 import { Globals } from '../globals';
 import { environment } from '../../environments/environment';
@@ -9,14 +8,13 @@ import { Menu } from '../api/model/menu';
 
 @Injectable()
 export class MenuService {
-  jwt: string | null = null;
+  jwt: string | null = 'JWT';
 
   constructor(
     public globals: Globals,
     private http: HttpClient,
-    private cookie: CookieService,
     private api: MenusService
-  ) { }
+  ) {}
 
   async createMenu(file: Blob, menuName: string | undefined) {
     await firstValueFrom(this.api.createMenu(file, menuName));
@@ -95,7 +93,6 @@ export class MenuService {
   }
 
   createHttpOptions(): any {
-    this.jwt = this.cookie.get('ApiJwt');
     if (this.jwt) {
       return {
         headers: new HttpHeaders({

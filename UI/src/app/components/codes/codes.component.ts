@@ -1,7 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { EditMealsComponent } from '../edit-meals/edit-meals.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -32,7 +31,6 @@ export class CodesComponent implements OnInit {
     public dialog: MatDialog,
     public screen: ScreenService,
     private router: Router,
-    private cookie: CookieService,
     private service: QrMenuService,
     private menuService: MenuService,
     private restService: RestaurantService,
@@ -42,7 +40,7 @@ export class CodesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    let jwt = this.cookie.get('ApiJwt');
+    let jwt = 'JWT';
     if (jwt) {
       this.restService.listRestaurants()?.subscribe((rests) => {
         this.rests = rests as Restaurant[];

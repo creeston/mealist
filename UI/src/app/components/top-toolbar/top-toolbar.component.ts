@@ -8,7 +8,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ContactUsDialog } from '../contact-us/contact-us';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -31,8 +30,7 @@ export class TopToolbarComponent {
     public translate: TranslateService,
     private location: Location,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private cookie: CookieService
+    private snackBar: MatSnackBar
   ) {
     translate.setDefaultLang(this.selectedLanguage);
   }
@@ -46,8 +44,7 @@ export class TopToolbarComponent {
   }
 
   ngOnInit() {
-    this.cookie.set('ApiJwt', 'JWT');
-    let lang = this.cookie.get('LOCALE');
+    let lang = 'ru';
     if (lang) {
       this.translate.use(lang);
       this.selectedLanguage = lang;
@@ -56,7 +53,7 @@ export class TopToolbarComponent {
       this.selectLanguage(locale);
     }
 
-    let jwt = this.cookie.get('ApiJwt');
+    let jwt = 'JWT';
     this.screen.set(window.innerWidth, window.innerHeight);
     this.globals.isLogged = Boolean(jwt);
   }
@@ -98,7 +95,7 @@ export class TopToolbarComponent {
   logout() {
     this.globals.isLogged = false;
     this.globals.email = '';
-    this.cookie.delete('ApiJwt');
+    // this.cookie.delete('ApiJwt');
     // this.router.navigate(['/login']);
     if (this.sidenav.opened) {
       this.toggleSidenav();
@@ -108,6 +105,6 @@ export class TopToolbarComponent {
   selectLanguage(language: string) {
     this.translate.use(language);
     this.selectedLanguage = language;
-    this.cookie.set('LOCALE', this.selectedLanguage);
+    // this.cookie.set('LOCALE', this.selectedLanguage);
   }
 }

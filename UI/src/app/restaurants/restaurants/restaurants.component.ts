@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { RestaurantFormDialog } from '../restaurant-form/restaurant-form.component';
 import { RestaurantService } from '../../services/restaurant.service';
 import { Globals } from '../../globals';
@@ -21,14 +19,12 @@ export class RestaurantsComponent implements OnInit {
   constructor(
     public globals: Globals,
     public dialog: MatDialog,
-    private router: Router,
     private service: RestaurantService,
-    private cookie: CookieService,
     public screen: ScreenService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    let jwt = this.cookie.get('ApiJwt');
+    let jwt = 'JWT';
     if (jwt) {
       this.refresh();
     } else {
