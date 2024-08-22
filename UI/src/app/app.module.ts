@@ -15,7 +15,7 @@ import {
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 /* Components */
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { CookieService } from 'ngx-cookie-service';
 import { Globals } from './globals';
@@ -87,78 +87,73 @@ export function apiConfigFactory(): Configuration {
   return new Configuration(params);
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    TutorialComponent,
-    OnlyNumbersAndLetters,
-    ContactUsDialog,
-    ConfirmationDialog,
-    CreateCodeComponent,
-    CodesComponent,
-    QrMenuComponent,
-    MenuMarkupComponent,
-    LogInComponent,
-    TopToolbarComponent,
-    DrawerContentComponent,
-    RegisterComponent,
-    EditMealsComponent,
-    SearchFilterPipe,
-  ],
-  imports: [
-    // https://www.kevinboosten.dev/how-i-use-an-openapi-spec-in-my-angular-projects
-    ApiModule.forRoot(apiConfigFactory),
-    AngularMaterialModule,
-    RestaurantsModule,
-    MenusModule,
-    ReactiveFormsModule,
-    FormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatSliderModule,
-    MatStepperModule,
-    MatProgressBarModule,
-    MarkdownModule.forRoot({
-      loader: HttpClient,
-      sanitize: SecurityContext.NONE,
-    }),
-    TranslateModule.forRoot({
-      defaultLanguage: 'ru',
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      },
-    }),
-  ],
-  providers: [
-    CookieService,
-    Globals,
-    AuthenticationService,
-    GeocodingService,
-    RestaurantService,
-    MenuService,
-    QrMenuService,
-    SidenavService,
-    DrawService,
-    ScreenService,
-    FeedbackService,
-    TranslateHelperClass,
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: { appearance: 'fill' },
-    },
-    { provide: LOCALE_ID, useValue: 'ru-RU' },
-    {
-      provide: MatPaginatorIntl,
-      deps: [TranslateService],
-    },
-    { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } },
-    provideAnimationsAsync(),
-  ],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        TutorialComponent,
+        OnlyNumbersAndLetters,
+        ContactUsDialog,
+        ConfirmationDialog,
+        CreateCodeComponent,
+        CodesComponent,
+        QrMenuComponent,
+        MenuMarkupComponent,
+        LogInComponent,
+        TopToolbarComponent,
+        DrawerContentComponent,
+        RegisterComponent,
+        EditMealsComponent,
+        SearchFilterPipe,
+    ],
+    bootstrap: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA], imports: [
+        // https://www.kevinboosten.dev/how-i-use-an-openapi-spec-in-my-angular-projects
+        ApiModule.forRoot(apiConfigFactory),
+        AngularMaterialModule,
+        RestaurantsModule,
+        MenusModule,
+        ReactiveFormsModule,
+        FormsModule,
+        AppRoutingModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        MatSliderModule,
+        MatStepperModule,
+        MatProgressBarModule,
+        MarkdownModule.forRoot({
+            loader: HttpClient,
+            sanitize: SecurityContext.NONE,
+        }),
+        TranslateModule.forRoot({
+            defaultLanguage: 'ru',
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            },
+        })], providers: [
+        CookieService,
+        Globals,
+        AuthenticationService,
+        GeocodingService,
+        RestaurantService,
+        MenuService,
+        QrMenuService,
+        SidenavService,
+        DrawService,
+        ScreenService,
+        FeedbackService,
+        TranslateHelperClass,
+        {
+            provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+            useValue: { appearance: 'fill' },
+        },
+        { provide: LOCALE_ID, useValue: 'ru-RU' },
+        {
+            provide: MatPaginatorIntl,
+            deps: [TranslateService],
+        },
+        { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } },
+        provideAnimationsAsync(),
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule { }
