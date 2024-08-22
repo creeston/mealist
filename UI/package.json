@@ -25,9 +25,7 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "colorthief": "^2.4.0",
     "leaflet": "^1.9.4",
-    "ngx-cookie-service": "^17.1.0",
-    "ngx-markdown": "^17.2.1",
-    "pdfjs-dist": "^4.5.136",
+    "ngx-markdown": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"
