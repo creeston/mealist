@@ -1,0 +1,170 @@
+<div *ngIf="menu && menu.pages" class="menu-control">
+  <div class="menu-title-container">
+    <mat-icon class="menu-title-icon">picture_as_pdf</mat-icon>
+    <h1 class="menu-title">{{ menu.name }} / {{ currentPage + 1 }}</h1>
+  </div>
+  <mat-paginator [length]="menu.pages.length" [pageSize]="1" [hidePageSize]="true" (page)="changePage($event)"
+    class="paginator-control">
+  </mat-paginator>
+  <div *ngIf="ocrEditor">
+    <button mat-icon-button (click)="ocrEditor.toViewMode()" *ngIf="ocrEditor.isEdit()"
+      [matTooltip]="'demo' | translate">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.toEditMode()" *ngIf="ocrEditor.isView()"
+      [matTooltip]="'edit' | translate">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.zoomIn()" [matTooltip]="'markup.zoom_in' | translate">
+      <mat-icon>zoom_in</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.zoomOut()" [matTooltip]="'markup.zoom_out' | translate">
+      <mat-icon>zoom_out</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.selectAll()" *ngIf="ocrEditor.isEdit()"
+      [matTooltip]="'markup.select_all' | translate">
+      <mat-icon>done_all</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.deselectAll()" *ngIf="ocrEditor.isEdit()"
+      [matTooltip]="'markup.cancel' | translate">
+      <mat-icon>remove_done</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.deleteSelected()" *ngIf="ocrEditor.isEdit()"
+      [matTooltip]="'markup.delete_selected' | translate">
+      <mat-icon>clear</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.mergeSelection()" *ngIf="ocrEditor.isEdit()"
+      [matTooltip]="'markup.merge' | translate">
+      <mat-icon>compress</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.rollback()" *ngIf="ocrEditor.isEdit()"
+      [disabled]="!ocrEditor.anyActionsToRollback()" [matTooltip]="'markup.rollback' | translate">
+      <mat-icon>history</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.resetMarkup()" *ngIf="ocrEditor.isEdit()"
+      [matTooltip]="'markup.reset' | translate">
+      <mat-icon>settings_backup_restore</mat-icon>
+    </button>
+    <button mat-icon-button (click)="ocrEditor.addLine(-1)" [matTooltip]="'markup.dish.add' | translate">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button mat-icon-button (click)="saveMarkup()" [matTooltip]="'markup.save' | translate" [disabled]="saveDisabled">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button (click)="deleteMarkup()"
+      [matTooltip]="'markup.delete' | translate"><mat-icon>delete_sweep</mat-icon></button>
+    <button mat-icon-button (click)="openHelp()" [matTooltip]="'markup.tutorial' | translate">
+      <mat-icon>help</mat-icon>
+    </button>
+  </div>
+
+</div>
+<div *ngIf="ocrDocuments.length > 0">
+  <div *ngFor="let document of ocrDocuments; let i = index;" [class.hidden-container]="currentPage !== i"
+    class="container">
+    <ng-ocr-editor-component [document]="document" [boundingBoxStyle]="boxStyle" mode="edit" #editor>
+    </ng-ocr-editor-component>
+
+    <div class="markup-setting" *ngIf="editor.isEdit()" [style.height.vh]="editor.canvasHeight">
+      <table mat-table [dataSource]="editor.documentProvider.value!.markup">
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let line;">
+            <div class="dish-actions">
+              <button mat-icon-button (click)="editor.removeLine(line)" [matTooltip]="'markup.dish.remove' | translate"
+                class="delete-button" [class.button-visible]="line.hovered">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-checkbox (change)="editor.onLineSelected($event)" [(ngModel)]="line.editSelected"></mat-checkbox>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="text">
+          <th mat-header-cell *matHeaderCellDef [translate]="'markup.dish.title'" class="edit-header-cell"></th>
+          <td mat-cell *matCellDef="let line">
+            <mat-form-field subscriptSizing="dynamic" class="box-text" appearance="fill">
+              <input matInput [(ngModel)]="line.text" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="x1">
+          <th mat-header-cell *matHeaderCellDef class="edit-header-cell">x1</th>
+          <td mat-cell *matCellDef="let line">
+            <mat-form-field subscriptSizing="dynamic" (change)="editor.redrawCanvas()" class="box-coordinate"
+              appearance="fill">
+              <input type="number" matInput [(ngModel)]="line.x1" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="x2">
+          <th mat-header-cell *matHeaderCellDef class="edit-header-cell">x2</th>
+          <td mat-cell *matCellDef="let line">
+            <mat-form-field subscriptSizing="dynamic" (change)="editor.redrawCanvas()" class="box-coordinate"
+              appearance="fill">
+              <input type="number" matInput [(ngModel)]="line.x2" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="y1">
+          <th mat-header-cell *matHeaderCellDef class="edit-header-cell">y1</th>
+          <td mat-cell *matCellDef="let line">
+            <mat-form-field subscriptSizing="dynamic" (change)="editor.redrawCanvas()" class="box-coordinate"
+              appearance="fill">
+              <input type="number" matInput [(ngModel)]="line.y1" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="y2">
+          <th mat-header-cell *matHeaderCellDef class="edit-header-cell">y2</th>
+          <td mat-cell *matCellDef="let line">
+            <mat-form-field subscriptSizing="dynamic" (change)="editor.redrawCanvas()" class="box-coordinate"
+              appearance="fill">
+              <input type="number" matInput [(ngModel)]="line.y2" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['action', 'text', 'x1', 'x2', 'y1', 'y2']"></tr>
+        <tr mat-row *matRowDef="let line; columns: ['action', 'text', 'x1', 'x2', 'y1', 'y2']"
+          (mouseover)="line.hovered = true; editor.redrawCanvas()"
+          (mouseleave)="line.hovered = false; editor.redrawCanvas()"></tr>
+      </table>
+
+    </div>
+
+    <!-- View markup -->
+    <div class="markup-setting" *ngIf="editor.isView()" [style.height.vh]="editor.canvasHeight">
+      <table mat-table [dataSource]="editor.documentProvider.value!.markup">
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef>№</th>
+          <td mat-cell *matCellDef="let line; let i = index">{{ i + 1 }}.</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef [translate]="'markup.dish.title'"></th>
+          <td mat-cell *matCellDef="let line">{{ line.text }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="presence">
+          <th mat-header-cell *matHeaderCellDef [translate]="'markup.dish.presence'"></th>
+          <td mat-cell *matCellDef="let line">
+            <mat-checkbox (change)="editor.onLineSelected($event)" [(ngModel)]="line.highlight"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </div>
+
+
+
+</div>

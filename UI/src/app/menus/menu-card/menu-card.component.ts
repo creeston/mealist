@@ -6,7 +6,6 @@ import { MenuService } from '../../services/menu.service';
 import { ScreenService } from '../../services/screen.service';
 import { Globals } from '../../globals';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
-import { AuthenticationService } from '../../services/auth.service';
 import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
 import { Menu } from '../../api/model/menu';
 import { PageEvent } from '@angular/material/paginator';
@@ -42,28 +41,19 @@ export class MenuCardComponent implements OnInit {
     public globals: Globals,
     private translate: TranslateService,
     public translateHelper: TranslateHelperClass,
-    private auth: AuthenticationService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.previewImageUrl =
       this.menu.pages && this.menu.pages.length > 0
         ? this.menu.pages[0].imageUrl
         : null;
+
+    this.renderedImages = this.menu.pages!.map((page) => page.imageUrl);
   }
 
-  async showPdfGallery(menu: Menu) {
-    if (!menu.pages || menu.pages.length == 0) {
-      return;
-    }
-
-    if (!menu.originalFileUrl) {
-      return;
-    }
-
-    this.renderedImages = menu.pages.map((page) => page.imageUrl);
-
+  async showGallery(menu: Menu) {
     if (this.displayMenu) {
       this.displayMenu = false;
       return;

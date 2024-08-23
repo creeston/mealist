@@ -1,7 +1,3 @@
-.menuItem {
-    margin-bottom: 20px;
-}
-
 .container {
     display: flex;
     /* justify-content: center; */
@@ -14,35 +10,16 @@
     /* max-height: 80vh; */
 }
 
-.loadingSpinner {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-}
-
 h1 {
     margin-bottom: 0px;
 }
 
-/* ::ng-deep .mat-form-field-flex > .mat-form-field-infix { padding: 0.4em 0px !important;} */
-/* ::ng-deep .mat-form-field-label-wrapper { top: -1.5em; } */
-
-/* ::ng-deep .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
-    transform: translateY(-1.1em) scale(.75);
-    width: 133.33333%;
+.box-text {
+    width: 350px;
 }
 
-
-::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
-    padding: 0 .75em 0 .75em !important;
-} */
-
-
-.lineName {
-    margin-right: 10px;
-    padding-left: 10px;
-    width: 350px;
+.box-coordinate {
+    width: 100px;
 }
 
 
@@ -55,19 +32,11 @@ h1 {
     margin-left: 3px;
 }
 
-.removeButton {
-    position: absolute;
-    right: 0px;
-    top: 15px;
+.delete-button {
+    visibility: hidden;
 }
 
-.addButton {
-    position: absolute;
-    right: 0px;
-    top: 40px;
-}
-
-.buttonBox {
+.button-container {
     position: relative;
     width: 0;
     height: 0;
@@ -75,8 +44,6 @@ h1 {
 
 .markup-setting {
     overflow-y: auto;
-    padding-left: 60px;
-    /* max-height: 80vh; */
 }
 
 .menu-title {
@@ -120,38 +87,6 @@ h1 {
 
 .menu-title-container {
     display: inline-block;
-}
-
-.image-canvas {
-    position: absolute;
-    z-index: 1;
-    left: 0px;
-    border: 1px solid #7474744a;
-}
-
-.markup-canvas-x-resize:hover,
-.image-canvas-x-resize:hover {
-    cursor: e-resize;
-}
-
-.markup-canvas-y-resize:hover,
-.image-canvas-y-resize:hover {
-    cursor: n-resize;
-}
-
-.markup-canvas-move:hover,
-.image-canvas-move:hover {
-    cursor: move;
-}
-
-.canvas {
-    position: relative;
-}
-
-.markup-canvas {
-    position: absolute;
-    z-index: 2;
-    left: 0px;
 }
 
 /* custom scrollbar */
@@ -206,37 +141,6 @@ h1 {
     margin-left: 30px;
 }
 
-.canvas-delete-button {
-    position: absolute;
-    background-color: #4f4742ce;
-    z-index: 3;
-
-    width: 20px;
-    height: 20px;
-    line-height: 15px;
-    border-radius: 2px;
-    padding: 0px;
-
-    .mat-icon {
-        font-size: 15px;
-        width: 15px;
-        height: 15px;
-        line-height: 15px;
-        color: white;
-    }
-
-
-    ::ng-deep .mat-mdc-button-touch-target {
-        width: 20px !important;
-        height: 20px !important;
-    }
-}
-
-.canvas-delete-button table {
-    min-width: 300px;
-    width: 100%;
-}
-
 .mat-column-presence {
     padding-left: 20px;
 }
@@ -276,4 +180,24 @@ h1 {
 
 .dish-line-container {
     display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.button-visible {
+    visibility: visible;
+}
+
+.dish-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.hidden-container {
+    display: none;
+}
+
+.edit-header-cell {
+    text-align: center;
 }

@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { RestaurantsComponent } from './restaurants/restaurants/restaurants.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
-import { MenuMarkupComponent } from './components/menu-markup/menu-markup.component';
+import { MenuMarkupComponent } from './menus/menu-markup/menu-markup.component';
 import { CodesComponent } from './components/codes/codes.component';
 import { CreateCodeComponent } from './components/create-code/create-code.component';
 import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
@@ -27,4 +27,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

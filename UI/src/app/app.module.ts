@@ -58,7 +58,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CreateCodeComponent } from './components/create-code/create-code.component';
 import { CodesComponent } from './components/codes/codes.component';
 import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
-import { MenuMarkupComponent } from './components/menu-markup/menu-markup.component';
+import { MenuMarkupComponent } from './menus/menu-markup/menu-markup.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
 import {
@@ -100,7 +100,6 @@ export function apiConfigFactory(): Configuration {
     CreateCodeComponent,
     CodesComponent,
     QrMenuComponent,
-    MenuMarkupComponent,
     LogInComponent,
     TopToolbarComponent,
     DrawerContentComponent,
@@ -124,7 +123,6 @@ export function apiConfigFactory(): Configuration {
     MatSliderModule,
     MatStepperModule,
     MatProgressBarModule,
-    NgOcrEditorComponent,
     MarkdownModule.forRoot({
       loader: HttpClient,
       sanitize: SecurityContext.NONE,
@@ -164,4 +162,4 @@ export function apiConfigFactory(): Configuration {
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
-export class AppModule {}
+export class AppModule { }

@@ -9,6 +9,9 @@ import { MenuFormDialog } from './menu-form/menu-form.component';
 import { MenuCardComponent } from './menu-card/menu-card.component';
 import { MenuComponent } from './menu/menu.component';
 import { MenusComponent } from './menus/menus.component';
+import { MenuMarkupComponent } from './menu-markup/menu-markup.component';
+import { NgOcrEditorComponent } from 'ng-ocr-editor';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -16,12 +19,14 @@ import { MenusComponent } from './menus/menus.component';
     MenuCardComponent,
     MenuComponent,
     MenusComponent,
+    MenuMarkupComponent,
   ],
   imports: [
     CommonModule,
     AngularMaterialModule,
     ReactiveFormsModule,
     FormsModule,
+    NgOcrEditorComponent,
     TranslateModule.forRoot({
       defaultLanguage: 'ru',
       loader: {
@@ -31,5 +36,13 @@ import { MenusComponent } from './menus/menus.component';
       },
     }),
   ],
+  providers: [
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        subscriptSizing: 'dynamic'
+      }
+    }
+  ],
 })
-export class MenusModule {}
+export class MenusModule { }

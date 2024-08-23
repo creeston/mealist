@@ -1,20 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
+import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { TutorialComponent } from '../tutorial/tutorial';
+import { TutorialComponent } from '../../components/tutorial/tutorial';
 import { MenuService } from '../../services/menu.service';
 import { Globals } from '../../globals';
 import { Menu } from '../../api';
-import { MarkedLine, MarkedMenu, MarkedPage } from './marked-menu';
 import {
   BoundingBoxStyle,
   OcrBox,
   OcrDocument,
 } from 'ng-ocr-editor/lib/ocr-document';
-import { PageProvider } from './providers';
+import { NgOcrEditorComponent } from 'ng-ocr-editor';
 
 @Component({
   selector: 'app-menu-markup',
@@ -24,14 +23,15 @@ import { PageProvider } from './providers';
 export class MenuMarkupComponent implements OnInit {
   canvasHeight: number = 80;
 
-  menu: MarkedMenu | null = null;
   menuId: string | null = null;
   userId: string | null = null;
-  originalMenu: Menu = {} as Menu;
-  page: PageProvider = new PageProvider();
+  menu: Menu = {} as Menu;
+
+  currentPage = 0;
   ocrDocuments: OcrDocument[] = [];
 
-  @ViewChild('ocrEditor') ocrEditor: any;
+  @ViewChildren(NgOcrEditorComponent)
+  ocrEditors!: QueryList<NgOcrEditorComponent>
 
   public stopModes = [
     { key: 'underline', value: '' },
@@ -41,8 +41,8 @@ export class MenuMarkupComponent implements OnInit {
   boxStyle: BoundingBoxStyle = {
     width: 2,
     color: '#000000',
-    selectedColor: '#FF0000',
-    selectedWidth: 5,
+    selectedColor: '#0b454b',
+    selectedWidth: 6,
     constastWidth: 2,
     contrastColor: '#FFFFFF',
   };
@@ -73,7 +73,8 @@ export class MenuMarkupComponent implements OnInit {
     private router: Router,
     private service: MenuService,
     private translate: TranslateService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.translate.get('markup.style.underline').subscribe((text) => {
@@ -91,18 +92,17 @@ export class MenuMarkupComponent implements OnInit {
     this.translate.get('markup.was_saved').subscribe((text) => {
       this.markupedSavedMessage = text;
     });
-  }
 
-  ngAfterViewInit() {
     this.route.params.subscribe((params) => {
       this.menuId = params['menuId'];
       this.service.getMenu(this.menuId!).then((menu: Menu) => {
-        this.originalMenu = menu;
-        this.processMenuAsync(menu).then((menu) => {
-          this.menu = menu;
+        this.menu = menu;
+        this.processMenuAsync(menu).then((documents) => {
+          this.ocrDocuments = documents;
         });
       });
     });
+
   }
 
   async processMenuAsync(menu: Menu) {
@@ -112,7 +112,7 @@ export class MenuMarkupComponent implements OnInit {
       pages: [],
       stopStyle: menu.stopStyle,
       stopColor: menu.stopColor,
-    } as MarkedMenu;
+    };
 
     if (!markedMenu.stopStyle) {
       markedMenu.stopStyle = 'underline';
@@ -120,61 +120,39 @@ export class MenuMarkupComponent implements OnInit {
     }
 
     if (!menu.pages) {
-      return markedMenu;
+      return [];
     }
 
-    this.ocrDocuments = [];
+    const ocrDocuments = [];
 
     for (let page of menu.pages) {
-      const pageMarkup: MarkedLine[] = [];
-
-      page.markup!.forEach((line) => {
-        const markedLine = {
-          x1: line.x1,
-          y1: line.y1,
-          x2: line.x2,
-          y2: line.y2,
+      const pageMarkup: OcrBox[] = page.markup?.map((line) => {
+        return {
           text: line.text,
-          children: [],
-          editSelected: false,
-          viewSelected: false,
-          hover: false,
-        } as MarkedLine;
-        pageMarkup.push(markedLine);
-      });
+          x1: line.x1,
+          x2: line.x2,
+          y1: line.y1,
+          y2: line.y2,
+          highlight: false,
+          viewStyle: {
+            color: '#000000',
+            style: 'fill',
+          },
+        } as OcrBox;
+      }) ?? [];
 
       const imageUrl = page.imageUrl;
       const image = await this.loadImageAsync(imageUrl);
 
-      markedMenu.pages.push({
-        pageNumber: page.pageNumber,
-        imageUrl: page.imageUrl,
-        markup: pageMarkup,
-        imageElement: image,
-      } as MarkedPage);
-
       const document = {
         imageElement: image,
-        markup: pageMarkup.map((line) => {
-          return {
-            text: line.text,
-            x1: line.x1,
-            x2: line.x2,
-            y1: line.y1,
-            y2: line.y2,
-            highlight: false,
-            viewStyle: {
-              color: '#000000',
-              style: 'fill',
-            },
-          } as OcrBox;
-        }),
+        markup: pageMarkup
       } as OcrDocument;
 
-      this.ocrDocuments.push(document);
+      ocrDocuments.push(document);
     }
 
-    return markedMenu;
+    return ocrDocuments;
   }
 
   async loadImageAsync(imageUrl: string): Promise<HTMLImageElement> {
@@ -187,25 +165,12 @@ export class MenuMarkupComponent implements OnInit {
     });
   }
 
-  onColorChange(event: any) {
-    // this.redrawCanvas();
-  }
-
   changePage(event: PageEvent) {
-    this.page.changePage(event.pageIndex);
+    this.currentPage = event.pageIndex;
   }
 
-  flatChildrenLines(line: MarkedLine) {
-    if (!line.children || line.children.length == 0) {
-      return [line];
-    } else {
-      let result: any[] = [];
-      line.children.forEach((l) => {
-        let children = this.flatChildrenLines(l);
-        children.forEach((c) => result.push(c));
-      });
-      return result;
-    }
+  get ocrEditor() {
+    return this.ocrEditors.get(this.currentPage);
   }
 
   saveMarkup() {
