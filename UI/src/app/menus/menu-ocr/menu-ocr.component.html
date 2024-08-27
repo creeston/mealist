@@ -45,14 +45,13 @@
       [matTooltip]="'markup.reset' | translate">
       <mat-icon>settings_backup_restore</mat-icon>
     </button>
-    <button mat-icon-button (click)="ocrEditor.addLine(-1)" [matTooltip]="'markup.dish.add' | translate">
+    <button mat-icon-button (click)="ocrEditor.addLine(-1)" [matTooltip]="'markup.dish.add' | translate"
+      *ngIf="ocrEditor.isEdit()">
       <mat-icon>add</mat-icon>
     </button>
     <button mat-icon-button (click)="saveMarkup()" [matTooltip]="'markup.save' | translate" [disabled]="saveDisabled">
       <mat-icon>save</mat-icon>
     </button>
-    <button mat-icon-button (click)="deleteMarkup()"
-      [matTooltip]="'markup.delete' | translate"><mat-icon>delete_sweep</mat-icon></button>
     <button mat-icon-button (click)="openHelp()" [matTooltip]="'markup.tutorial' | translate">
       <mat-icon>help</mat-icon>
     </button>

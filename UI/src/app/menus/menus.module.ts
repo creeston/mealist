@@ -9,7 +9,7 @@ import { MenuFormDialog } from './menu-form/menu-form.component';
 import { MenuCardComponent } from './menu-card/menu-card.component';
 import { MenuComponent } from './menu/menu.component';
 import { MenusComponent } from './menus/menus.component';
-import { MenuMarkupComponent } from './menu-markup/menu-markup.component';
+import { MenuOcrComponent } from './menu-ocr/menu-ocr.component';
 import { NgOcrEditorComponent } from 'ng-ocr-editor';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
@@ -19,7 +19,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
     MenuCardComponent,
     MenuComponent,
     MenusComponent,
-    MenuMarkupComponent,
+    MenuOcrComponent,
   ],
   imports: [
     CommonModule,

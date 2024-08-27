@@ -58,7 +58,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CreateCodeComponent } from './components/create-code/create-code.component';
 import { CodesComponent } from './components/codes/codes.component';
 import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
-import { MenuMarkupComponent } from './menus/menu-markup/menu-markup.component';
+import { MenuOcrComponent } from './menus/menu-ocr/menu-ocr.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
 import {

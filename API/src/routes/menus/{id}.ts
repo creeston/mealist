@@ -8,7 +8,7 @@ import { MenuModel } from "../../db/models/menu";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-type MenuResponseModel = components["schemas"]["Menu"];
+type MenuApiModel = components["schemas"]["Menu"];
 type MenuPageResponseModel = components["schemas"]["MenuPage"];
 type MenuLineResponseModel = components["schemas"]["MenuLine"];
 
@@ -36,7 +36,7 @@ export const menuToResponseModel = async (menu: MenuModel) => {
     creationDate: menu.creationDate,
     moodifiedDate: menu.modifiedDate,
     status: menu.status
-  } as MenuResponseModel;
+  } as MenuApiModel;
 
   if (menu.pages && menu.pages.length > 0) {
     const pages: MenuPageResponseModel[] = [];
@@ -112,3 +112,4 @@ GET.apiDoc = {
     },
   },
 };
+

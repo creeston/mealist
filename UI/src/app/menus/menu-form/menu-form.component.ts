@@ -12,9 +12,17 @@ import { MenuService } from '../../services/menu.service';
 export class MenuFormDialog {
   public fileControl = new FormControl([] as any[], [Validators.required]);
   public menuNameControl = new FormControl('', []);
+  public languageControl = new FormControl('en', []);
   public disabled = false;
   fileName = '';
   selectedFile: Blob | null = null;
+  languages = [{
+    code: 'en', name: 'English'
+  }, {
+    code: "ru", name: "Russian",
+  }, {
+    code: "pl", name: "Polish",
+  }];
 
   color: ThemePalette = 'primary';
   accept: string = 'application/pdf,image/png';

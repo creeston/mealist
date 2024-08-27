@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { RestaurantsComponent } from './restaurants/restaurants/restaurants.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
-import { MenuMarkupComponent } from './menus/menu-markup/menu-markup.component';
+import { MenuOcrComponent } from './menus/menu-ocr/menu-ocr.component';
 import { CodesComponent } from './components/codes/codes.component';
 import { CreateCodeComponent } from './components/create-code/create-code.component';
 import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'login', component: LogInComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'menus', component: MenusComponent },
-  { path: 'menus/:menuId', component: MenuMarkupComponent },
+  { path: 'menus/:menuId', component: MenuOcrComponent },
   { path: 'restaurants', component: RestaurantsComponent },
   { path: 'codes', component: CodesComponent },
   { path: 'code-create', component: CreateCodeComponent },

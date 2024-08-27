@@ -6,6 +6,16 @@
     <mat-icon matSuffix>create</mat-icon>
   </mat-form-field>
 
+  <!-- Angular dropdown with language code selection -->
+  <mat-form-field class="field">
+    <mat-label [translate]="'menu.language'"></mat-label>
+    <mat-select [formControl]="languageControl">
+      <mat-option *ngFor="let language of languages" [value]="language.code">
+        {{ language.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <div class="field">
     <input type="file" multiple="false" [formControl]="fileControl" accept="application/pdf,image/png"
       class="file-input" (change)="onFileSelected($event)" #fileUpload />

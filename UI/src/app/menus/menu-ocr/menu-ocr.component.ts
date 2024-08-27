@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { TutorialComponent } from '../../components/tutorial/tutorial';
 import { MenuService } from '../../services/menu.service';
 import { Globals } from '../../globals';
-import { Menu } from '../../api';
+import { Menu, MenuPage } from '../../api';
 import {
   BoundingBoxStyle,
   OcrBox,
@@ -17,10 +17,10 @@ import { NgOcrEditorComponent } from 'ng-ocr-editor';
 
 @Component({
   selector: 'app-menu-markup',
-  templateUrl: './menu-markup.component.html',
-  styleUrls: ['./menu-markup.component.scss'],
+  templateUrl: './menu-ocr.component.html',
+  styleUrls: ['./menu-ocr.component.scss'],
 })
-export class MenuMarkupComponent implements OnInit {
+export class MenuOcrComponent implements OnInit {
   canvasHeight: number = 80;
 
   menuId: string | null = null;
@@ -174,71 +174,40 @@ export class MenuMarkupComponent implements OnInit {
   }
 
   saveMarkup() {
-    // var menuMarkupToUpload: any[] = [];
-    // this.menu?.markups?.forEach((markup) => {
-    //   let lines: any[] = [];
-    //   markup.forEach((line) => {
-    //     let box = [
-    //       [line.x1, line.y1],
-    //       [line.x2, line.y2],
-    //     ];
-    //     let text = line.text;
-    //     let children = [];
-    //     if (line.children && line.children.length > 0) {
-    //       children = this.flatChildrenLines(line);
-    //     }
-    //     lines.push({ text: text, box: box, tag: line.tag, children: children });
-    //   });
-    //   menuMarkupToUpload.push(lines);
-    // });
-    // this.saveDisabled = true;
-    // let updateRequest = {
-    //   markup: menuMarkupToUpload,
-    //   deletedLines: this.lineController.deletedLines,
-    //   stopStyle: this.menu!.stopStyle,
-    //   stopColor: this.menu!.stopColor,
-    // };
-    // this.service
-    //   .uploadMarkup(this.menuId!, this.userId!, updateRequest)
-    //   .subscribe(
-    //     (r: any) => {
-    //       this.saveDisabled = false;
-    //       this.snackBar.open(this.markupedSavedMessage, this.closeText, {
-    //         duration: 2 * 1000,
-    //       });
-    //       this.lineController.deletedLines = [];
-    //     },
-    //     (r: any) => {
-    //       this.saveDisabled = false;
-    //       this.snackBar.open(r, '', {
-    //         duration: 5 * 1000,
-    //       });
-    //     }
-    //   );
-  }
+    const pages = this.menu.pages;
 
-  deleteMarkup() {
-    this.translate.get('markup.delete_confirmation').subscribe((text) => {
-      const dialogRef = this.dialog.open(ConfirmationDialog, {
-        width: '350px',
-        data: { message: text },
-      });
+    if (!pages) {
+      return;
+    }
 
-      dialogRef.componentInstance.callback.subscribe(() => {
-        this.service.deleteMarkup(this.menuId!).subscribe(
-          (r: any) => {
-            dialogRef.componentInstance.close();
-            this.router.navigate(['menus']);
-          },
-          (e: any) => {
-            // this.notify.error(JSON.stringify(e));
-            dialogRef.componentInstance.close();
-          }
-        );
+    for (let i = 0; i < this.ocrEditors.length; i++) {
+      const editor = this.ocrEditors.get(i);
+      if (!editor) {
+        continue;
+      }
+      const document = editor.documentProvider.value;
+
+      if (!document) {
+        continue;
+      }
+      const page = pages[i];
+
+      page.markup = document.markup.map((line) => {
+        return {
+          x1: line.x1,
+          x2: line.x2,
+          y1: line.y1,
+          y2: line.y2,
+          text: line.text,
+        };
       });
+    }
+
+    this.saveDisabled = true;
+    this.service.updateMenuPages(this.menuId!, pages).then(() => {
+      this.saveDisabled = false;
     });
   }
-
   openHelp() {
     this.dialog.open(TutorialComponent, {
       width: '550px',

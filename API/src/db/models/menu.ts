@@ -27,4 +27,4 @@ export interface OcrBoxModel {
     y2: number;
 }
 
-export type MenuProcessingStatus = "NOT_PARSED" | "PARSING_IN_PROGRESS" | "PARSING_FAILED" | "PARSING_COMPLETED" | "OCR_IN_PROGRESS" | "OCR_FAILED" | "OCR_COMPLETED";
+export type MenuProcessingStatus = "NOT_PARSED" | "PARSING_IN_PROGRESS" | "PARSING_FAILED" | "PARSING_COMPLETED" | "OCR_IN_PROGRESS" | "OCR_FAILED" | "OCR_COMPLETED" | "REVIEWED";

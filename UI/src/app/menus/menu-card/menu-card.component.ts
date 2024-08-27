@@ -93,6 +93,8 @@ export class MenuCardComponent implements OnInit {
       return 'OCR в процессе';
     } else if (status === 'OCR_COMPLETED') {
       return 'OCR завершен';
+    } else if (status == "REVIEWED") {
+      return "Проверено";
     }
 
     return status;

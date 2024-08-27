@@ -5,6 +5,7 @@ import { Globals } from '../globals';
 import { environment } from '../../environments/environment';
 import { MenusService } from '../api/api/menus.service';
 import { Menu } from '../api/model/menu';
+import { MenuPage } from '../api';
 
 @Injectable()
 export class MenuService {
@@ -14,7 +15,7 @@ export class MenuService {
     public globals: Globals,
     private http: HttpClient,
     private api: MenusService
-  ) {}
+  ) { }
 
   async createMenu(file: Blob, menuName: string | undefined) {
     await firstValueFrom(this.api.createMenu(file, menuName));
@@ -54,40 +55,13 @@ export class MenuService {
     return menu;
   }
 
-  uploadMarkup(menuId: string, userId: string, menuMarkup: any) {
-    let endpoint = '';
-    if (userId) {
-      endpoint =
-        environment.apiUrl +
-        '/api/UploadReviewedMarkup/' +
-        userId +
-        '/' +
-        menuId;
-    } else {
-      endpoint = environment.apiUrl + '/api/UploadMarkup/' + menuId;
-    }
-    return this.http.post(endpoint, menuMarkup, this.createHttpOptions());
-  }
-
-  deleteMarkup(menuId: string) {
-    return this.http.post(
-      environment.apiUrl + '/api/DeleteMarkup/' + menuId,
-      {},
-      this.createHttpOptions()
-    );
+  async updateMenuPages(menuId: string, pages: MenuPage[]) {
+    return await firstValueFrom(this.api.updateMenuPages(menuId, pages));
   }
 
   listMeals(menuId: string) {
     return this.http.get<Meal[]>(
       environment.apiUrl + '/api/ListMeals/' + menuId,
-      this.createHttpOptions()
-    );
-  }
-
-  triggerFeature(menuId: string, feature: string) {
-    return this.http.post<Menu>(
-      environment.apiUrl + `/api/TriggerFeature/${menuId}/${feature}`,
-      {},
       this.createHttpOptions()
     );
   }
