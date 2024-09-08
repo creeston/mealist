@@ -33,12 +33,13 @@ async def callback(message: AbstractIncomingMessage):
     menu_id = ocr_request["menuId"]
     menu_page = ocr_request["menuPage"]
     image_path = ocr_request["imagePath"]
+    image_language = ocr_request.get("language", "eng")
     image = file_repository.read_file("mealist", image_path)
 
     with tempfile.NamedTemporaryFile(delete=False) as temp_image:
         temp_image.write(image)
         temp_image_path = temp_image.name
-        data = text_extractor.extract_text(temp_image_path)
+        data = text_extractor.extract_text(temp_image_path, image_language)
 
     rabbitmq_sender.send_message(
         {"status": "success", "menuId": menu_id, "menuPage": menu_page, "data": data},

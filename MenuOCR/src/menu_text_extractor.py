@@ -13,16 +13,17 @@ class MenuTextExtractor:
         if tesseract_cmd:
             pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
-    def extract_text(self, image_path):
+    def extract_text(self, image_path: str, language: str = "eng"):
         """
         Extract text from an image using Tesseract OCR.
 
         :param image_path: The path to the image file from which to extract text.
+        :param language: Language to use for OCR. Default is "eng" (English).
         :return: The text extracted from the image.
         """
         try:
             image = Image.open(image_path)
-            data = pytesseract.image_to_data(image, output_type="dict")
+            data = pytesseract.image_to_data(image, output_type="dict", lang=language)
             values = len(data["text"])
             extracted_texts = []
             for i in range(values):
