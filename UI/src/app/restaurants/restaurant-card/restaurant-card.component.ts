@@ -7,7 +7,6 @@ import { RestaurantService } from '../../services/restaurant.service';
 import { ScreenService } from '../../services/screen.service';
 import { TranslateHelperClass } from '../../services/translate-helper.service';
 import { Restaurant } from '../../api/model/models';
-import { GeocodingService } from '../../services/geocoding.service';
 
 @Component({
   selector: 'app-restaurant-card',
@@ -29,11 +28,10 @@ export class RestaurantCardComponent implements OnInit {
     public screen: ScreenService,
     private service: RestaurantService,
     private translate: TranslateService,
-    public translateHelper: TranslateHelperClass,
-  ) { }
+    public translateHelper: TranslateHelperClass
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   deleteRestaurant(rest: Restaurant) {
     this.translate.get('rest.delete_confirmation').subscribe((text) => {

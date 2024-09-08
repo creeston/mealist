@@ -10,8 +10,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 24px;
-    margin-bottom: 10px;
-    margin-top: 10px;
     cursor: default;
 
     p {

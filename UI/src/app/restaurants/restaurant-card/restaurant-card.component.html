@@ -1,41 +1,86 @@
 <mat-grid-list cols="7" rowHeight="175px">
   <!-- Restaurant information -->
-  <mat-grid-tile [colspan]="screen.width > 800 ? 3 : screen.width > 600 ? 3 : 7" [rowspan]="1" class="grid-cell">
+  <mat-grid-tile
+    [colspan]="screen.width > 800 ? 3 : screen.width > 600 ? 3 : 7"
+    [rowspan]="1"
+    class="grid-cell"
+  >
     <div class="menu-metadata">
       <div class="menu-main-info">
         <mat-icon aria-hidden="false" class="title-icon">
           brunch_dining
         </mat-icon>
-        <p class="menu-title" #titleElement [matTooltip]="checkOverflow(titleElement) ? restaurant.name : ''">
+        <p
+          class="menu-title"
+          #titleElement
+          [matTooltip]="checkOverflow(titleElement) ? restaurant.name : ''"
+        >
           {{ restaurant.name }}
         </p>
       </div>
       <div class="menu-secondary-info">
         <mat-icon aria-hidden="false" class="secondary-icon">home</mat-icon>
-        <p class="rest-address" #addressElement [matTooltip]="checkOverflow(addressElement) ? restaurant.address : ''">
+        <p
+          class="rest-address"
+          #addressElement
+          [matTooltip]="checkOverflow(addressElement) ? restaurant.address : ''"
+        >
           {{ restaurant.city }}, {{ restaurant.address }}
         </p>
       </div>
       <div class="menu-secondary-info" *ngIf="restaurant.description">
         <mat-icon aria-hidden="false" class="secondary-icon">info</mat-icon>
-        <p class="rest-description" #descriptionElement [matTooltip]="
+        <p
+          class="rest-description"
+          #descriptionElement
+          [matTooltip]="
             checkOverflow(descriptionElement) ? restaurant.description : ''
-          ">
+          "
+        >
           {{ restaurant.description }}
         </p>
       </div>
       <div class="menu-secondary-info menu-social">
-        <a href="{{ restaurant.facebookUrl }}" target="_blank" *ngIf="restaurant.facebookUrl">
-          <span class="iconify" data-icon="mdi-facebook" data-inline="false" *ngIf="restaurant.facebookUrl"></span>
+        <a
+          href="{{ restaurant.facebookUrl }}"
+          target="_blank"
+          *ngIf="restaurant.facebookUrl"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi-facebook"
+            data-inline="false"
+            *ngIf="restaurant.facebookUrl"
+          ></span>
         </a>
-        <a href="{{ restaurant.instagramUrl }}" target="_blank" *ngIf="restaurant.instagramUrl">
-          <span class="iconify" data-icon="mdi-instagram" data-inline="false"></span>
+        <a
+          href="{{ restaurant.instagramUrl }}"
+          target="_blank"
+          *ngIf="restaurant.instagramUrl"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi-instagram"
+            data-inline="false"
+          ></span>
         </a>
-        <a href="{{ restaurant.vkUrl }}" target="_blank" *ngIf="restaurant.vkUrl">
+        <a
+          href="{{ restaurant.vkUrl }}"
+          target="_blank"
+          *ngIf="restaurant.vkUrl"
+        >
           <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
         </a>
-        <a href="{{ restaurant.tripAdvisorUrl }}" target="_blank" *ngIf="restaurant.tripAdvisorUrl">
-          <span class="iconify" data-icon="fa:tripadvisor" data-inline="false"></span>
+        <a
+          href="{{ restaurant.tripAdvisorUrl }}"
+          target="_blank"
+          *ngIf="restaurant.tripAdvisorUrl"
+        >
+          <span
+            class="iconify"
+            data-icon="fa:tripadvisor"
+            data-inline="false"
+          ></span>
         </a>
       </div>
     </div>
@@ -46,11 +91,20 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #actionMenu="matMenu">
-        <button mat-button (click)="editRestaurant(restaurant)" [matTooltip]="'edit' | translate" class="menu-button">
+        <button
+          mat-button
+          (click)="editRestaurant(restaurant)"
+          [matTooltip]="'edit' | translate"
+          class="menu-button"
+        >
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-button (click)="deleteRestaurant(restaurant)" [matTooltip]="'delete' | translate"
-          class="menu-button">
+        <button
+          mat-button
+          (click)="deleteRestaurant(restaurant)"
+          [matTooltip]="'delete' | translate"
+          class="menu-button"
+        >
           <mat-icon>clear</mat-icon>
         </button>
       </mat-menu>
@@ -58,21 +112,43 @@
   </mat-grid-tile>
 
   <!-- Restaurant Image (Map view)-->
-  <mat-grid-tile [colspan]="screen.width > 800 ? 3 : 2" [rowspan]="1" class="grid-cell" *ngIf="screen.width > 600">
+  <mat-grid-tile
+    [colspan]="screen.width > 800 ? 3 : 2"
+    [rowspan]="1"
+    class="grid-cell"
+    *ngIf="screen.width > 600"
+  >
     <div class="menu-image-container">
-      <app-restaurant-map [address]="restaurant.address" [city]="restaurant.city"
-        [restaurantName]="restaurant.name"></app-restaurant-map>
+      <app-restaurant-map
+        [address]="restaurant.address"
+        [city]="restaurant.city"
+        [restaurantName]="restaurant.name"
+        [restaurantId]="restaurant.id!"
+      ></app-restaurant-map>
     </div>
   </mat-grid-tile>
 
   <!-- Actions -->
-  <mat-grid-tile [colspan]="screen.width > 800 ? 1 : 2" [rowspan]="1" class="grid-cell menu-buttons"
-    *ngIf="screen.width > 600">
-    <button mat-icon-button (click)="editRestaurant(restaurant)" [matTooltip]="'edit' | translate" class="menu-button">
+  <mat-grid-tile
+    [colspan]="screen.width > 800 ? 1 : 2"
+    [rowspan]="1"
+    class="grid-cell menu-buttons"
+    *ngIf="screen.width > 600"
+  >
+    <button
+      mat-icon-button
+      (click)="editRestaurant(restaurant)"
+      [matTooltip]="'edit' | translate"
+      class="menu-button"
+    >
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button (click)="deleteRestaurant(restaurant)" [matTooltip]="'delete' | translate"
-      class="menu-button">
+    <button
+      mat-icon-button
+      (click)="deleteRestaurant(restaurant)"
+      [matTooltip]="'delete' | translate"
+      class="menu-button"
+    >
       <mat-icon>clear</mat-icon>
     </button>
   </mat-grid-tile>
