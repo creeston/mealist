@@ -25,6 +25,8 @@ export interface components {
     };
     CreateMenuRequest: {
       name?: string;
+      /** @enum {string} */
+      language?: "eng" | "rus" | "ukr" | "bel" | "pol" | "deu";
       /** Format: binary */
       file: string;
     };
@@ -32,7 +34,7 @@ export interface components {
       id?: string;
       name: string;
       /** @enum {string} */
-      status?: "NOT_PARSED" | "PARSING_IN_PROGRESS" | "PARSING_FAILED" | "PARSING_COMPLETED" | "OCR_IN_PROGRESS" | "OCR_FAILED" | "OCR_COMPLETED";
+      status?: "NOT_PARSED" | "PARSING_IN_PROGRESS" | "PARSING_FAILED" | "PARSING_COMPLETED" | "OCR_IN_PROGRESS" | "OCR_FAILED" | "OCR_COMPLETED" | "REVIEWED";
       dishesCount?: number;
       originalFileUrl?: string;
       stopColor?: string;

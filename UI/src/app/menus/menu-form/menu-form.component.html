@@ -17,19 +17,41 @@
   </mat-form-field>
 
   <div class="field">
-    <input type="file" multiple="false" [formControl]="fileControl" accept="application/pdf,image/png"
-      class="file-input" (change)="onFileSelected($event)" #fileUpload />
+    <input
+      type="file"
+      multiple="false"
+      [formControl]="fileControl"
+      accept="application/pdf,image/png"
+      class="file-input"
+      (change)="onFileSelected($event)"
+      #fileUpload
+    />
     <div class="file-upload">
-
-      <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
+      <button
+        mat-mini-fab
+        color="primary"
+        class="upload-btn"
+        (click)="fileUpload.click()"
+      >
         <mat-icon>attach_file</mat-icon>
       </button>
-      <span *ngIf="fileControl.invalid" [translate]="'menu.choose'" class="upload-placeholder"></span>
-      <span *ngIf="!fileControl.invalid" class="upload-placeholder">{{fileName}}</span>
+      <span
+        *ngIf="fileControl.invalid"
+        [translate]="'menu.choose'"
+        class="upload-placeholder"
+      ></span>
+      <span *ngIf="!fileControl.invalid" class="upload-placeholder">{{
+        fileName
+      }}</span>
     </div>
   </div>
 
-  <button mat-raised-button class="add-menu-button" (click)="createMenu()" [disabled]="disabled || fileControl.invalid">
+  <button
+    mat-raised-button
+    class="add-menu-button"
+    (click)="createMenu()"
+    [disabled]="disabled || fileControl.invalid"
+  >
     <span [translate]="'create'"></span>
   </button>
 </div>

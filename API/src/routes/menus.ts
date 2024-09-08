@@ -9,30 +9,33 @@ import { collections } from "../db/connection";
 import { client, menuToResponseModel } from "./menus/{id}";
 
 type MenuResponseModel = components["schemas"]["Menu"];
-type CreateMenuRequest = components["schemas"]["CreateMenuRequest"]
-
+type CreateMenuRequest = components["schemas"]["CreateMenuRequest"];
 
 export const listenToMenuParsingStatusQueue = () => {
   const channel = rabbitMQ.channel;
   if (!channel) {
     logger.log({
-      level: 'error', message: 'Channel not found'
+      level: "error",
+      message: "Channel not found",
     });
 
     return;
   }
 
   logger.log({
-    level: 'info', message: 'Subscribing to menu-parsing-status-queue',
-  })
+    level: "info",
+    message: "Subscribing to menu-parsing-status-queue",
+  });
   channel.consume("menu-parsing-status-queue", (msg) => {
     logger.log({
-      level: 'info', message: 'Received message from menu-parsing-status-queue'
-    })
+      level: "info",
+      message: "Received message from menu-parsing-status-queue",
+    });
 
     if (!msg) {
       logger.log({
-        level: 'error', message: 'Message not found'
+        level: "error",
+        message: "Message not found",
       });
       return;
     }
@@ -42,7 +45,8 @@ export const listenToMenuParsingStatusQueue = () => {
 
     if (!menu) {
       logger.log({
-        level: 'error', message: 'Menu not found'
+        level: "error",
+        message: "Menu not found",
       });
       channel!.ack(msg);
       return;
@@ -50,7 +54,8 @@ export const listenToMenuParsingStatusQueue = () => {
 
     if (!data.paths) {
       logger.log({
-        level: 'error', message: 'Paths not found'
+        level: "error",
+        message: "Paths not found",
       });
       channel!.ack(msg);
       return;
@@ -60,13 +65,14 @@ export const listenToMenuParsingStatusQueue = () => {
     menu.pages = data.paths.map((path: string, i: number) => {
       return {
         pageNumber: i,
-        imagePath: path
+        imagePath: path,
       };
     });
     menu.status = "PARSING_COMPLETED";
 
     logger.log({
-      level: 'info', message: 'Menu updated with image urls'
+      level: "info",
+      message: "Menu updated with image urls",
     });
 
     channel.ack(msg);
@@ -75,13 +81,15 @@ export const listenToMenuParsingStatusQueue = () => {
       var ocrRequest = JSON.stringify({
         menuId: menu.id,
         menuPage: page.pageNumber,
-        imagePath: page.imagePath
+        imagePath: page.imagePath,
+        language: menu.language,
       });
-      channel.sendToQueue('menu-ocr-queue', Buffer.from(ocrRequest));
+      channel.sendToQueue("menu-ocr-queue", Buffer.from(ocrRequest));
     });
 
     logger.log({
-      level: 'info', message: 'Sent ocr requests to menu-ocr-queue'
+      level: "info",
+      message: "Sent ocr requests to menu-ocr-queue",
     });
 
     menu.status = "OCR_IN_PROGRESS";
@@ -92,35 +100,46 @@ export const listenToMenuOcrStatusQueue = () => {
   const channel = rabbitMQ.channel;
   if (!channel) {
     logger.log({
-      level: 'error', message: 'Channel not found'
+      level: "error",
+      message: "Channel not found",
     });
 
     return;
   }
 
   logger.log({
-    level: 'info', message: 'Subscribing to menu-ocr-status-queue',
-  })
+    level: "info",
+    message: "Subscribing to menu-ocr-status-queue",
+  });
 
   channel.consume("menu-ocr-status-queue", (msg) => {
     logger.log({
-      level: 'info', message: 'Received message from menu-ocr-status-queue'
-    })
+      level: "info",
+      message: "Received message from menu-ocr-status-queue",
+    });
 
     if (!msg) {
       logger.log({
-        level: 'error', message: 'Message not found'
+        level: "error",
+        message: "Message not found",
       });
       return;
     }
 
-    const data = JSON.parse(msg.content.toString());
+    const content = msg.content.toString();
+    logger.log({
+      level: "info",
+      message: content,
+    });
+
+    const data = JSON.parse(content);
     const menu = collections.menus!.find((menu) => menu.id === data.menuId);
     const pageNumber = data.menuPage;
 
     if (!menu) {
       logger.log({
-        level: 'error', message: 'Menu not found'
+        level: "error",
+        message: "Menu not found",
       });
       rabbitMQ.channel!.ack(msg);
       return;
@@ -128,7 +147,8 @@ export const listenToMenuOcrStatusQueue = () => {
 
     if (!menu.pages || pageNumber > menu.pages.length) {
       logger.log({
-        level: 'error', message: 'Pages not found'
+        level: "error",
+        message: "Pages not found",
       });
       rabbitMQ.channel!.ack(msg);
       return;
@@ -139,7 +159,7 @@ export const listenToMenuOcrStatusQueue = () => {
       return {
         blockId: block.blockId,
         text: block.text,
-        box: block.box
+        box: block.box,
       };
     });
 
@@ -148,19 +168,22 @@ export const listenToMenuOcrStatusQueue = () => {
     }
 
     logger.log({
-      level: 'info', message: `Menu page ${pageNumber} updated with ocr data`
+      level: "info",
+      message: `Menu page ${pageNumber} updated with ocr data`,
     });
 
     rabbitMQ.channel!.ack(msg);
   });
-}
+};
 
 export const GET: Operation = [
   async (req: Request, res: Response): Promise<void> => {
-    const menusReponse: MenuResponseModel[] = await Promise.all(collections.menus!.map(async (menu) => {
-      const response = await menuToResponseModel(menu);
-      return response;
-    }));
+    const menusReponse: MenuResponseModel[] = await Promise.all(
+      collections.menus!.map(async (menu) => {
+        const response = await menuToResponseModel(menu);
+        return response;
+      })
+    );
     res.json(menusReponse);
   },
 ];
@@ -191,8 +214,9 @@ export const POST: Operation = [
     const { body } = req;
 
     logger.log({
-      level: 'info', message: 'Creating new menu'
-    })
+      level: "info",
+      message: "Creating new menu",
+    });
 
     const files = req.files as Express.Multer.File[];
 
@@ -206,6 +230,7 @@ export const POST: Operation = [
 
     if (files && files.length > 0) {
       const menuId = collections.menus!.length + 1;
+      const language = menu.language ? menu.language : "eng";
       const menuName = menu.name ? menu.name : file.originalname;
       const key = "RawMenus/" + menuId + "/" + file.originalname;
       const bucket = "mealist";
@@ -221,11 +246,12 @@ export const POST: Operation = [
       await upload.done();
 
       const newMenu: MenuModel = {
-        id: menuId + '',
+        id: menuId + "",
         name: menuName,
         menuPath: key,
         creationDate: new Date().toISOString(),
         status: "NOT_PARSED",
+        language: language,
       };
 
       collections.menus!.push(newMenu);
@@ -234,23 +260,22 @@ export const POST: Operation = [
 
       if (channel) {
         var data = JSON.stringify(newMenu);
-        channel.sendToQueue('menu-parsing-queue', Buffer.from(data));
+        channel.sendToQueue("menu-parsing-queue", Buffer.from(data));
       }
 
       logger.log({
-        level: 'info', message: 'Menu created and sent to menu-parsing-queue'
+        level: "info",
+        message: "Menu created and sent to menu-parsing-queue",
       });
 
       newMenu.status = "PARSING_IN_PROGRESS";
 
       res.status(201).json(newMenu);
-    }
-    else {
+    } else {
       res.status(400).json({ error: "No file uploaded" });
     }
   },
 ];
-
 
 POST.apiDoc = {
   description: "Create a new menu",
@@ -259,7 +284,7 @@ POST.apiDoc = {
   requestBody: {
     required: true,
     content: {
-      'multipart/form-data': {
+      "multipart/form-data": {
         schema: {
           $ref: "#/components/schemas/CreateMenuRequest",
         },

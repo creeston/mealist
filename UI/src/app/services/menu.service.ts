@@ -15,10 +15,14 @@ export class MenuService {
     public globals: Globals,
     private http: HttpClient,
     private api: MenusService
-  ) { }
+  ) {}
 
-  async createMenu(file: Blob, menuName: string | undefined) {
-    await firstValueFrom(this.api.createMenu(file, menuName));
+  async createMenu(
+    file: Blob,
+    menuName: string | undefined,
+    language: string | undefined
+  ) {
+    await firstValueFrom(this.api.createMenu(file, menuName, language));
   }
 
   getMenuState(menuId: string) {

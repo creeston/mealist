@@ -12,17 +12,36 @@ import { MenuService } from '../../services/menu.service';
 export class MenuFormDialog {
   public fileControl = new FormControl([] as any[], [Validators.required]);
   public menuNameControl = new FormControl('', []);
-  public languageControl = new FormControl('en', []);
+  public languageControl = new FormControl('eng', []);
   public disabled = false;
   fileName = '';
   selectedFile: Blob | null = null;
-  languages = [{
-    code: 'en', name: 'English'
-  }, {
-    code: "ru", name: "Russian",
-  }, {
-    code: "pl", name: "Polish",
-  }];
+  languages = [
+    {
+      code: 'eng',
+      name: 'English',
+    },
+    {
+      code: 'rus',
+      name: 'Russian',
+    },
+    {
+      code: 'pol',
+      name: 'Polish',
+    },
+    {
+      code: 'deu',
+      name: 'German',
+    },
+    {
+      code: 'ukr',
+      name: 'Ukrainian',
+    },
+    {
+      code: 'bel',
+      name: 'Belarusian',
+    },
+  ];
 
   color: ThemePalette = 'primary';
   accept: string = 'application/pdf,image/png';
@@ -31,8 +50,7 @@ export class MenuFormDialog {
     public dialogRef: MatDialogRef<MenuFormDialog>,
     private service: MenuService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
-
+  ) {}
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -53,6 +71,7 @@ export class MenuFormDialog {
 
     const menuName = this.menuNameControl.value;
     const files = this.fileControl.value as any[];
+    const language = this.languageControl.value;
 
     if (!files) {
       return;
@@ -66,11 +85,13 @@ export class MenuFormDialog {
     this.disabled = true;
 
     try {
-      await this.service.createMenu(this.selectedFile, menuName ? menuName : undefined);
+      await this.service.createMenu(
+        this.selectedFile,
+        menuName ? menuName : undefined,
+        language ?? 'eng'
+      );
       this.dialogRef.close(true);
-
-    }
-    finally {
+    } finally {
       this.disabled = false;
     }
   }

@@ -6,6 +6,12 @@ FROM python:3.11
 # Download tesseract 
 
 RUN apt-get update && apt-get install -y tesseract-ocr
+RUN apt-get install tesseract-ocr-eng  
+RUN apt-get install tesseract-ocr-rus 
+RUN apt-get install tesseract-ocr-deu  
+RUN apt-get install tesseract-ocr-bel  
+RUN apt-get install tesseract-ocr-ukr  
+RUN apt-get install tesseract-ocr-pol  
 
 # Set the working directory in the container to /app
 WORKDIR /app

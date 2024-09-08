@@ -39,6 +39,15 @@ components:
       properties:
         name:
           type: string
+        language:
+          type: string
+          enum:
+            - "eng"
+            - "rus"
+            - "ukr"
+            - "bel"
+            - "pol"
+            - "deu"
         file:
           type: string
           format: binary
