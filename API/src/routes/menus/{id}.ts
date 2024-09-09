@@ -73,13 +73,18 @@ export const GET: Operation = [
   async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
-    const menu = collections.menus!.find(v => v.id === id);
-    if (!menu) {
+    const query = { _id: new ObjectId(id) };
+    const document = await collections.menus?.findOne(query);
+
+    if (!document) {
       res.status(404).send(`Menu with id: ${id} not found`);
       return;
     }
 
-    const menuResponse = await menuToResponseModel(menu);
+    const { _id, ...menu } = document;
+    menu.id = _id.toString();
+
+    const menuResponse = await menuToResponseModel(menu as MenuModel);
     res.status(200).json(menuResponse);
   },
 ];

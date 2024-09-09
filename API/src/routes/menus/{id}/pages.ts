@@ -1,8 +1,9 @@
 import { Operation } from "express-openapi";
 import { components } from "../../../types/api";
 import { collections } from "../../../db/connection";
-import { MenuLineModel, OcrBoxModel } from "../../../db/models/menu";
+import { MenuLineModel, MenuModel, OcrBoxModel } from "../../../db/models/menu";
 import { logger } from "../../../logging/logger";
+import { ObjectId } from "mongodb";
 
 type MenuPageApiModel = components["schemas"]["MenuPage"];
 type MenuLineApiModel = components["schemas"]["MenuLine"];
@@ -12,12 +13,17 @@ export const PUT: Operation = [
         const menuId = req?.params?.id;
         const pages = req.body as MenuPageApiModel[];
 
-        const menu = collections.menus!.find(v => v.id === menuId);
+        const query = { _id: new ObjectId(menuId) };
+        const document = await collections.menus!.findOne(query);
 
-        if (!menu) {
+        if (!document) {
             res.status(404).send(`Menu with id: ${menuId} not found`);
             return;
         }
+
+        const { _id, ...rest } = document;
+
+        const menu = rest as MenuModel;
 
         if (!menu.pages) {
             res.status(404).send(`Menu with id: ${menuId} does not have any pages`);
@@ -27,7 +33,7 @@ export const PUT: Operation = [
         let anyPageUpdated = false;
 
         for (const page of pages) {
-            const menuPage = menu.pages.find(v => v.pageNumber === page.pageNumber);
+            const menuPage = menu.pages.find(p => p.pageNumber === page.pageNumber);
             if (menuPage && page.markup) {
                 menuPage.markup = page.markup.map((line: MenuLineApiModel, i: number) => {
                     return {
@@ -51,6 +57,8 @@ export const PUT: Operation = [
         if (anyPageUpdated) {
             menu.status = 'REVIEWED'
         }
+
+        await collections.menus!.updateOne(query, { $set: menu });
 
         res.status(200).send();
     },

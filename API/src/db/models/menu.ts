@@ -1,7 +1,7 @@
 export interface MenuModel {
-  id: string;
+  id?: string;
   name: string;
-  menuPath: string;
+  menuPath?: string;
   creationDate: string;
   modifiedDate?: string;
   language: MenuLanguage;

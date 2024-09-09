@@ -7,6 +7,7 @@ import { rabbitMQ } from "../queue/connection";
 import { logger } from "../logging/logger";
 import { collections } from "../db/connection";
 import { client, menuToResponseModel } from "./menus/{id}";
+import { ObjectId } from "mongodb";
 
 type MenuResponseModel = components["schemas"]["Menu"];
 type CreateMenuRequest = components["schemas"]["CreateMenuRequest"];
@@ -26,7 +27,7 @@ export const listenToMenuParsingStatusQueue = () => {
     level: "info",
     message: "Subscribing to menu-parsing-status-queue",
   });
-  channel.consume("menu-parsing-status-queue", (msg) => {
+  channel.consume("menu-parsing-status-queue", async (msg) => {
     logger.log({
       level: "info",
       message: "Received message from menu-parsing-status-queue",
@@ -41,16 +42,6 @@ export const listenToMenuParsingStatusQueue = () => {
     }
 
     const data = JSON.parse(msg.content.toString());
-    const menu = collections.menus!.find((menu) => menu.id === data.menuId);
-
-    if (!menu) {
-      logger.log({
-        level: "error",
-        message: "Menu not found",
-      });
-      channel!.ack(msg);
-      return;
-    }
 
     if (!data.paths) {
       logger.log({
@@ -61,6 +52,22 @@ export const listenToMenuParsingStatusQueue = () => {
       return;
     }
 
+    const menuId = data.menuId as string;
+    const query = { _id: new ObjectId(menuId) };
+    const document = await collections.menus!.findOne(query);
+
+    if (!document) {
+      logger.log({
+        level: "error",
+        message: "Menu not found",
+      });
+      channel!.ack(msg);
+      return;
+    }
+
+    const { _id, ...rest } = document;
+    const menu = rest as MenuModel;
+
     menu.modifiedDate = new Date().toISOString();
     menu.pages = data.paths.map((path: string, i: number) => {
       return {
@@ -69,6 +76,10 @@ export const listenToMenuParsingStatusQueue = () => {
       };
     });
     menu.status = "PARSING_COMPLETED";
+
+    await collections.menus!.updateOne(query, {
+      $set: menu,
+    });
 
     logger.log({
       level: "info",
@@ -112,7 +123,7 @@ export const listenToMenuOcrStatusQueue = () => {
     message: "Subscribing to menu-ocr-status-queue",
   });
 
-  channel.consume("menu-ocr-status-queue", (msg) => {
+  channel.consume("menu-ocr-status-queue", async (msg) => {
     logger.log({
       level: "info",
       message: "Received message from menu-ocr-status-queue",
@@ -133,10 +144,11 @@ export const listenToMenuOcrStatusQueue = () => {
     });
 
     const data = JSON.parse(content);
-    const menu = collections.menus!.find((menu) => menu.id === data.menuId);
-    const pageNumber = data.menuPage;
+    const menuId = data.menuId as string;
+    const query = { _id: new ObjectId(menuId) };
+    const document = await collections.menus!.findOne(query);
 
-    if (!menu) {
+    if (!document) {
       logger.log({
         level: "error",
         message: "Menu not found",
@@ -145,7 +157,11 @@ export const listenToMenuOcrStatusQueue = () => {
       return;
     }
 
-    if (!menu.pages || pageNumber > menu.pages.length) {
+    const { _id, ...rest } = document;
+    const menu = rest as MenuModel;
+    const pageNumber = data.menuPage;
+
+    if (!menu.pages || pageNumber > document.pages.length) {
       logger.log({
         level: "error",
         message: "Pages not found",
@@ -163,9 +179,13 @@ export const listenToMenuOcrStatusQueue = () => {
       };
     });
 
-    if (menu.pages.every((page) => page.markup)) {
+    if (menu.pages.every((menu) => menu.markup)) {
       menu.status = "OCR_COMPLETED";
     }
+
+    await collections.menus!.updateOne(query, {
+      $set: menu,
+    });
 
     logger.log({
       level: "info",
@@ -178,9 +198,16 @@ export const listenToMenuOcrStatusQueue = () => {
 
 export const GET: Operation = [
   async (req: Request, res: Response): Promise<void> => {
+    const menus = await collections.menus?.find({}).toArray();
+    if (!menus) {
+      res.json([]);
+    }
+
     const menusReponse: MenuResponseModel[] = await Promise.all(
-      collections.menus!.map(async (menu) => {
-        const response = await menuToResponseModel(menu);
+      menus!.map(async (document) => {
+        const { _id, ...menu } = document;
+        menu.id = _id;
+        const response = await menuToResponseModel(menu as MenuModel);
         return response;
       })
     );
@@ -228,52 +255,59 @@ export const POST: Operation = [
 
     const menu = body as CreateMenuRequest;
 
-    if (files && files.length > 0) {
-      const menuId = collections.menus!.length + 1;
-      const language = menu.language ? menu.language : "eng";
-      const menuName = menu.name ? menu.name : file.originalname;
-      const key = "RawMenus/" + menuId + "/" + file.originalname;
-      const bucket = "mealist";
-      let upload = new Upload({
-        client: client,
-        params: {
-          Bucket: bucket,
-          Key: key,
-          Body: files[0].buffer,
-        },
-      });
 
-      await upload.done();
 
-      const newMenu: MenuModel = {
-        id: menuId + "",
-        name: menuName,
-        menuPath: key,
-        creationDate: new Date().toISOString(),
-        status: "NOT_PARSED",
-        language: language,
-      };
 
-      collections.menus!.push(newMenu);
-
-      const channel = rabbitMQ.channel;
-
-      if (channel) {
-        var data = JSON.stringify(newMenu);
-        channel.sendToQueue("menu-parsing-queue", Buffer.from(data));
-      }
-
-      logger.log({
-        level: "info",
-        message: "Menu created and sent to menu-parsing-queue",
-      });
-
-      newMenu.status = "PARSING_IN_PROGRESS";
-
-      res.status(201).json(newMenu);
-    } else {
+    if (!files || files.length === 0) {
       res.status(400).json({ error: "No file uploaded" });
     }
+
+    const language = menu.language ? menu.language : "eng";
+    const menuName = menu.name ? menu.name : file.originalname;
+    const newMenu: MenuModel = {
+      name: menuName,
+      creationDate: new Date().toISOString(),
+      status: "NOT_PARSED",
+      language: language,
+    };
+
+    const result = await collections.menus!.insertOne(newMenu);
+    newMenu.id = result.insertedId.toString();
+
+    const key = "RawMenus/" + newMenu.id + "/" + file.originalname;
+    const bucket = "mealist";
+    let upload = new Upload({
+      client: client,
+      params: {
+        Bucket: bucket,
+        Key: key,
+        Body: files[0].buffer,
+      },
+    });
+
+    await upload.done();
+    newMenu.menuPath = key;
+
+    const query = { _id: new ObjectId(newMenu.id) };
+    await collections.menus!.updateOne(query, {
+      $set: newMenu,
+    });
+
+    const channel = rabbitMQ.channel;
+
+    if (channel) {
+      var data = JSON.stringify(newMenu);
+      channel.sendToQueue("menu-parsing-queue", Buffer.from(data));
+    }
+
+    logger.log({
+      level: "info",
+      message: "Menu created and sent to menu-parsing-queue",
+    });
+
+    newMenu.status = "PARSING_IN_PROGRESS";
+
+    res.status(201).json(newMenu);
   },
 ];
 
