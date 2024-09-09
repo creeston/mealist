@@ -21,26 +21,6 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongodb:27017/
       ME_CONFIG_BASICAUTH: false
 
-  minio-service:
-    image: minio/minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: "minioadmin"
-      MINIO_ROOT_PASSWORD: "minioadmin"
-      MINIO_REGION: "europe-west1"
-    command: server --console-address ":9001" /data
-
-  createbuckets:
-    image: minio/mc
-    depends_on:
-      - minio-service
-    volumes:
-      - ../files:/files
-    entrypoint: >
-      /bin/sh -c " /usr/bin/mc config host add myminio http://minio-service:9000 minioadmin minioadmin; /usr/bin/mc mb myminio/mealist --ignore-existing; exit 0; "
-
   rabbitmq:
     # Add user for each service
     # Define roles for accessing queues
