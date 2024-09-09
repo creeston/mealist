@@ -30,7 +30,7 @@ export class EditMealsComponent implements OnInit {
     public dialogRef: MatDialogRef<EditMealsComponent>,
     private service: QrMenuService,
     public screen: ScreenService
-  ) { }
+  ) {}
 
   displayedColumns = ['position', 'name', 'presence'];
 

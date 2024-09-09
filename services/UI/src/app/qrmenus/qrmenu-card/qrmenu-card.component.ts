@@ -1,12 +1,12 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { ScreenService } from "../../services/screen.service";
-import { QrMenu } from "../../api";
-import { TranslateService } from "@ngx-translate/core";
-import { MatDialog } from "@angular/material/dialog";
-import { ConfirmationDialog } from "../../components/confirmation-dialog/confirmation-dialog";
-import { environment } from "../../../environments/environment";
-import { EditMealsComponent } from "../edit-meals/edit-meals.component";
-import { Router } from "@angular/router";
+import { Component, Input, OnInit } from '@angular/core';
+import { ScreenService } from '../../services/screen.service';
+import { QrMenu } from '../../api';
+import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialog } from '../../components/confirmation-dialog/confirmation-dialog';
+import { environment } from '../../../environments/environment';
+import { EditMealsComponent } from '../edit-meals/edit-meals.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-qrmenu-card',
@@ -18,12 +18,15 @@ export class QrmenuCardComponent implements OnInit {
 
   @Input({ required: true }) qrmenu!: QrMenu;
 
-  constructor(public screen: ScreenService, public translate: TranslateService, public dialog: MatDialog, public router: Router) {
-
-  }
+  constructor(
+    public screen: ScreenService,
+    public translate: TranslateService,
+    public dialog: MatDialog,
+    public router: Router
+  ) {}
 
   ngOnInit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   deleteCode(code: QrMenu) {
@@ -72,7 +75,7 @@ export class QrmenuCardComponent implements OnInit {
 
         const pageMeals = markup.map((line) => {
           return line.text;
-        })
+        });
 
         menuMeals.push({
           menuName: menu.name,
@@ -94,13 +97,11 @@ export class QrmenuCardComponent implements OnInit {
       .subscribe((r) => {
         if (r) {
           menu.stopList = r;
-          this.translate
-            .get('codes.stop_list_updated')
-            .subscribe((text) => {
-              // this.snackBar.open(text, '', {
-              //   duration: 2 * 1000,
-              // });
-            });
+          this.translate.get('codes.stop_list_updated').subscribe((text) => {
+            // this.snackBar.open(text, '', {
+            //   duration: 2 * 1000,
+            // });
+          });
         }
       });
   }
@@ -114,13 +115,13 @@ export class QrmenuCardComponent implements OnInit {
   }
 
   getMenuPreviewUrl(menu: QrMenu) {
-    return `https://qrmenuapistorage.blob.core.windows.net/preview/${menu.urlSuffix
-      }.jpg?ts=${new Date().getTime()}`;
+    return `https://qrmenuapistorage.blob.core.windows.net/preview/${
+      menu.urlSuffix
+    }.jpg?ts=${new Date().getTime()}`;
   }
 
   openQrMenu(menu: QrMenu) {
     let url = this.getMenuPublicUrl(menu);
     window.open(url, '_blank');
   }
-
 }
