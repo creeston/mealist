@@ -1,16 +1,17 @@
 import { Operation } from "express-openapi";
-import { components } from "../types/api";
+import { components } from "../api";
 import { Response, Request } from "express";
-import { Upload } from "@aws-sdk/lib-storage";
-import { MenuModel, MenuPageModel } from "../db/models/menu";
-import { rabbitMQ } from "../queue/connection";
-import { logger } from "../logging/logger";
-import { collections } from "../db/connection";
-import { client, menuToResponseModel } from "./menus/{id}";
+import { MenuModel, MenuPageModel } from "../../models/menu";
+import { rabbitMQ } from "../../queue/connection";
+import { logger } from "../../utils/logging/logger";
+import { collections, menusRepository } from "../../repositories/connection";
 import { ObjectId } from "mongodb";
+import { MenusService } from "../../services/menusService";
 
 type MenuResponseModel = components["schemas"]["Menu"];
 type CreateMenuRequest = components["schemas"]["CreateMenuRequest"];
+
+export const menusService = new MenusService(menusRepository);
 
 export const listenToMenuParsingStatusQueue = () => {
   const channel = rabbitMQ.channel;
@@ -198,20 +199,8 @@ export const listenToMenuOcrStatusQueue = () => {
 
 export const GET: Operation = [
   async (req: Request, res: Response): Promise<void> => {
-    const menus = await collections.menus?.find({}).toArray();
-    if (!menus) {
-      res.json([]);
-    }
-
-    const menusReponse: MenuResponseModel[] = await Promise.all(
-      menus!.map(async (document) => {
-        const { _id, ...menu } = document;
-        menu.id = _id;
-        const response = await menuToResponseModel(menu as MenuModel);
-        return response;
-      })
-    );
-    res.json(menusReponse);
+    const menus = await menusService.listMenus();
+    res.json(menus);
   },
 ];
 
@@ -239,12 +228,6 @@ GET.apiDoc = {
 export const POST: Operation = [
   async (req: Request, res: Response): Promise<void> => {
     const { body } = req;
-
-    logger.log({
-      level: "info",
-      message: "Creating new menu",
-    });
-
     const files = req.files as Express.Multer.File[];
 
     if (!files || files.length === 0) {
@@ -252,62 +235,10 @@ export const POST: Operation = [
     }
 
     let file = files[0];
-
     const menu = body as CreateMenuRequest;
+    await menusService.createMenu(menu, file);
 
-
-
-
-    if (!files || files.length === 0) {
-      res.status(400).json({ error: "No file uploaded" });
-    }
-
-    const language = menu.language ? menu.language : "eng";
-    const menuName = menu.name ? menu.name : file.originalname;
-    const newMenu: MenuModel = {
-      name: menuName,
-      creationDate: new Date().toISOString(),
-      status: "NOT_PARSED",
-      language: language,
-    };
-
-    const result = await collections.menus!.insertOne(newMenu);
-    newMenu.id = result.insertedId.toString();
-
-    const key = "RawMenus/" + newMenu.id + "/" + file.originalname;
-    const bucket = "mealist";
-    let upload = new Upload({
-      client: client,
-      params: {
-        Bucket: bucket,
-        Key: key,
-        Body: files[0].buffer,
-      },
-    });
-
-    await upload.done();
-    newMenu.menuPath = key;
-
-    const query = { _id: new ObjectId(newMenu.id) };
-    await collections.menus!.updateOne(query, {
-      $set: newMenu,
-    });
-
-    const channel = rabbitMQ.channel;
-
-    if (channel) {
-      var data = JSON.stringify(newMenu);
-      channel.sendToQueue("menu-parsing-queue", Buffer.from(data));
-    }
-
-    logger.log({
-      level: "info",
-      message: "Menu created and sent to menu-parsing-queue",
-    });
-
-    newMenu.status = "PARSING_IN_PROGRESS";
-
-    res.status(201).json(newMenu);
+    res.status(201).json({ message: "Menu created" });
   },
 ];
 

@@ -1,5 +1,5 @@
 import { Operation } from "express-openapi";
-import { components } from "../types/api";
+import { components } from "../api";
 import { Response, Request } from "express";
 
 type Code = components["schemas"]["Code"];

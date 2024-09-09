@@ -4,9 +4,9 @@ import { initialize } from "express-openapi";
 import { resolve } from "path";
 import swaggerUi from "swagger-ui-express";
 import multer from "multer";
-import { connectToDatabase } from "./db/connection";
+import { connectToDatabase } from "./repositories/connection";
 import { connectoToRabbitMQ } from "./queue/connection";
-import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from "./routes/menus";
+import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from "./presentation/routes/menus";
 
 
 const app = express();
@@ -20,11 +20,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 initialize({
-  apiDoc: "./src/api-doc.yaml",
+  apiDoc: "./src/presentation/api-doc.yaml",
   // apiDoc: "./API/src/api-doc.yaml",
   app: app,
   promiseMode: true,
-  paths: resolve(__dirname, "routes"),
+  paths: resolve(__dirname, "presentation", "routes"),
   // paths: "./src/routes",
   routesGlob: "**/*.{ts,js}",
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/,

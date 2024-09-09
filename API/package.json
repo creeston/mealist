@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node .",
     "serve": "node dist/index.js",
-    "generate-types": "openapi-typescript src/api-doc.yaml --output src/types/api.ts"
+    "generate-types": "openapi-typescript src/api-doc.yaml --output src/presentation/api.ts"
   },
   "author": "Radzivon Chorny",
   "license": "ISC",
