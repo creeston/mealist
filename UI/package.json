@@ -26,6 +26,7 @@
     "colorthief": "^2.4.0",
     "leaflet": "^1.9.4",
     "ng-ocr-editor": "^0.0.6",
+    "ngx-kjua": "^18.1.3",
     "ngx-markdown": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

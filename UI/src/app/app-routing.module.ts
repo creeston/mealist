@@ -4,9 +4,9 @@ import { RestaurantsComponent } from './restaurants/restaurants/restaurants.comp
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
 import { MenuOcrComponent } from './menus/menu-ocr/menu-ocr.component';
-import { CodesComponent } from './components/codes/codes.component';
-import { CreateCodeComponent } from './components/create-code/create-code.component';
-import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
+import { QrMenusComponent } from './qrmenus/qrmenus/qrmenus.component';
+import { QrMenuFormComponent } from './qrmenus/qrmenu-form/qrmenu-form.component';
+import { QrMenuComponent } from './qrmenus/qrmenu/qrmenu.component';
 import { MenusComponent } from './menus/menus/menus.component';
 
 const routes: Routes = [
@@ -16,11 +16,11 @@ const routes: Routes = [
   { path: 'menus', component: MenusComponent },
   { path: 'menus/:menuId', component: MenuOcrComponent },
   { path: 'restaurants', component: RestaurantsComponent },
-  { path: 'codes', component: CodesComponent },
-  { path: 'code-create', component: CreateCodeComponent },
-  { path: 'codes/:menuId', component: CreateCodeComponent },
-  { path: 'qr/:userId/:menuId', component: QrMenuComponent },
-  { path: 'menu/:suffix', component: QrMenuComponent },
+  { path: 'qrmenus', component: QrMenusComponent },
+  { path: 'qrmenu-create', component: QrMenuFormComponent },
+  { path: 'qrmenus/:menuId', component: QrMenuFormComponent },
+  { path: 'qrmenu/:userId/:menuId', component: QrMenuComponent },
+  { path: 'qr/:suffix', component: QrMenuComponent },
 ];
 
 @NgModule({

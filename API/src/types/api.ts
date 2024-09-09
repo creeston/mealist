@@ -60,6 +60,44 @@ export interface components {
     Code: {
       menuId: number;
     };
+    QrMenu: {
+      id?: string;
+      name?: string;
+      restaurant?: components["schemas"]["Restaurant"];
+      primaryColor?: string;
+      secondaryColor?: string;
+      fontColor?: string;
+      scanCount?: number;
+      stopList?: string[];
+      hideSections?: string[];
+      previewIndex?: number;
+      urlSuffix?: string;
+      items?: components["schemas"]["QrMenuItem"][];
+      /** Format: date-time */
+      creationDate?: string;
+      /** Format: date-time */
+      modificationDate?: string;
+    };
+    QrMenuItem: {
+      menu?: components["schemas"]["Menu"];
+      title?: string;
+      thumbnailIndex?: number;
+    };
+    CreateQrMenuRequest: {
+      name?: string;
+      primaryColor?: string;
+      secondaryColor?: string;
+      fontColor?: string;
+      previewIndex?: number;
+      urlSuffix?: string;
+      items?: components["schemas"]["CreateQrMenuItem"][];
+      restaurantId: string;
+    };
+    CreateQrMenuItem: {
+      title: string;
+      thumbnailIndex: number;
+      menuId: string;
+    };
   };
   responses: never;
   parameters: never;

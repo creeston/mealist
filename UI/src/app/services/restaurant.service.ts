@@ -12,19 +12,10 @@ export class RestaurantService {
     null;
   restaurantValues: Restaurant[] | null = null;
 
-  constructor(public globals: Globals, private api: RestaurantsService) {}
+  constructor(public globals: Globals, private api: RestaurantsService) { }
 
   createRestaurant(rest: Restaurant) {
     return firstValueFrom(this.api.createRestaurant(rest));
-  }
-
-  getRestaurantImage(rest: Restaurant) {
-    return new Observable<string>();
-    // return this.http.post(
-    //   environment.apiUrl + '/api/GetRestaurantMapLocation',
-    //   rest,
-    //   this.createHttpOptions()
-    // );
   }
 
   updateRestaurant(rest: Restaurant, id: string) {

@@ -1,10 +1,10 @@
 import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { of } from 'rxjs/internal/observable/of';
+import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
-import { Menu, Restaurant } from '../api/model/models';
+import { CreateQrMenuRequest, QrMenu, Menu, Restaurant } from '../api/model/models';
+import { QrmenusService } from '../api';
 
 @Injectable()
 export class QrMenuService {
@@ -12,24 +12,13 @@ export class QrMenuService {
   qrMenus: Observable<QrMenu[] | HttpEvent<QrMenu[]>> | null = null;
   qrMenuValues: QrMenu[] | null = null;
 
-  constructor(public globals: Globals, private http: HttpClient) {}
+  constructor(public globals: Globals, private http: HttpClient, private api: QrmenusService) { }
 
-  create(qrMenuFormData: any) {
-    this.clearCache();
-    const options = {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + this.jwt,
-      }),
-    };
-    return this.http.post(
-      environment.apiUrl + '/api/CreateQrMenu',
-      qrMenuFormData,
-      options
-    );
+  async create(qrMenuFormData: CreateQrMenuRequest) {
+    await firstValueFrom(this.api.createQrMenu(qrMenuFormData));
   }
 
   update(qrMenuFormData: any, id: string) {
-    this.clearCache();
     const options = {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + this.jwt,
@@ -46,58 +35,32 @@ export class QrMenuService {
     return this.http.post(
       environment.apiUrl + '/api/UpdateStopLists/' + id,
       stopLists,
-      this.createHttpOptions()
     );
   }
 
-  list() {
+  async list() {
     if (this.globals.role != 'client') {
       return;
     }
-    if (!this.qrMenus) {
-      this.qrMenus = this.http.get<QrMenu[]>(
-        environment.apiUrl + '/api/codes',
-        this.createHttpOptions()
-      );
-      this.qrMenus.subscribe((data: QrMenu[] | HttpEvent<QrMenu[]>) => {
-        this.qrMenuValues = data as QrMenu[];
-        this.globals.qrMenusCount = this.qrMenuValues.length;
-      });
-    }
-    return this.qrMenus;
-  }
 
-  clearCache() {
-    this.qrMenus = null;
-    this.qrMenuValues = null;
+    const qrMenus = await firstValueFrom(this.api.getQrMenus());
+    this.globals.qrMenusCount = qrMenus.length;
+    return qrMenus;
   }
 
   delete(id: string) {
-    this.clearCache();
     return this.http.post(
       environment.apiUrl + '/api/DeleteQrMenu/' + id,
       {},
-      this.createHttpOptions()
     );
   }
 
-  getMenu(qrMenuId: string, userId: string): Observable<QrMenu> {
-    if (this.qrMenuValues) {
-      var match = this.qrMenuValues.filter(
-        (menu: QrMenu) => menu.id == qrMenuId
-      );
-      if (match.length > 0) {
-        return of(match[0]);
-      }
-    }
-    return this.getGetMenuFromService(qrMenuId, userId);
+  async getMenu(qrMenuId: string, userId: string): Promise<QrMenu> {
+    const qrMenu = await firstValueFrom(this.api.getQrMenu(qrMenuId));
+
+    return qrMenu;
   }
 
-  getGetMenuFromService(qrMenuId: string, userId: string) {
-    return this.http.get<QrMenu>(
-      environment.apiUrl + '/api/ShowQrMenu/' + userId + '/' + qrMenuId
-    );
-  }
 
   getMenuRoutingParams(urlSuffix: string) {
     return this.http.get<QrRoutingParams>(
@@ -105,32 +68,11 @@ export class QrMenuService {
     );
   }
 
-  createHttpOptions(): any {
-    this.jwt = 'JWT';
-    if (this.jwt) {
-      return {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.jwt,
-        }),
-      };
-    } else {
-      throw new Error('JWT token not found in cookies');
-    }
-  }
 }
 
-export class QrMenuCreationRequest {
-  constructor(
-    public name: string,
-    public restId: string,
-    public description: string,
-    public menuItems: QrMenuItem[]
-  ) {}
-}
 
 export class QrMenuItem {
-  constructor(public name: string, public menuId: string) {}
+  constructor(public name: string, public menuId: string) { }
 }
 
 export class QrMenuEntity {
@@ -139,10 +81,10 @@ export class QrMenuEntity {
     public restId: string,
     public description: string,
     public menuItems: string
-  ) {}
+  ) { }
 }
 
-export class QrMenu {
+export class QrMenuModel {
   public id: string = '';
   public scansCount: number = 0;
   public stopLists: string[][] = [];
@@ -160,7 +102,7 @@ export class QrMenu {
     public hideSections: string[] = [],
     public restaurantId: string = '',
     public previewIndex: number = -1
-  ) {}
+  ) { }
 }
 
 export class QrItem {
@@ -175,7 +117,7 @@ export class QrItem {
     public title: string,
     public thumbnailIndex: number,
     public originalFileUrl: string = ''
-  ) {}
+  ) { }
 }
 
 export class Code {
@@ -186,9 +128,9 @@ export class Code {
     public restName: string,
     public displayName: string,
     public menuItems: any
-  ) {}
+  ) { }
 }
 
 export class QrRoutingParams {
-  constructor(public userId: string, public qrMenuId: string) {}
+  constructor(public userId: string, public qrMenuId: string) { }
 }

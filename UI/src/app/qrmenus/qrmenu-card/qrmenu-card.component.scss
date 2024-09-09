@@ -7,7 +7,7 @@
 
 .addCodeButton {
     margin: 0 auto;
-    display:block;
+    display: block;
     margin-top: 30px;
 }
 
@@ -59,7 +59,7 @@
     text-decoration: none;
 }
 
-.menu-link > span {
+.menu-link>span {
     padding-left: 27px;
 }
 
@@ -139,7 +139,7 @@
     padding-left: 20px;
 }
 
-.qr-code-stats > p {
+.qr-code-stats>p {
     text-align: left;
 }
 
@@ -152,13 +152,13 @@ p.qr-stats-value {
 
 ::ng-deep .mat-progress-bar-fill::after {
     background-color: #A0B454b0;
-  }
-  
-  ::ng-deep .mat-progress-bar-buffer {
-    background: #E4E8EB;
-  }
+}
 
-  .progress-bar {
+::ng-deep .mat-progress-bar-buffer {
+    background: #E4E8EB;
+}
+
+.progress-bar {
     position: absolute !important;
 }
 

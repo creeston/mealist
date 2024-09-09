@@ -5,40 +5,36 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { RestaurantService } from '../../services/restaurant.service';
 import { MenuService } from '../../services/menu.service';
-import { QrItem, QrMenu, QrMenuService } from '../../services/qrmenu.service';
+import { QrItem, QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
-import { Menu, Restaurant } from '../../api/model/models';
+import { CreateQrMenuItem, CreateQrMenuRequest, Menu, QrMenu, QrMenuItem, Restaurant } from '../../api/model/models';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
 @Component({
-  selector: 'create-code-component',
-  templateUrl: './create-code.component.html',
-  styleUrls: ['./create-code.component.css'],
+  selector: 'qrmenu-form-component',
+  templateUrl: './qrmenu-form.component.html',
+  styleUrls: ['./qrmenu-form.component.css'],
 })
-export class CreateCodeComponent {
+export class QrMenuFormComponent {
   Arr = Array;
 
   public disabled = false;
-  public restsLoaded = false;
+  public restaurantsLoaded = false;
   public menusLoaded = false;
   public creationAttempt = false;
   public rests: Restaurant[] = [];
   public menus: Menu[] = [];
   public menuFieldsCount = 1;
   public loading: boolean = true;
-  public qrmenu: QrMenu = new QrMenu(
-    '',
-    '',
-    null,
-    [],
-    '#989089',
-    '#A0B454b0',
-    '#FFFFFF',
-    this.makeid(5)
-  );
+  public qrmenu: QrMenu = {
+    primaryColor: '#989089',
+    secondaryColor: '#A0B454b0',
+    fontColor: '#FFFFFF',
+    urlSuffix: this.makeid(5),
+  }
   public previewImage: string = PLACEHOLDER_URL;
   public uploadedCustomPreview: string = '';
   public menuLoading: boolean = false;
@@ -47,7 +43,10 @@ export class CreateCodeComponent {
   public menuNameControl = new FormControl('', []);
   public restControl = new FormControl('', []);
   public previewIndexControl = new FormControl('', []);
-  public urlSuffixControl = new FormControl(this.qrmenu.urlSuffix, []);
+  public urlSuffixControl = new FormControl({
+    value: this.qrmenu.urlSuffix,
+    disabled: this.restaurantsLoaded
+  });
   public fileControl = new FormControl(null, []);
 
   @ViewChild('removableInput') removableInput: any;
@@ -93,7 +92,7 @@ export class CreateCodeComponent {
     private route: ActivatedRoute,
     private draw: DrawService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     let restPromise = this.restService.listRestaurants();
@@ -101,7 +100,7 @@ export class CreateCodeComponent {
 
     restPromise?.subscribe((data: any) => {
       this.rests = data;
-      this.restsLoaded = true;
+      this.restaurantsLoaded = true;
     });
     menusPromise.then((data: any) => {
       this.menus = data;
@@ -121,7 +120,7 @@ export class CreateCodeComponent {
   loadMenu(restPromise: any, menusPromise: any) {
     this.qrMenuService
       .getMenu(this.menuId!, this.globals.userId)
-      .subscribe((r: QrMenu) => {
+      .then((r: QrMenu) => {
         let menu = r;
         this.qrmenu.previewIndex = menu.previewIndex;
         if (menu.previewIndex === -1) {
@@ -138,7 +137,7 @@ export class CreateCodeComponent {
 
         this.qrmenu.urlSuffix = menu.urlSuffix;
         this.urlSuffixControl.setValue(menu.urlSuffix);
-        this.menuNameControl.setValue(menu.name);
+        this.menuNameControl.setValue(menu.name ?? "");
 
         restPromise.subscribe((rests: any) => {
           let restId = rests.findIndex(
@@ -146,28 +145,29 @@ export class CreateCodeComponent {
           );
           this.qrmenu.restaurant = this.rests[restId];
           this.restControl.setValue(this.qrmenu.restaurant?.name ?? '');
-          this.onRestChange(this.qrmenu.restaurant, menu.hideSections);
+          this.onRestaurantChange(this.qrmenu.restaurant, menu.hideSections);
           menusPromise.subscribe((menus: Menu[]) => {
-            menu.menuItems.forEach((item: QrItem) => {
+            menu.items?.forEach((item: QrMenuItem) => {
               let title = item.title;
-              let firstImage = item.images[0];
+              let firstImage = item.menu!.pages![0].imageUrl;
               let menuIdx = menus.findIndex(
                 (m: any) => m.images[0] == firstImage
               );
               let menuItem = this.menus[menuIdx];
-              let qrItem = new QrItem(item.menuId, title, item.thumbnailIndex);
-              qrItem.images = item.images;
-              qrItem.originalFileUrl = menuItem.originalFileUrl ?? '';
-              qrItem.entity = menuItem;
-              this.qrmenu.menuItems.push(qrItem);
+              let qrItem = {
+                title: title,
+                thumbnailIndex: item.thumbnailIndex,
+                menu: menuItem,
+              } as QrMenuItem;
+              this.qrmenu.items!.push(qrItem);
               this.loading = false;
             });
 
-            if (this.qrmenu.previewIndex >= 0) {
+            if (this.qrmenu.previewIndex! >= 0) {
               let previewMenuItem =
-                this.qrmenu.menuItems[this.qrmenu.previewIndex];
+                this.qrmenu.items![this.qrmenu.previewIndex!];
               this.previewImage =
-                previewMenuItem.images[previewMenuItem.thumbnailIndex];
+                previewMenuItem.menu!.pages![previewMenuItem.thumbnailIndex!]!.imageUrl;
               this.previewIndexControl.setValue(this.qrmenu.previewIndex + '');
             }
           });
@@ -184,7 +184,7 @@ export class CreateCodeComponent {
     }
   }
 
-  onRestChange(rest: Restaurant, hideSections: string[] = []) {
+  onRestaurantChange(rest: Restaurant, hideSections: string[] = []) {
     this.qrmenu.restaurant = rest;
     this.restaurantSections = [];
     if (rest.address) {
@@ -258,14 +258,19 @@ export class CreateCodeComponent {
   }
 
   addMenuField() {
-    this.qrmenu.menuItems.push(new QrItem('', '', -1));
+    this.qrmenu.items!.push({
+      title: '',
+      thumbnailIndex: -1,
+      images: [],
+      entity: ''
+    } as QrMenuItem);
   }
 
   removeMenuField() {
-    this.qrmenu.menuItems = this.qrmenu.menuItems.slice(0, -1);
+    this.qrmenu.items = this.qrmenu.items!.slice(0, -1);
   }
 
-  createCode() {
+  async createCode() {
     this.creationAttempt = true;
     this.disabled = true;
     if (!this.validate()) {
@@ -273,49 +278,35 @@ export class CreateCodeComponent {
       return;
     }
 
-    let menuItems = this.qrmenu.menuItems
-      .filter((i: QrItem) => i.thumbnailIndex >= 0 && i.images)
-      .map((i: QrItem) => {
-        let item = new QrItem(
-          i.menuId,
-          i.title,
-          i.thumbnailIndex,
-          i.originalFileUrl
-        );
-        if (i.menuCompressed) {
-          item.images = i.images;
-        }
-        item.pagesCount = i.pagesCount;
+    let menuItems = this.qrmenu.items!
+      .filter((i: QrMenuItem) => i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages)
+      .map((i: QrMenuItem) => {
+        let item = {
+          title: i.title,
+          thumbnailIndex: i.thumbnailIndex,
+          menuId: i.menu!.id,
+        } as CreateQrMenuItem;
         return item;
       });
 
-    let qrModel = new QrMenu(
-      this.menuNameControl.value ?? '',
-      this.qrmenu.displayName,
-      this.qrmenu.restaurant,
-      menuItems,
-      this.qrmenu.primaryColor,
-      this.qrmenu.secondaryColor,
-      this.qrmenu.fontColor,
-      this.urlSuffixControl.value ?? '',
-      this.qrmenu.hideSections,
-      '12',
-      this.qrmenu.previewIndex
-    );
+    // const formData = new FormData();
+    // this.addPreviewimageToFormData(formData);
+    // this.addQrMenuToFormData(formData, qrModel);
 
-    const formData = new FormData();
-    this.addPreviewimageToFormData(formData);
-    this.addQrMenuToFormData(formData, qrModel);
+    const creationRequest = {
+      name: this.menuNameControl.value ?? '',
+      displayName: this.qrmenu.displayName,
+      restaurantId: this.qrmenu.restaurant!.id,
+      primaryColor: this.qrmenu.primaryColor,
+      secondaryColor: this.qrmenu.secondaryColor,
+      fontColor: this.qrmenu.fontColor,
+      urlSuffix: this.urlSuffixControl.value ?? '',
+      hideSections: this.qrmenu.hideSections,
+      items: menuItems,
+    } as CreateQrMenuRequest;
 
-    this.qrMenuService.create(formData).subscribe(
-      (r: any) => {
-        this.router.navigate(['codes']);
-      },
-      (error: any) => {
-        // this.notify.error(JSON.stringify(error));
-        this.disabled = false;
-      }
-    );
+    await this.qrMenuService.create(creationRequest);
+    this.router.navigate(['qrmenus']);
   }
 
   updateCode() {
@@ -325,22 +316,22 @@ export class CreateCodeComponent {
       return;
     }
 
-    let menuItems = this.qrmenu.menuItems.filter(
-      (i: QrItem) => i.thumbnailIndex >= 0 && i.images
+    let menuItems = this.qrmenu.items!.filter(
+      (i: QrMenuItem) => i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages
     );
-    let qrModel = new QrMenu(
-      this.menuNameControl.value ?? '',
-      this.qrmenu.displayName,
-      this.qrmenu.restaurant,
-      menuItems,
-      this.qrmenu.primaryColor,
-      this.qrmenu.secondaryColor,
-      this.qrmenu.fontColor,
-      this.urlSuffixControl.value ?? '',
-      this.qrmenu.hideSections,
-      '1',
-      this.qrmenu.previewIndex
-    );
+
+    let qrModel = {
+      name: this.menuNameControl.value ?? '',
+      displayName: this.qrmenu.displayName,
+      restaurant: this.qrmenu.restaurant,
+      primaryColor: this.qrmenu.primaryColor,
+      secondaryColor: this.qrmenu.secondaryColor,
+      fontColor: this.qrmenu.fontColor,
+      urlSuffix: this.urlSuffixControl.value ?? '',
+      hideSections: this.qrmenu.hideSections,
+      items: menuItems,
+      previewIndex: this.qrmenu.previewIndex
+    } as QrMenu;
 
     const formData = new FormData();
     this.addQrMenuToFormData(formData, qrModel);
@@ -348,10 +339,9 @@ export class CreateCodeComponent {
 
     this.qrMenuService.update(formData, this.menuId!).subscribe(
       (r: any) => {
-        this.router.navigate(['codes']);
+        this.router.navigate(['qrmenus']);
       },
       (error: any) => {
-        // this.notify.error(JSON.stringify(error));
         this.disabled = false;
       }
     );
@@ -368,11 +358,6 @@ export class CreateCodeComponent {
       isValid = false;
       this.restControl.setErrors({ empty: true });
     }
-    this.qrmenu.menuItems.forEach((item) => {
-      if (!item.entity) {
-        isValid = false;
-      }
-    });
 
     if (this.isAnyMenuItem()) {
       if (
@@ -404,9 +389,9 @@ export class CreateCodeComponent {
 
   isAnyMenuItem() {
     let isValid = false;
-    this.qrmenu.menuItems.forEach((item) => {
+    this.qrmenu.items!.forEach((item) => {
       isValid =
-        isValid || (item.menuId !== undefined && item.thumbnailIndex >= 0);
+        isValid || !!(item.menu?.id && item.thumbnailIndex && item.thumbnailIndex >= 0);
     });
 
     return isValid;
@@ -419,20 +404,20 @@ export class CreateCodeComponent {
 
   areColorsSelected(qrmenu: QrMenu) {
     return (
-      this.isHexColor(qrmenu.primaryColor) &&
-      this.isHexColor(qrmenu.secondaryColor) &&
-      this.isHexColor(qrmenu.fontColor)
+      this.isHexColor(qrmenu.primaryColor!) &&
+      this.isHexColor(qrmenu.secondaryColor!) &&
+      this.isHexColor(qrmenu.fontColor!)
     );
   }
 
   areMenuItemsValid(qrmenu: QrMenu) {
-    if (qrmenu.menuItems.length == 0) {
+    if (qrmenu.items?.length == 0) {
       return false;
     }
 
     let isVaild = true;
-    qrmenu.menuItems.forEach((item) => {
-      isVaild = item.menuId !== undefined && item.thumbnailIndex >= 0;
+    qrmenu.items!.forEach((item) => {
+      isVaild = !!(item.menu?.id && item.thumbnailIndex && item.thumbnailIndex >= 0);
     });
 
     return isVaild;
@@ -467,19 +452,20 @@ export class CreateCodeComponent {
     stepper.next();
   }
 
-  async onMenuSelected(menuItem: QrItem, event: any) {
+  async onMenuSelected(menuItem: QrMenuItem, event: any) {
     let menu = event.value as Menu;
-    menuItem.images = await this.getMenuImages(menu);
+    // menuItem.images = await this.getMenuImages(menu);
     menuItem.thumbnailIndex = 0;
-    menuItem.menuId = menu.id!;
-    menuItem.originalFileUrl = menu.originalFileUrl!;
-    menuItem.pagesCount = menu.pages?.length!;
+    menuItem.menu = menu;
+    // menuItem.menuId = menu.id!;
+    // menuItem.originalFileUrl = menu.originalFileUrl!;
+    // menuItem.pagesCount = menu.pages?.length!;
   }
 
   onPreviewSelected(menuIndex: number) {
     if (menuIndex >= 0) {
-      let menuItem = this.qrmenu.menuItems[menuIndex];
-      this.previewImage = menuItem.images[menuItem.thumbnailIndex];
+      let menuItem = this.qrmenu.items![menuIndex];
+      this.previewImage = menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
       this.qrmenu.previewIndex = menuIndex;
     } else if (this.uploadedCustomPreview) {
       this.previewImage = this.uploadedCustomPreview;
@@ -495,7 +481,7 @@ export class CreateCodeComponent {
       this.menuLoading = false;
     }
 
-    if (event.selectedIndex === 1 && this.qrmenu.menuItems.length === 0) {
+    if (event.selectedIndex === 1 && this.qrmenu.items) {
       this.addMenuField();
     }
   }
@@ -530,9 +516,9 @@ export class CreateCodeComponent {
   clearFileInput(event: any) {
     this.removableInput._inputValueRef.nativeElement.value = '';
     this.uploadedCustomPreview = '';
-    if (this.isAnyMenuItem() && this.qrmenu.previewIndex >= 0) {
-      let menuItem = this.qrmenu.menuItems[this.qrmenu.previewIndex];
-      this.previewImage = menuItem.images[menuItem.thumbnailIndex];
+    if (this.isAnyMenuItem() && this.qrmenu.previewIndex! >= 0) {
+      let menuItem = this.qrmenu.items![this.qrmenu.previewIndex!];
+      this.previewImage = menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
     } else {
       this.previewImage = PLACEHOLDER_URL;
     }

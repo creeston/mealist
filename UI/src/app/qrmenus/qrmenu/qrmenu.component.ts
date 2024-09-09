@@ -11,19 +11,19 @@ import {
 } from '@angular/core';
 import {
   QrItem,
-  QrMenu,
   QrMenuService,
   QrRoutingParams,
 } from '../../services/qrmenu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
+import { QrMenu, QrMenuItem } from '../../api';
 
 const colorThief = new ColorThief();
 
 @Component({
   selector: 'app-qr-menu',
-  templateUrl: './qr-menu.component.html',
-  styleUrls: ['./qr-menu.component.scss'],
+  templateUrl: './qrmenu.component.html',
+  styleUrls: ['./qrmenu.component.scss'],
 })
 export class QrMenuComponent implements OnInit {
   @Input()
@@ -48,7 +48,7 @@ export class QrMenuComponent implements OnInit {
   userId: string | undefined;
   urlSuffix: string | undefined;
   menu: QrMenu | undefined = undefined;
-  selectedMenu: QrItem | undefined = undefined;
+  selectedMenu: QrMenuItem | undefined = undefined;
   imagesData: any[] = [];
   previewMode = true;
   loading = true;
@@ -95,7 +95,7 @@ export class QrMenuComponent implements OnInit {
             this.userId = r.userId;
             this.service
               .getMenu(this.menuId, this.userId)
-              .subscribe((r: QrMenu) => {
+              .then((r: QrMenu) => {
                 this.menu = r;
                 this.setMenuColors();
                 this.initializeMenuImages();
@@ -106,7 +106,7 @@ export class QrMenuComponent implements OnInit {
         this.userId = p.userId;
         this.service
           .getMenu(this.menuId!, this.userId!)
-          .subscribe((r: QrMenu) => {
+          .then((r: QrMenu) => {
             this.menu = r;
             this.setMenuColors();
             this.initializeMenuImages();
@@ -134,37 +134,11 @@ export class QrMenuComponent implements OnInit {
     if (!this.menu) {
       return;
     }
-    this.menu.menuItems.forEach((item: QrItem) => {
+    this.menu.items!.forEach((item: QrMenuItem) => {
       if (!item.thumbnailIndex) {
         item.thumbnailIndex = 0;
       }
-      if (item.images.length == 0) {
-        // let i = this.menu!.menuItems.indexOf(item);
-        // item.images = Array(item.pagesCount).fill('');
-        // getDocument(item.originalFileUrl).promise.then((doc) => {
-        //   for (let j = 0; j < item.pagesCount; j++) {
-        //     doc.getPage(j + 1).then((page) => {
-        //       var viewport = page.getViewport({ scale: 3 });
-        //       var canvas = document.getElementById(
-        //         'viewcanvas_' + i + '_' + j
-        //       ) as any;
-        //       var context = canvas.getContext('2d');
-        //       canvas.height = viewport.height;
-        //       canvas.width = viewport.width;
-        //       page
-        //         .render({ canvasContext: context, viewport: viewport })
-        //         .promise.then((r: any) => {
-        //           item.images[j] = canvas.toDataURL('image/jpeg');
-        //           canvas.width = 0;
-        //           canvas.height = 0;
-        //           this.loading = false;
-        //         });
-        //     });
-        //   }
-        // });
-      } else {
-        this.loading = false;
-      }
+      this.loading = false;
     });
   }
 
@@ -204,9 +178,9 @@ export class QrMenuComponent implements OnInit {
     this.isColorDetected = true;
   }
 
-  openMenu(menuItem: QrItem) {
+  openMenu(menuItem: QrMenuItem) {
     this.imagesData = [];
-    for (let pageId = 0; pageId < menuItem.pagesCount; pageId++) {
+    for (let pageId = 0; pageId < menuItem.menu!.pages!.length; pageId++) {
       this.imagesData.push({ width: 0, height: 0 });
     }
     this.selectedMenu = menuItem;
@@ -235,15 +209,16 @@ export class QrMenuComponent implements OnInit {
     let rate = canvas.height / realHeight;
 
     context.lineWidth = 3;
-    let menuindex = this.menu.menuItems.indexOf(this.selectedMenu);
-    let markup = this.menu.stopMarkup[menuindex][i];
+    let menuindex = this.menu.items!.indexOf(this.selectedMenu);
+    // TODO Consider using separate stop list
+    // let markup = this.menu.stopMarkup[menuindex][i];
+    let markup = this.menu.items![menuindex].menu!.pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
-      let box = line.box;
-      let x1 = box[0][0] * rate;
-      let y1 = box[0][1] * rate;
-      let x2 = box[1][0] * rate;
-      let y2 = box[1][1] * rate;
+      let x1 = line.x1 * rate;
+      let y1 = line.y1 * rate;
+      let x2 = line.x2 * rate;
+      let y2 = line.y2 * rate;
 
       let x = x1;
       let y = y1;
@@ -280,15 +255,16 @@ export class QrMenuComponent implements OnInit {
     let rate = canvas.height / realHeight;
 
     context.lineWidth = 3;
-    let menuindex = this.menu.menuItems.indexOf(this.selectedMenu);
-    let markup = this.menu.stopMarkup[menuindex][i];
+    let menuindex = this.menu.items!.indexOf(this.selectedMenu);
+    // TODO Consider using separate stop list
+    // let markup = this.menu.stopMarkup[menuindex][i];
+    let markup = this.menu.items![menuindex].menu!.pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
-      let box = line.box;
-      let x1 = box[0][0] * rate;
-      let y1 = box[0][1] * rate;
-      let x2 = box[1][0] * rate;
-      let y2 = box[1][1] * rate;
+      let x1 = line.x1 * rate;
+      let y1 = line.y1 * rate;
+      let x2 = line.x2 * rate;
+      let y2 = line.y2 * rate;
 
       let x = x1;
       let y = y1;

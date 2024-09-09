@@ -3,8 +3,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Pipe, PipeTransform } from '@angular/core';
 import { Meal } from '../../services/menu.service';
-import { QrMenu, QrMenuService } from '../../services/qrmenu.service';
+import { QrMenuService } from '../../services/qrmenu.service';
 import { ScreenService } from '../../services/screen.service';
+import { QrMenu } from '../../api';
 @Component({
   selector: 'app-edit-meals',
   templateUrl: './edit-meals.component.html',
@@ -29,7 +30,7 @@ export class EditMealsComponent implements OnInit {
     public dialogRef: MatDialogRef<EditMealsComponent>,
     private service: QrMenuService,
     public screen: ScreenService
-  ) {}
+  ) { }
 
   displayedColumns = ['position', 'name', 'presence'];
 
@@ -37,7 +38,7 @@ export class EditMealsComponent implements OnInit {
     this.menuMeals = this.data.menuMeals;
     this.menu = this.data.menu;
     for (let pageId = 0; pageId < this.menuMeals.length; pageId++) {
-      let stopList = this.menu!.stopLists[pageId];
+      let stopList = this.menu!.stopList![pageId];
       this.menuMeals[pageId].meals.forEach((m: any) => {
         if (stopList.indexOf(m.text) >= 0) {
           m.enabled = false;

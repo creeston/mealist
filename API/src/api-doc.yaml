@@ -130,3 +130,93 @@ components:
           type: integer
       required:
         - menuId
+    QrMenu:
+      type: "object"
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+        restaurant:
+          $ref: "#/components/schemas/Restaurant"
+        primaryColor:
+          type: string
+        secondaryColor:
+          type: string
+        fontColor:
+          type: string
+        scanCount:
+          type: integer
+        stopList:
+          type: array
+          items:
+            type: string
+        hideSections:
+          type: array
+          items:
+            type: string
+        previewIndex:
+          type: integer
+        urlSuffix:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QrMenuItem"
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+      required:
+        - menuId
+        - restaurantId
+    QrMenuItem:
+      type: "object"
+      properties:
+        menu:
+          $ref: "#/components/schemas/Menu"
+        title:
+          type: string
+        thumbnailIndex:
+          type: integer
+    CreateQrMenuRequest:
+      type: "object"
+      properties:
+        name:
+          type: string
+        primaryColor:
+          type: string
+        secondaryColor:
+          type: string
+        fontColor:
+          type: string
+        previewIndex:
+          type: integer
+        urlSuffix:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateQrMenuItem"
+        restaurantId:
+          type: string
+      required:
+        - menuId
+        - restaurantId
+    CreateQrMenuItem:
+      type: "object"
+      properties:
+        title:
+          type: string
+        thumbnailIndex:
+          type: integer
+        menuId:
+          type: string
+      required:
+        - title
+        - thumbnailIndex
+        - menuId

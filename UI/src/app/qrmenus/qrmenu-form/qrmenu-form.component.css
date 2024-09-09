@@ -1,7 +1,7 @@
 .mat-stepper-vertical {
   margin-top: 8px;
 }
-  
+
 .mat-form-field {
   margin-top: 5px;
 }
@@ -26,7 +26,8 @@
   width: 100px;
 }
 
-h4, h5 {
+h4,
+h5 {
   margin: 0px;
 }
 
@@ -93,7 +94,7 @@ h4, h5 {
   z-index: 5;
   min-height: 100vh;
   -webkit-box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
-  -moz-box-shadow: 0 0 24px 0 rgba(0,0,0,0.1);
+  -moz-box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.1);
   box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
   opacity: 0;
   transition: opacity .3s ease-in-out;
@@ -225,7 +226,7 @@ h4, h5 {
   width: 240px;
 }
 
-.round-container > p {
+.round-container>p {
   margin-bottom: -15px;
 }
 
@@ -243,11 +244,11 @@ h4, h5 {
 
 
 ::ng-deep .mat-step-header .mat-step-icon-selected {
-  background-color: #A0B454b0; 
+  background-color: #A0B454b0;
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-edit {
-  background-color: #A0B454b0; 
+  background-color: #A0B454b0;
 }
 
 .menu-name-field {
@@ -256,7 +257,8 @@ h4, h5 {
   margin-top: 20px;
 }
 
-.menu-name-field .mat-form-field, .menu-url-field .mat-form-field {
+.menu-name-field .mat-form-field,
+.menu-url-field .mat-form-field {
   max-width: 70%;
   width: 500px;
 }
@@ -274,10 +276,11 @@ ul {
 
 ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
   opacity: 0.03 !important;
-  background-color: #A0B454b0!important;
+  background-color: #A0B454b0 !important;
 }
 
-::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
   background-color: #A0B454b0;
 }
 

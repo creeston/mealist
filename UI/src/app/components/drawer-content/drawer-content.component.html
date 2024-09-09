@@ -1,42 +1,26 @@
 <div class="menu-container">
   <div>
-    <button
-      mat-button
-      (click)="goTo('menus')"
-      class="menu-button"
-      [class.selected-button]="router.url.includes('menu')"
-    >
+    <button mat-button (click)="goTo('menus')" class="menu-button"
+      [class.selected-button]="router.url.includes('/menu')">
       <mat-icon aria-hidden="false" class="menu-icon">menu_book</mat-icon>
       <span class="menu-label" [translate]="'menus.title'"></span>
       <span *ngIf="globals.menusCount >= 0">({{ globals.menusCount }})</span>
     </button>
   </div>
   <div>
-    <button
-      mat-button
-      (click)="goTo('restaurants')"
-      class="menu-button"
-      [class.selected-button]="router.url.includes('restaurants')"
-      *ngIf="globals.role != 'reviewer'"
-    >
+    <button mat-button (click)="goTo('restaurants')" class="menu-button"
+      [class.selected-button]="router.url.includes('restaurants')" *ngIf="globals.role != 'reviewer'">
       <mat-icon aria-hidden="false" class="menu-icon">restaurant_menu</mat-icon>
       <span class="menu-label" [translate]="'rest.title'"></span>
       <span *ngIf="globals.restsCount >= 0">({{ globals.restsCount }})</span>
     </button>
   </div>
   <div>
-    <button
-      mat-button
-      (click)="goTo('codes')"
-      class="menu-button"
-      [class.selected-button]="router.url.includes('codes')"
-      *ngIf="globals.role != 'reviewer'"
-    >
+    <button mat-button (click)="goTo('qrmenus')" class="menu-button"
+      [class.selected-button]="router.url.includes('/qrmenus')" *ngIf="globals.role != 'reviewer'">
       <mat-icon aria-hidden="false" class="menu-icon">qr_code</mat-icon>
       <span class="menu-label" [translate]="'codes.label'"></span>
-      <span *ngIf="globals.qrMenusCount >= 0"
-        >({{ globals.qrMenusCount }})</span
-      >
+      <span *ngIf="globals.qrMenusCount >= 0">({{ globals.qrMenusCount }})</span>
     </button>
   </div>
   <div class="panel-line"></div>
@@ -61,9 +45,7 @@
   <div class="footer-basic-navigation">
     <footer>
       <div class="social">
-        <a href="https://t.me/mealist_feedback_bot" target="_blank"
-          ><i class="icon ion-android-send"></i
-        ></a>
+        <a href="https://t.me/mealist_feedback_bot" target="_blank"><i class="icon ion-android-send"></i></a>
         <a (click)="contactUs()"><i class="icon ion-android-mail"></i></a>
       </div>
       <p class="copyright">Mealist © 2021</p>

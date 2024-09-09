@@ -55,16 +55,11 @@ import { ContactUsDialog } from './components/contact-us/contact-us';
 import { AngularMaterialModule } from './angular-material.module';
 import { ConfirmationDialog } from './components/confirmation-dialog/confirmation-dialog';
 import { AppRoutingModule } from './app-routing.module';
-import { CreateCodeComponent } from './components/create-code/create-code.component';
-import { CodesComponent } from './components/codes/codes.component';
-import { QrMenuComponent } from './components/qr-menu/qr-menu.component';
-import { MenuOcrComponent } from './menus/menu-ocr/menu-ocr.component';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
 import {
-  EditMealsComponent,
   SearchFilterPipe,
-} from './components/edit-meals/edit-meals.component';
+} from './qrmenus/edit-meals/edit-meals.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ApiModule } from './api/api.module';
 import { Configuration, ConfigurationParameters } from './api/configuration';
@@ -73,7 +68,7 @@ import { DrawerContentComponent } from './components/drawer-content/drawer-conte
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { MenusModule } from './menus/menus.module';
 import { GeocodingService } from './services/geocoding.service';
-import { NgOcrEditorComponent } from 'ng-ocr-editor';
+import { QrMenusModule } from './qrmenus/qrmenus.module';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);
@@ -97,15 +92,10 @@ export function apiConfigFactory(): Configuration {
     OnlyNumbersAndLetters,
     ContactUsDialog,
     ConfirmationDialog,
-    CreateCodeComponent,
-    CodesComponent,
-    QrMenuComponent,
     LogInComponent,
     TopToolbarComponent,
     DrawerContentComponent,
     RegisterComponent,
-    EditMealsComponent,
-    SearchFilterPipe,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -115,6 +105,7 @@ export function apiConfigFactory(): Configuration {
     AngularMaterialModule,
     RestaurantsModule,
     MenusModule,
+    QrMenusModule,
     ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,
