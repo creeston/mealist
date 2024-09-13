@@ -30,27 +30,29 @@ export class QrmenuCardComponent implements OnInit {
   }
 
   deleteCode(code: QrMenu) {
-    this.translate.get('codes.delete_confirmation').subscribe((text) => {
-      const dialogRef = this.dialog.open(ConfirmationDialog, {
-        width: Math.min(this.screen.width, 450) + 'px',
-        panelClass: 'mat-dialog-confirmation-container',
-        data: { message: text + ' "' + code.name + '"?' },
-      });
+    this.translate
+      .get('codes.delete_confirmation')
+      .subscribe((text: string) => {
+        const dialogRef = this.dialog.open(ConfirmationDialog, {
+          width: Math.min(this.screen.width, 450) + 'px',
+          panelClass: 'mat-dialog-confirmation-container',
+          data: { message: text + ' "' + code.name + '"?' },
+        });
 
-      // dialogRef.componentInstance.callback.subscribe((r) => {
-      //   this.service.delete(code.id).subscribe(
-      //     (r: any) => {
-      //       const index = this.qrMenus.indexOf(code, 0);
-      //       this.qrMenus.splice(index, 1);
-      //       this.silentRefresh();
-      //       dialogRef.componentInstance.close();
-      //     },
-      //     (error: any) => {
-      //       // this.notify.error(JSON.stringify(error));
-      //     }
-      //   );
-      // });
-    });
+        // dialogRef.componentInstance.callback.subscribe((r) => {
+        //   this.service.delete(code.id).subscribe(
+        //     (r: any) => {
+        //       const index = this.qrMenus.indexOf(code, 0);
+        //       this.qrMenus.splice(index, 1);
+        //       this.silentRefresh();
+        //       dialogRef.componentInstance.close();
+        //     },
+        //     (error: any) => {
+        //       // this.notify.error(JSON.stringify(error));
+        //     }
+        //   );
+        // });
+      });
   }
 
   editMeals(menu: QrMenu) {
@@ -94,14 +96,16 @@ export class QrmenuCardComponent implements OnInit {
         data: { menuMeals, menu },
       })
       .afterClosed()
-      .subscribe((r) => {
+      .subscribe((r: any) => {
         if (r) {
           menu.stopList = r;
-          this.translate.get('codes.stop_list_updated').subscribe((text) => {
-            // this.snackBar.open(text, '', {
-            //   duration: 2 * 1000,
-            // });
-          });
+          this.translate
+            .get('codes.stop_list_updated')
+            .subscribe((text: string) => {
+              // this.snackBar.open(text, '', {
+              //   duration: 2 * 1000,
+              // });
+            });
         }
       });
   }

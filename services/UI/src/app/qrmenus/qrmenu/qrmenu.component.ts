@@ -93,24 +93,20 @@ export class QrMenuComponent implements OnInit {
           .subscribe((r: QrRoutingParams) => {
             this.menuId = r.qrMenuId;
             this.userId = r.userId;
-            this.service
-              .getMenu(this.menuId, this.userId)
-              .then((r: QrMenu) => {
-                this.menu = r;
-                this.setMenuColors();
-                this.initializeMenuImages();
-              });
+            this.service.getMenu(this.menuId, this.userId).then((r: QrMenu) => {
+              this.menu = r;
+              this.setMenuColors();
+              this.initializeMenuImages();
+            });
           });
       } else {
         this.menuId = p.menuId;
         this.userId = p.userId;
-        this.service
-          .getMenu(this.menuId!, this.userId!)
-          .then((r: QrMenu) => {
-            this.menu = r;
-            this.setMenuColors();
-            this.initializeMenuImages();
-          });
+        this.service.getMenu(this.menuId!, this.userId!).then((r: QrMenu) => {
+          this.menu = r;
+          this.setMenuColors();
+          this.initializeMenuImages();
+        });
       }
     });
   }

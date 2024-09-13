@@ -98,11 +98,11 @@ export class RegisterComponent implements OnInit {
     }
     this.loading = true;
     this.auth.sendCode(this.myForm.controls.email.value).subscribe(
-      (r) => {
+      (r: any) => {
         this.loading = false;
         this.registerState = 1;
       },
-      (error) => {
+      (error: any) => {
         // this.notify.error(error.error);
       }
     );
@@ -122,7 +122,7 @@ export class RegisterComponent implements OnInit {
       (token: string) => {
         // this.cookie.set('ApiJwt', token);
         this.globals.isLogged = true;
-        this.auth.getUserProfile(token).subscribe((r) => {
+        this.auth.getUserProfile(token).subscribe((r: any) => {
           this.menusService.listMenus();
           this.restService.listRestaurants();
           this.qrMenusService.list();
@@ -130,7 +130,7 @@ export class RegisterComponent implements OnInit {
           this.sidenav.open();
         });
       },
-      (error) => {
+      (error: any) => {
         // this.notify.error(error.error);
         this.disabled = false;
       }

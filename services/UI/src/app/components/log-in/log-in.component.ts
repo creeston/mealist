@@ -68,7 +68,7 @@ export class LogInComponent implements OnInit {
         (token: string) => {
           // this.cookie.set('ApiJwt', token);
           this.globals.isLogged = true;
-          this.auth.getUserProfile(token).subscribe((r) => {
+          this.auth.getUserProfile(token).subscribe((r: any) => {
             this.menusService.listMenus();
             this.restService.listRestaurants();
             this.qrMenusService.list();
@@ -76,7 +76,7 @@ export class LogInComponent implements OnInit {
             this.sidenav.open();
           });
         },
-        (error) => {
+        (error: any) => {
           // this.notifier.error(error.error);
           this.disabled = false;
         }

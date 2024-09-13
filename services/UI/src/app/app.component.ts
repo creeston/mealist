@@ -72,17 +72,19 @@ export class AppComponent {
   }
 
   contactUs() {
-    this.translate.get('contact.we_will_contact_you').subscribe((text) => {
-      const dialogRef = this.dialog.open(ContactUsDialog, {
-        width: '450px',
+    this.translate
+      .get('contact.we_will_contact_you')
+      .subscribe((text: string) => {
+        const dialogRef = this.dialog.open(ContactUsDialog, {
+          width: '450px',
+        });
+        dialogRef.afterClosed().subscribe((result: any) => {
+          if (result) {
+            this.snackBar.open(text, '', {
+              duration: 2 * 1000,
+            });
+          }
+        });
       });
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.snackBar.open(text, '', {
-            duration: 2 * 1000,
-          });
-        }
-      });
-    });
   }
 }

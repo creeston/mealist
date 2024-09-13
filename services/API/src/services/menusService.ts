@@ -1,84 +1,52 @@
-import { Upload } from '@aws-sdk/lib-storage';
-import { IMenusRepository } from '../interfaces/menusRepository';
-import { MenuModel, OcrBoxModel } from '../models/menu';
+import { Menu, MenuPage, OcrBox } from '../domain/models/menu';
 import { components } from '../presentation/api';
-import { rabbitMQ } from '../queue/connection';
-import { logger } from '../utils/logging/logger';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { logError, logInfo } from '../utils/logging/logger';
+import { StorageService } from '../data-access/storage/storageService';
+import { MenuLanguage } from '../domain/enums/menuLanguage';
+import { MenuProcessingStatus } from '../domain/enums/menuProcessingStatus';
+import { MenusRepository } from '../data-access/repositories/menusRepository';
+import { MessageProducer } from '../queue/producer';
 
 type MenuPageApiModel = components['schemas']['MenuPage'];
 type MenuLineApiModel = components['schemas']['MenuLine'];
 type MenuApiModel = components['schemas']['Menu'];
 type CreateMenuRequest = components['schemas']['CreateMenuRequest'];
 
-export const client = new S3Client({
-  endpoint: 'http://127.0.0.1:9000',
-  credentials: {
-    accessKeyId: 'minioadmin',
-    secretAccessKey: 'minioadmin',
-  },
-  region: 'europe-west1',
-});
-
 export class MenusService {
-  constructor(private menusRepository: IMenusRepository) {}
+  constructor(
+    private menusRepository: MenusRepository,
+    private storageService: StorageService,
+    private menuParsingProducer: MessageProducer
+  ) {}
 
-  async createMenu(menu: CreateMenuRequest, file: any): Promise<void> {
-    logger.log({
-      level: 'info',
-      message: 'Creating new menu',
-    });
-
-    const language = menu.language ? menu.language : 'eng';
+  async createMenu(menu: CreateMenuRequest, file: any): Promise<MenuApiModel> {
+    const language = menu.language ? (menu.language as MenuLanguage) : MenuLanguage.ENG;
     const menuName = menu.name ? menu.name : file.originalname;
-    const newMenu: MenuModel = {
+
+    const createdMenu = await this.menusRepository.createMenu({
       name: menuName,
       creationDate: new Date().toISOString(),
-      status: 'NOT_PARSED',
+      status: MenuProcessingStatus.NOT_PARSED,
       language: language,
-    };
-
-    const createdMenu = await this.menusRepository.createMenu(newMenu);
-
-    const key = 'RawMenus/' + newMenu.id + '/' + file.originalname;
-    const bucket = 'mealist';
-    let upload = new Upload({
-      client: client,
-      params: {
-        Bucket: bucket,
-        Key: key,
-        Body: file.buffer,
-      },
     });
 
-    await upload.done();
-    createdMenu.menuPath = key;
-
+    createdMenu.menuPath = 'RawMenus/' + createdMenu.id + '/' + file.originalname;
+    await this.storageService.uploadFile(createdMenu.menuPath, file.buffer);
     await this.menusRepository.updateMenu(createdMenu);
 
-    const channel = rabbitMQ.channel;
-
-    if (channel) {
-      var data = JSON.stringify(newMenu);
-      channel.sendToQueue('menu-parsing-queue', Buffer.from(data));
-    }
-
-    createdMenu.status = 'PARSING_IN_PROGRESS';
+    this.menuParsingProducer.publishMenuParsingMessage(createdMenu);
+    createdMenu.status = MenuProcessingStatus.PARSING_IN_PROGRESS;
     await this.menusRepository.updateMenu(createdMenu);
 
-    logger.log({
-      level: 'info',
-      message: 'Menu created and sent to menu-parsing-queue',
-    });
+    return this.menuToResponseModel(createdMenu);
   }
 
-  async getMenuById(menuId: string) {
+  async getMenuById(menuId: string): Promise<MenuApiModel> {
     const menu = await this.menusRepository.getMenuById(menuId);
     return await this.menuToResponseModel(menu);
   }
 
-  async listMenus() {
+  async listMenus(): Promise<MenuApiModel[]> {
     const menus = await this.menusRepository.listMenus();
     if (!menus) {
       return [];
@@ -86,7 +54,7 @@ export class MenusService {
 
     const menusReponse: MenuApiModel[] = await Promise.all(
       menus!.map(async (menu) => {
-        const response = await this.menuToResponseModel(menu as MenuModel);
+        const response = await this.menuToResponseModel(menu as Menu);
         return response;
       })
     );
@@ -105,43 +73,99 @@ export class MenusService {
     for (const page of pages) {
       const menuPage = menu.pages.find((p) => p.pageNumber === page.pageNumber);
       if (menuPage && page.markup) {
-        menuPage.markup = page.markup.map(
-          (line: MenuLineApiModel, i: number) => {
-            return {
-              blockId: i + '',
-              text: line.text ?? '',
-              box: {
-                x1: line.x1,
-                y1: line.y1,
-                x2: line.x2,
-                y2: line.y2,
-              } as OcrBoxModel,
-            };
-          }
-        );
+        menuPage.markup = page.markup.map((line: MenuLineApiModel, i: number) => {
+          return {
+            blockId: i + '',
+            text: line.text ?? '',
+            box: {
+              x1: line.x1,
+              y1: line.y1,
+              x2: line.x2,
+              y2: line.y2,
+            } as OcrBox,
+          };
+        });
 
         anyPageUpdated = true;
-        logger.log(
-          'info',
-          `Updated page ${page.pageNumber} for menu ${menuId}`
-        );
+        logInfo(`Updated page ${page.pageNumber} for menu ${menuId}`);
       }
     }
 
     if (anyPageUpdated) {
-      menu.status = 'REVIEWED';
+      menu.status = MenuProcessingStatus.REVIEWED;
     }
 
     await this.menusRepository.updateMenu(menu);
   }
 
-  private async menuToResponseModel(menu: MenuModel) {
-    const command = new GetObjectCommand({
-      Bucket: 'mealist',
-      Key: menu.menuPath,
+  async processMenuParsingStatus(data: any): Promise<void> {
+    if (!data.paths) {
+      logError('Paths not found');
+      return;
+    }
+
+    const menuId = data.menuId as string;
+    const menu = await this.menusRepository.getMenuById(menuId);
+    if (!menu) {
+      logError('Menu not found');
+      return;
+    }
+
+    menu.modifiedDate = new Date().toISOString();
+    menu.pages = data.paths.map((path: string, i: number) => {
+      return {
+        pageNumber: i,
+        imagePath: path,
+      };
+    });
+    menu.status = MenuProcessingStatus.PARSING_COMPLETED;
+    await this.menusRepository.updateMenu(menu);
+
+    logInfo('Menu updated with image urls');
+
+    menu.pages!.forEach((page: MenuPage) => {
+      this.menuParsingProducer.publishOcrRequest(menu.id!, page.pageNumber, page.imagePath, menu.language);
     });
 
-    const url = await getSignedUrl(client, command, { expiresIn: 3600 });
+    logInfo('Sent ocr requests to menu-ocr-queue');
+    menu.status = MenuProcessingStatus.OCR_IN_PROGRESS;
+    this.menusRepository.updateMenu(menu);
+  }
+
+  async processMenuOcrStatus(data: any): Promise<void> {
+    const menuId = data.menuId as string;
+    const menu = await this.menusRepository.getMenuById(menuId);
+    if (!menu) {
+      logError('Menu not found');
+      return;
+    }
+
+    const pageNumber = data.menuPage;
+
+    if (!menu.pages || pageNumber > menu.pages.length) {
+      logError('Pages not found');
+      return;
+    }
+
+    menu.modifiedDate = new Date().toISOString();
+    menu.pages[pageNumber].markup = data.data.map((block: any) => {
+      return {
+        blockId: block.blockId,
+        text: block.text,
+        box: block.box,
+      };
+    });
+
+    if (menu.pages.every((menu) => menu.markup)) {
+      menu.status = MenuProcessingStatus.OCR_COMPLETED;
+    }
+
+    await this.menusRepository.updateMenu(menu);
+    logInfo(`Menu page ${pageNumber} updated with ocr data`);
+  }
+
+  private async menuToResponseModel(menu: Menu) {
+    const url = menu.menuPath ? await this.storageService.getFileUrl(menu.menuPath) : '';
 
     const response = {
       id: menu.id,
@@ -155,14 +179,7 @@ export class MenusService {
     if (menu.pages && menu.pages.length > 0) {
       const pages: MenuPageApiModel[] = [];
       for (let page of menu.pages) {
-        const getImageCommand = new GetObjectCommand({
-          Bucket: 'mealist',
-          Key: page.imagePath,
-        });
-
-        const imageUrl = await getSignedUrl(client, getImageCommand, {
-          expiresIn: 3600,
-        });
+        const imageUrl = await this.storageService.getFileUrl(page.imagePath);
         const responseMarkup = page.markup?.map((line) => {
           return {
             text: line.text,

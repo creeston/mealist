@@ -2,12 +2,12 @@ import { Request } from 'express';
 import { components } from '../api';
 import { Operation } from 'express-openapi';
 import { Response } from 'express';
-import { restaurantsRepository } from '../../repositories/connection';
 import { RestaurantsService } from '../../services/restaurantsService';
+import { RestaurantsRepository } from '../../data-access/repositories/restaurantsRepository';
 
 type RestaurantApiModel = components['schemas']['Restaurant'];
 
-export const restaurantService = new RestaurantsService(restaurantsRepository);
+export const restaurantService = new RestaurantsService(new RestaurantsRepository());
 
 export const GET: Operation = [
   async (req: Request, res: Response) => {

@@ -13,7 +13,7 @@ import { Restaurant } from './restaurant';
 import { QrMenuItem } from './qrMenuItem';
 
 
-export interface QrMenu {
+export interface QrMenu { 
     id?: string;
     name?: string;
     displayName?: string;

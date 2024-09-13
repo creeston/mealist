@@ -12,7 +12,7 @@ export class RestaurantService {
     null;
   restaurantValues: Restaurant[] | null = null;
 
-  constructor(public globals: Globals, private api: RestaurantsService) { }
+  constructor(public globals: Globals, private api: RestaurantsService) {}
 
   createRestaurant(rest: Restaurant) {
     return firstValueFrom(this.api.createRestaurant(rest));
@@ -22,20 +22,14 @@ export class RestaurantService {
     return firstValueFrom(this.api.updateRestaurant(id, rest));
   }
 
-  listRestaurants() {
-    if (!this.restaurants$) {
-      this.restaurants$ = this.api.getRestaurants();
-
-      this.restaurants$.subscribe((rests) => {
-        this.restaurantValues = rests as Restaurant[];
-        this.globals.restsCount = this.restaurantValues.length;
-      });
-    }
-    return this.restaurants$;
+  async listRestaurants() {
+    const result = await firstValueFrom(this.api.getRestaurants());
+    this.globals.restsCount = result.length;
+    return result;
   }
 
   async deleteRestaurant(id: string) {
-    await firstValueFrom(this.api.deleteRestaurant(id));
+    // await firstValueFrom(this.api.deleteRestaurant(id));
     this.clearCache();
   }
 

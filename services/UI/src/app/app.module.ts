@@ -57,9 +57,7 @@ import { ConfirmationDialog } from './components/confirmation-dialog/confirmatio
 import { AppRoutingModule } from './app-routing.module';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
-import {
-  SearchFilterPipe,
-} from './qrmenus/edit-meals/edit-meals.component';
+import { SearchFilterPipe } from './qrmenus/edit-meals/edit-meals.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ApiModule } from './api/api.module';
 import { Configuration, ConfigurationParameters } from './api/configuration';
@@ -153,4 +151,4 @@ export function apiConfigFactory(): Configuration {
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -40,7 +40,7 @@ export class RestaurantsComponent implements OnInit {
 
   refresh() {
     this.dataLoaded = false;
-    this.service.listRestaurants()?.subscribe((data: any) => {
+    this.service.listRestaurants().then((data: any) => {
       this.restaurants = data;
       this.dataLoaded = true;
     });
@@ -50,7 +50,7 @@ export class RestaurantsComponent implements OnInit {
     const dialogRef = this.dialog.open(RestaurantFormDialog, {
       width: '550px',
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
         this.refresh();
       }
@@ -64,7 +64,7 @@ export class RestaurantsComponent implements OnInit {
   }
 
   silentRefresh() {
-    this.service.listRestaurants()?.subscribe((r: any) => {
+    this.service.listRestaurants().then((r: any) => {
       this.restaurants = r as Restaurant[];
     });
   }

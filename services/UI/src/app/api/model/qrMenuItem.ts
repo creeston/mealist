@@ -12,10 +12,9 @@
 import { Menu } from './menu';
 
 
-export interface QrMenuItem {
+export interface QrMenuItem { 
     menu?: Menu;
     title?: string;
     thumbnailIndex?: number;
-    entity: string;
 }
 

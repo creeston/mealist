@@ -9,7 +9,14 @@ import { QrItem, QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
-import { CreateQrMenuItem, CreateQrMenuRequest, Menu, QrMenu, QrMenuItem, Restaurant } from '../../api/model/models';
+import {
+  CreateQrMenuItem,
+  CreateQrMenuRequest,
+  Menu,
+  QrMenu,
+  QrMenuItem,
+  Restaurant,
+} from '../../api/model/models';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
@@ -34,7 +41,7 @@ export class QrMenuFormComponent {
     secondaryColor: '#A0B454b0',
     fontColor: '#FFFFFF',
     urlSuffix: this.makeid(5),
-  }
+  };
   public previewImage: string = PLACEHOLDER_URL;
   public uploadedCustomPreview: string = '';
   public menuLoading: boolean = false;
@@ -45,7 +52,7 @@ export class QrMenuFormComponent {
   public previewIndexControl = new FormControl('', []);
   public urlSuffixControl = new FormControl({
     value: this.qrmenu.urlSuffix,
-    disabled: this.restaurantsLoaded
+    disabled: this.restaurantsLoaded,
   });
   public fileControl = new FormControl(null, []);
 
@@ -92,13 +99,13 @@ export class QrMenuFormComponent {
     private route: ActivatedRoute,
     private draw: DrawService,
     private translate: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit() {
     let restPromise = this.restService.listRestaurants();
     let menusPromise = this.menuService.listMenus();
 
-    restPromise?.subscribe((data: any) => {
+    restPromise.then((data: any) => {
       this.rests = data;
       this.restaurantsLoaded = true;
     });
@@ -137,7 +144,7 @@ export class QrMenuFormComponent {
 
         this.qrmenu.urlSuffix = menu.urlSuffix;
         this.urlSuffixControl.setValue(menu.urlSuffix);
-        this.menuNameControl.setValue(menu.name ?? "");
+        this.menuNameControl.setValue(menu.name ?? '');
 
         restPromise.subscribe((rests: any) => {
           let restId = rests.findIndex(
@@ -167,7 +174,9 @@ export class QrMenuFormComponent {
               let previewMenuItem =
                 this.qrmenu.items![this.qrmenu.previewIndex!];
               this.previewImage =
-                previewMenuItem.menu!.pages![previewMenuItem.thumbnailIndex!]!.imageUrl;
+                previewMenuItem.menu!.pages![
+                  previewMenuItem.thumbnailIndex!
+                ]!.imageUrl;
               this.previewIndexControl.setValue(this.qrmenu.previewIndex + '');
             }
           });
@@ -176,7 +185,9 @@ export class QrMenuFormComponent {
   }
 
   ngAfterViewInit(): void {
-    this.fileControl.valueChanges.subscribe((value) => this.getFiles(value));
+    this.fileControl.valueChanges.subscribe((value: any) =>
+      this.getFiles(value)
+    );
     if (this.menuId) {
       this.stepper.steps.forEach((step: MatStep) => {
         step.completed = true;
@@ -262,7 +273,7 @@ export class QrMenuFormComponent {
       title: '',
       thumbnailIndex: -1,
       images: [],
-      entity: ''
+      entity: '',
     } as QrMenuItem);
   }
 
@@ -278,8 +289,11 @@ export class QrMenuFormComponent {
       return;
     }
 
-    let menuItems = this.qrmenu.items!
-      .filter((i: QrMenuItem) => i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages)
+    let menuItems = this.qrmenu
+      .items!.filter(
+        (i: QrMenuItem) =>
+          i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages
+      )
       .map((i: QrMenuItem) => {
         let item = {
           title: i.title,
@@ -317,7 +331,8 @@ export class QrMenuFormComponent {
     }
 
     let menuItems = this.qrmenu.items!.filter(
-      (i: QrMenuItem) => i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages
+      (i: QrMenuItem) =>
+        i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages
     );
 
     let qrModel = {
@@ -330,7 +345,7 @@ export class QrMenuFormComponent {
       urlSuffix: this.urlSuffixControl.value ?? '',
       hideSections: this.qrmenu.hideSections,
       items: menuItems,
-      previewIndex: this.qrmenu.previewIndex
+      previewIndex: this.qrmenu.previewIndex,
     } as QrMenu;
 
     const formData = new FormData();
@@ -391,7 +406,8 @@ export class QrMenuFormComponent {
     let isValid = false;
     this.qrmenu.items!.forEach((item) => {
       isValid =
-        isValid || !!(item.menu?.id && item.thumbnailIndex && item.thumbnailIndex >= 0);
+        isValid ||
+        !!(item.menu?.id && item.thumbnailIndex && item.thumbnailIndex >= 0);
     });
 
     return isValid;
@@ -417,7 +433,11 @@ export class QrMenuFormComponent {
 
     let isVaild = true;
     qrmenu.items!.forEach((item) => {
-      isVaild = !!(item.menu?.id && item.thumbnailIndex && item.thumbnailIndex >= 0);
+      isVaild = !!(
+        item.menu?.id &&
+        item.thumbnailIndex &&
+        item.thumbnailIndex >= 0
+      );
     });
 
     return isVaild;
@@ -465,7 +485,8 @@ export class QrMenuFormComponent {
   onPreviewSelected(menuIndex: number) {
     if (menuIndex >= 0) {
       let menuItem = this.qrmenu.items![menuIndex];
-      this.previewImage = menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
+      this.previewImage =
+        menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
       this.qrmenu.previewIndex = menuIndex;
     } else if (this.uploadedCustomPreview) {
       this.previewImage = this.uploadedCustomPreview;
@@ -518,7 +539,8 @@ export class QrMenuFormComponent {
     this.uploadedCustomPreview = '';
     if (this.isAnyMenuItem() && this.qrmenu.previewIndex! >= 0) {
       let menuItem = this.qrmenu.items![this.qrmenu.previewIndex!];
-      this.previewImage = menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
+      this.previewImage =
+        menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
     } else {
       this.previewImage = PLACEHOLDER_URL;
     }

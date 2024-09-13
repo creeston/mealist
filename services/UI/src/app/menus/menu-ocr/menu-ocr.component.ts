@@ -1,4 +1,10 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,7 +37,7 @@ export class MenuOcrComponent implements OnInit {
   ocrDocuments: OcrDocument[] = [];
 
   @ViewChildren(NgOcrEditorComponent)
-  ocrEditors!: QueryList<NgOcrEditorComponent>
+  ocrEditors!: QueryList<NgOcrEditorComponent>;
 
   public stopModes = [
     { key: 'underline', value: '' },
@@ -73,27 +79,26 @@ export class MenuOcrComponent implements OnInit {
     private router: Router,
     private service: MenuService,
     private translate: TranslateService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
-    this.translate.get('markup.style.underline').subscribe((text) => {
+    this.translate.get('markup.style.underline').subscribe((text: any) => {
       this.stopModes[0] = { key: 'underline', value: text };
     });
 
-    this.translate.get('markup.style.overflow').subscribe((text) => {
+    this.translate.get('markup.style.overflow').subscribe((text: any) => {
       this.stopModes[1] = { key: 'overflow', value: text };
     });
 
-    this.translate.get('close').subscribe((text) => {
+    this.translate.get('close').subscribe((text: any) => {
       this.closeText = text;
     });
 
-    this.translate.get('markup.was_saved').subscribe((text) => {
+    this.translate.get('markup.was_saved').subscribe((text: any) => {
       this.markupedSavedMessage = text;
     });
 
-    this.route.params.subscribe((params) => {
+    this.route.params.subscribe((params: any) => {
       this.menuId = params['menuId'];
       this.service.getMenu(this.menuId!).then((menu: Menu) => {
         this.menu = menu;
@@ -102,7 +107,6 @@ export class MenuOcrComponent implements OnInit {
         });
       });
     });
-
   }
 
   async processMenuAsync(menu: Menu) {
@@ -126,27 +130,28 @@ export class MenuOcrComponent implements OnInit {
     const ocrDocuments = [];
 
     for (let page of menu.pages) {
-      const pageMarkup: OcrBox[] = page.markup?.map((line) => {
-        return {
-          text: line.text,
-          x1: line.x1,
-          x2: line.x2,
-          y1: line.y1,
-          y2: line.y2,
-          highlight: false,
-          viewStyle: {
-            color: '#000000',
-            style: 'fill',
-          },
-        } as OcrBox;
-      }) ?? [];
+      const pageMarkup: OcrBox[] =
+        page.markup?.map((line) => {
+          return {
+            text: line.text,
+            x1: line.x1,
+            x2: line.x2,
+            y1: line.y1,
+            y2: line.y2,
+            highlight: false,
+            viewStyle: {
+              color: '#000000',
+              style: 'fill',
+            },
+          } as OcrBox;
+        }) ?? [];
 
       const imageUrl = page.imageUrl;
       const image = await this.loadImageAsync(imageUrl);
 
       const document = {
         imageElement: image,
-        markup: pageMarkup
+        markup: pageMarkup,
       } as OcrDocument;
 
       ocrDocuments.push(document);

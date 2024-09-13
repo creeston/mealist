@@ -1,11 +1,11 @@
 import { Operation } from 'express-openapi';
 import { components } from '../api';
-import { qrMenusRepository } from '../../repositories/connection';
 import { QrMenuService } from '../../services/qrMenuService';
+import { QrMenusRepository } from '../../data-access/repositories/qrMenusRepository';
 
 type CreateQrMenuRequest = components['schemas']['CreateQrMenuRequest'];
 
-export const qrMenuService = new QrMenuService(qrMenusRepository);
+export const qrMenuService = new QrMenuService(new QrMenusRepository());
 
 export const POST: Operation = [
   async (req, res) => {
@@ -44,7 +44,7 @@ POST.apiDoc = {
 
 export const GET: Operation = [
   async (req, res) => {
-    const qrMenus = await qrMenusRepository.listQrMenus();
+    const qrMenus = await qrMenuService.listQrMenus();
     res.status(200).json(qrMenus);
   },
 ];

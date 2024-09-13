@@ -1,32 +1,31 @@
-import express, { Request, Response } from "express";
-import cors from "cors";
-import { initialize } from "express-openapi";
-import { resolve } from "path";
-import swaggerUi from "swagger-ui-express";
-import multer from "multer";
-import { connectToDatabase } from "./repositories/connection";
-import { connectoToRabbitMQ } from "./queue/connection";
-import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from "./presentation/routes/menus";
-
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import { initialize } from 'express-openapi';
+import { resolve } from 'path';
+import swaggerUi from 'swagger-ui-express';
+import multer from 'multer';
+import { connectoToRabbitMQ } from './queue/connection';
+import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from './presentation/routes/menus';
+import { connectToDatabase } from './config/db';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 const corsOptions = {
   credentials: true,
-  origin: ["http://localhost:4200"],
+  origin: ['http://localhost:4200'],
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 
 initialize({
-  apiDoc: "./src/presentation/api-doc.yaml",
+  apiDoc: './src/presentation/api-doc.yaml',
   // apiDoc: "./API/src/api-doc.yaml",
   app: app,
   promiseMode: true,
-  paths: resolve(__dirname, "presentation", "routes"),
+  paths: resolve(__dirname, 'presentation', 'routes'),
   // paths: "./src/routes",
-  routesGlob: "**/*.{ts,js}",
+  routesGlob: '**/*.{ts,js}',
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
   consumesMiddleware: {
     'multipart/form-data': function (req, res, next) {
@@ -39,29 +38,29 @@ initialize({
         }
         return next();
       });
-    }
-  }
+    },
+  },
 });
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, TypeScript Express!");
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello, TypeScript Express!');
 });
 
-app.get("/api/GetUserProfile", (req: Request, res: Response) => {
+app.get('/api/GetUserProfile', (req: Request, res: Response) => {
   res.json({
-    email: "mityy2012@gmail.com",
-    userId: "1",
+    email: 'mityy2012@gmail.com',
+    userId: '1',
   });
 });
 
 app.use(
-  "/api-documentation",
+  '/api-documentation',
   swaggerUi.serve,
   swaggerUi.setup(
     {},
     {
       swaggerOptions: {
-        url: "http://localhost:3000/api-docs",
+        url: 'http://localhost:3000/api-docs',
       },
     }
   )
@@ -76,12 +75,13 @@ connectToDatabase()
         });
         listenToMenuParsingStatusQueue();
         listenToMenuOcrStatusQueue();
-      }).catch((error: Error) => {
-        console.error("RabbitMQ connection failed", error);
+      })
+      .catch((error: Error) => {
+        console.error('RabbitMQ connection failed', error);
         process.exit();
       });
   })
   .catch((error: Error) => {
-    console.error("Database connection failed", error);
+    console.error('Database connection failed', error);
     process.exit();
   });

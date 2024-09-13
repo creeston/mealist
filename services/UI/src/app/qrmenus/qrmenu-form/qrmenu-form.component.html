@@ -59,17 +59,17 @@
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label [translate]="'code.menu.choose'"></mat-label>
-            <mat-select (selectionChange)="onMenuSelected(menuItem, $event)" [(ngModel)]="menuItem.entity">
+            <!-- <mat-select (selectionChange)="onMenuSelected(menuItem, $event)" [(ngModel)]="menuItem.entity">
               <mat-option *ngFor="let menu of menus; let i = index" [value]="menu">{{ menu.name }}</mat-option>
-            </mat-select>
+            </mat-select> -->
           </mat-form-field>
-          <mat-form-field appearance="fill" *ngIf="menuItem.entity" class="page-selector">
+          <!-- <mat-form-field appearance="fill" *ngIf="menuItem.entity" class="page-selector">
             <mat-label [translate]="'code.menu.choose_page'"></mat-label>
             <mat-select [(ngModel)]="menuItem.thumbnailIndex">
               <mat-option *ngFor="let image of menuItem.menu!.pages!; let i = index" [value]="i">{{ i + 1
                 }}</mat-option>
             </mat-select>
-          </mat-form-field>
+          </mat-form-field> -->
         </div>
       </div>
       <button mat-button (click)="addMenuField()">
@@ -186,7 +186,7 @@
           [formControl]="previewIndexControl">
           <mat-option [value]="-1"></mat-option>
           <mat-option *ngFor="let menuItem of qrmenu.items; let i = index" [value]="i">
-            <span *ngIf="menuItem.entity">{{ menuItem.entity }}</span>
+            <!-- <span *ngIf="menuItem.entity">{{ menuItem.entity }}</span> -->
           </mat-option>
         </mat-select>
       </mat-form-field>

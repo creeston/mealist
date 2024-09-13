@@ -42,7 +42,7 @@ export class MenuCardComponent implements OnInit {
     private translate: TranslateService,
     public translateHelper: TranslateHelperClass,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.previewImageUrl =
@@ -93,8 +93,8 @@ export class MenuCardComponent implements OnInit {
       return 'OCR в процессе';
     } else if (status === 'OCR_COMPLETED') {
       return 'OCR завершен';
-    } else if (status == "REVIEWED") {
-      return "Проверено";
+    } else if (status == 'REVIEWED') {
+      return 'Проверено';
     }
 
     return status;
@@ -111,7 +111,7 @@ export class MenuCardComponent implements OnInit {
       return;
     }
 
-    this.translate.get('menu.delete_confirmation').subscribe((text) => {
+    this.translate.get('menu.delete_confirmation').subscribe((text: string) => {
       const dialogRef = this.dialog.open(ConfirmationDialog, {
         width: '350px',
         panelClass: 'mat-dialog-confirmation-container',
@@ -156,7 +156,7 @@ export class MenuCardComponent implements OnInit {
         this.opacity = 1;
         this.refreshDisabled = false;
       },
-      (e) => {
+      (e: any) => {
         // this.notify.error(e);
         this.opacity = 1;
         this.refreshDisabled = false;

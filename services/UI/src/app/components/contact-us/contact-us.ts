@@ -47,8 +47,8 @@ export class ContactUsDialog {
     let email = this.globals.isLogged
       ? this.globals.email
       : this.emailFormControl.value;
-    this.translate.get('contact.feedback_sent').subscribe((text) => {
-      this.translate.get('close').subscribe((closeText) => {
+    this.translate.get('contact.feedback_sent').subscribe((text: string) => {
+      this.translate.get('close').subscribe((closeText: string) => {
         this.service
           .sendFeedback(this.feedbackControl.value ?? '', email ?? '')
           .subscribe(

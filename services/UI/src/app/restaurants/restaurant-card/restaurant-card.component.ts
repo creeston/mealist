@@ -34,7 +34,7 @@ export class RestaurantCardComponent implements OnInit {
   ngOnInit(): void {}
 
   deleteRestaurant(rest: Restaurant) {
-    this.translate.get('rest.delete_confirmation').subscribe((text) => {
+    this.translate.get('rest.delete_confirmation').subscribe((text: string) => {
       const dialogRef = this.dialog.open(ConfirmationDialog, {
         width: '350px',
         panelClass: 'mat-dialog-confirmation-container',

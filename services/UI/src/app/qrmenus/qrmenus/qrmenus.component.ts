@@ -24,17 +24,17 @@ export class QrMenusComponent implements OnInit {
     public screen: ScreenService,
     private router: Router,
     private service: QrMenuService,
-    private restService: RestaurantService,
-  ) { }
+    private restService: RestaurantService
+  ) {}
 
   ngOnInit(): void {
-    this.restService.listRestaurants()?.subscribe((rests) => {
-      this.restaurants = rests as Restaurant[];
+    this.restService.listRestaurants().then((restaurants: Restaurant[]) => {
+      this.restaurants = restaurants;
       this.refresh();
     });
   }
 
-  ngAfterViewInit(): void { }
+  ngAfterViewInit(): void {}
 
   silentRefresh() {
     this.service.list()?.then((data: QrMenu[] | undefined) => {
@@ -46,14 +46,17 @@ export class QrMenusComponent implements OnInit {
 
   refresh() {
     this.dataLoaded = false;
-    this.service.list()?.then((data: QrMenu[] | undefined) => {
-      if (!data) {
-        return;
-      }
-      this.qrMenus = data;
-    }).finally(() => {
-      this.dataLoaded = true;
-    });
+    this.service
+      .list()
+      ?.then((data: QrMenu[] | undefined) => {
+        if (!data) {
+          return;
+        }
+        this.qrMenus = data;
+      })
+      .finally(() => {
+        this.dataLoaded = true;
+      });
   }
 
   createCode() {

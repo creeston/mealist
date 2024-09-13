@@ -1,7 +1,7 @@
-import { Request } from "express";
-import { Operation } from "express-openapi";
-import { Response } from "express";
-import { menusService } from "../menus";
+import { Request } from 'express';
+import { Operation } from 'express-openapi';
+import { Response } from 'express';
+import { menusService } from '../menus';
 
 export const GET: Operation = [
   async (req: Request, res: Response) => {
@@ -12,31 +12,30 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Get Menu",
-  operationId: "getMenu",
-  tags: ["menus"],
+  description: 'Get Menu',
+  operationId: 'getMenu',
+  tags: ['menus'],
   parameters: [
     {
-      name: "id",
-      in: "path",
+      name: 'id',
+      in: 'path',
       required: true,
       schema: {
-        type: "string",
+        type: 'string',
       },
-      description: "Menu ID",
+      description: 'Menu ID',
     },
   ],
   responses: {
     200: {
-      description: "Menu",
+      description: 'Menu',
       content: {
-        "application/json": {
+        'application/json': {
           schema: {
-            $ref: "#/components/schemas/Menu",
+            $ref: '#/components/schemas/Menu',
           },
         },
       },
     },
   },
 };
-

@@ -27,7 +27,7 @@ export class MenusComponent implements OnInit {
     public screen: ScreenService,
     private service: MenuService,
     private sidenavService: SidenavService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.sidenavService.openIfNeeded();
@@ -56,7 +56,7 @@ export class MenusComponent implements OnInit {
 
   createMenu() {
     const dialogRef = this.dialog.open(MenuFormDialog, { width: '350px' });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
         this.forceRefresh();
       }
@@ -68,7 +68,7 @@ export class MenusComponent implements OnInit {
       width: '350px',
       data: event,
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
         this.forceRefresh();
       }

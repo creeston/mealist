@@ -63,6 +63,7 @@ export interface components {
     QrMenu: {
       id?: string;
       name?: string;
+      displayName?: string;
       restaurant?: components["schemas"]["Restaurant"];
       primaryColor?: string;
       secondaryColor?: string;
@@ -85,6 +86,7 @@ export interface components {
     };
     CreateQrMenuRequest: {
       name?: string;
+      displayName?: string;
       primaryColor?: string;
       secondaryColor?: string;
       fontColor?: string;

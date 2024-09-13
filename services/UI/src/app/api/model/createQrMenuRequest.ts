@@ -14,6 +14,7 @@ import { CreateQrMenuItem } from './createQrMenuItem';
 
 export interface CreateQrMenuRequest { 
     name?: string;
+    displayName?: string;
     primaryColor?: string;
     secondaryColor?: string;
     fontColor?: string;

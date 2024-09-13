@@ -1,47 +1,75 @@
-import { QrMenuModel } from '../models/qrmenu';
+import { CreateQrMenuRequest, QrMenu, QrMenuStyle } from '../domain/models/qrmenu';
 import { components } from '../presentation/api';
-import { QrMenusRepository } from '../repositories/qrMenusRepository';
+import { QrMenusRepository } from '../data-access/repositories/qrMenusRepository';
 
 type QrMenuResponseModel = components['schemas']['QrMenu'];
-type CreateQrMenuRequest = components['schemas']['CreateQrMenuRequest'];
+type CreateQrMenuApiRequest = components['schemas']['CreateQrMenuRequest'];
 
 export class QrMenuService {
   constructor(private qrMenusRepository: QrMenusRepository) {}
 
-  async createQrMenu(creationRequest: CreateQrMenuRequest): Promise<QrMenuModel> {
-    const qrMenu: QrMenuModel = {
-      name: creationRequest.name || '',
-      displayName: creationRequest.name || '', // Assuming displayName is same as name
+  async createQrMenu(creationRequest: CreateQrMenuApiRequest): Promise<QrMenuResponseModel> {
+    const qrMenu = await this.qrMenusRepository.createQrMenu({
+      name: creationRequest.name,
       restaurantId: creationRequest.restaurantId,
-      primaryColor: creationRequest.primaryColor || '',
-      secondaryColor: creationRequest.secondaryColor || '',
-      fontColor: creationRequest.fontColor || '',
-      scanCount: 0, // Assuming scanCount starts at 0
-      stopList: [], // Assuming stopList starts empty
-      hideSections: [], // Assuming hideSections starts empty
-      previewIndex: creationRequest.previewIndex || 0,
-      urlSuffix: creationRequest.urlSuffix || '',
+      style: {
+        displayName: creationRequest.displayName,
+        primaryColor: creationRequest.primaryColor,
+        secondaryColor: creationRequest.secondaryColor,
+        fontColor: creationRequest.fontColor,
+        previewIndex: creationRequest.previewIndex,
+      } as QrMenuStyle,
+      urlSuffix: creationRequest.urlSuffix,
       items:
         creationRequest.items?.map((item) => ({
           menuId: item.menuId,
-          title: item.title,
-          thumbnailIndex: item.thumbnailIndex,
-        })) || [],
+          style: {
+            thumbnailIndex: item.thumbnailIndex,
+            title: item.title,
+          },
+        })) ?? [],
       creationDate: new Date().toISOString(), // Assuming creationDate is now
-      modificationDate: new Date().toISOString(), // Assuming modificationDate is now
+    } as CreateQrMenuRequest);
+
+    return this.mapDomainToApiModel(qrMenu);
+  }
+
+  async getQrMenuById(qrMenuId: string): Promise<QrMenuResponseModel | null> {
+    const qrMenu = await this.qrMenusRepository.getQrMenuById(qrMenuId);
+    if (!qrMenu) {
+      return null;
+    }
+
+    return this.mapDomainToApiModel(qrMenu);
+  }
+
+  async listQrMenus(): Promise<QrMenuResponseModel[]> {
+    const menus = await this.qrMenusRepository.listQrMenus();
+    return menus.map(this.mapDomainToApiModel);
+  }
+
+  async updateQrMenu(qrMenu: QrMenu): Promise<void> {
+    await this.qrMenusRepository.updateQrMenu(qrMenu);
+  }
+
+  private mapDomainToApiModel(qrMenu: QrMenu): QrMenuResponseModel {
+    return {
+      id: qrMenu.id,
+      name: qrMenu.name,
+      restaurant: qrMenu.restaurant,
+      primaryColor: qrMenu.style.primaryColor,
+      secondaryColor: qrMenu.style.secondaryColor,
+      fontColor: qrMenu.style.fontColor,
+      scanCount: qrMenu.stats.scanCount,
+      previewIndex: qrMenu.style.previewIndex,
+      urlSuffix: qrMenu.urlSuffix,
+      items: qrMenu.items.map((item) => ({
+        menuId: item.menu.id,
+        title: item.style.title,
+        thumbnailIndex: item.style.thumbnailIndex,
+      })),
+      creationDate: qrMenu.creationDate,
+      modificationDate: qrMenu.modificationDate,
     };
-    return this.qrMenusRepository.createQrMenu(qrMenu);
-  }
-
-  async getQrMenuById(qrMenuId: string): Promise<QrMenuModel | null> {
-    return this.qrMenusRepository.getQrMenuById(qrMenuId);
-  }
-
-  async listQrMenus(): Promise<QrMenuModel[]> {
-    return this.qrMenusRepository.listQrMenus();
-  }
-
-  async updateQrMenu(qrMenu: QrMenuModel): Promise<void> {
-    return this.qrMenusRepository.updateQrMenu(qrMenu);
   }
 }

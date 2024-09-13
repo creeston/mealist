@@ -15,7 +15,7 @@ import { RestaurantMapComponent } from './restaurant-map/restaurant-map.componen
     RestaurantCardComponent,
     RestaurantsComponent,
     RestaurantFormDialog,
-    RestaurantMapComponent
+    RestaurantMapComponent,
   ],
   imports: [
     CommonModule,
@@ -32,4 +32,4 @@ import { RestaurantMapComponent } from './restaurant-map/restaurant-map.componen
     }),
   ],
 })
-export class RestaurantsModule { }
+export class RestaurantsModule {}

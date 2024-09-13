@@ -73,11 +73,11 @@ export class EditMealsComponent implements OnInit {
       stopLists.push(disabledMeals);
     });
     this.service.updateStopList(this.data.menu.id, stopLists).subscribe(
-      (r) => {
+      (r: any) => {
         this.saveDisabled = false;
         this.dialogRef.close(stopLists);
       },
-      (e) => {
+      (e: any) => {
         // this.notify.error(e);
         this.saveDisabled = false;
       }
