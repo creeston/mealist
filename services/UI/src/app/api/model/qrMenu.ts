@@ -23,7 +23,7 @@ export interface QrMenu {
     fontColor?: string;
     scanCount?: number;
     stopList?: Array<string>;
-    hideSections?: Array<string>;
+    sectionsToShow?: Array<string>;
     previewIndex?: number;
     urlSuffix?: string;
     items?: Array<QrMenuItem>;

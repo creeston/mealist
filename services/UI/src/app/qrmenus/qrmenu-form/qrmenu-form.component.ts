@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { RestaurantService } from '../../services/restaurant.service';
 import { MenuService } from '../../services/menu.service';
-import { QrItem, QrMenuService } from '../../services/qrmenu.service';
+import { QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
@@ -26,13 +26,11 @@ const PLACEHOLDER_URL = 'assets/placeholder.png';
   styleUrls: ['./qrmenu-form.component.css'],
 })
 export class QrMenuFormComponent {
-  Arr = Array;
-
   public disabled = false;
   public restaurantsLoaded = false;
   public menusLoaded = false;
   public creationAttempt = false;
-  public rests: Restaurant[] = [];
+  public restaurants: Restaurant[] = [];
   public menus: Menu[] = [];
   public menuFieldsCount = 1;
   public loading: boolean = true;
@@ -41,14 +39,16 @@ export class QrMenuFormComponent {
     secondaryColor: '#A0B454b0',
     fontColor: '#FFFFFF',
     urlSuffix: this.makeid(5),
+    items: [],
   };
   public previewImage: string = PLACEHOLDER_URL;
   public uploadedCustomPreview: string = '';
   public menuLoading: boolean = false;
   public mode: string = 'plain';
 
-  public menuNameControl = new FormControl('', []);
-  public restControl = new FormControl('', []);
+  public qrMenuNameControl = new FormControl('', []);
+  public restaurantNameControl = new FormControl('', []);
+  public primaryColorControl = new FormControl('989089');
   public previewIndexControl = new FormControl('', []);
   public urlSuffixControl = new FormControl({
     value: this.qrmenu.urlSuffix,
@@ -102,11 +102,19 @@ export class QrMenuFormComponent {
   ) {}
 
   ngOnInit() {
-    let restPromise = this.restService.listRestaurants();
+    this.primaryColorControl.valueChanges.subscribe((value) => {
+      if (value && value.startsWith('#')) {
+        // Prepend the '#' if it is missing
+        value = value.substr(1);
+        this.primaryColorControl.setValue(`${value}`, { emitEvent: false });
+      }
+    });
+
+    let restaurantsPromise = this.restService.listRestaurants();
     let menusPromise = this.menuService.listMenus();
 
-    restPromise.then((data: any) => {
-      this.rests = data;
+    restaurantsPromise.then((data: any) => {
+      this.restaurants = data;
       this.restaurantsLoaded = true;
     });
     menusPromise.then((data: any) => {
@@ -119,69 +127,69 @@ export class QrMenuFormComponent {
       if (!this.menuId) {
         this.loading = false;
       } else {
-        this.loadMenu(restPromise, menusPromise);
+        this.loadExistingQrMenu(restaurantsPromise, menusPromise).finally(
+          () => {
+            this.loading = false;
+          }
+        );
       }
     });
   }
 
-  loadMenu(restPromise: any, menusPromise: any) {
-    this.qrMenuService
-      .getMenu(this.menuId!, this.globals.userId)
-      .then((r: QrMenu) => {
-        let menu = r;
-        this.qrmenu.previewIndex = menu.previewIndex;
-        if (menu.previewIndex === -1) {
-          this.previewImage =
-            'https://qrmenuapistorage.blob.core.windows.net/preview/' +
-            r.urlSuffix +
-            '.jpg';
-        }
-        this.qrmenu.name = menu.name;
-        this.qrmenu.displayName = menu.displayName;
-        this.qrmenu.primaryColor = menu.primaryColor;
-        this.qrmenu.secondaryColor = menu.secondaryColor;
-        this.qrmenu.hideSections = menu.hideSections;
+  async loadExistingQrMenu(restaurantsPromise: any, menusPromise: any) {
+    const qrMenu = await this.qrMenuService.getMenu(
+      this.menuId!,
+      this.globals.userId
+    );
+    this.qrmenu.previewIndex = qrMenu.previewIndex;
+    if (qrMenu.previewIndex === -1) {
+      this.previewImage =
+        'https://qrmenuapistorage.blob.core.windows.net/preview/' +
+        qrMenu.urlSuffix +
+        '.jpg';
+    }
+    this.qrmenu.name = qrMenu.name;
+    this.qrmenu.displayName = qrMenu.displayName;
+    this.qrmenu.primaryColor = qrMenu.primaryColor;
+    this.qrmenu.secondaryColor = qrMenu.secondaryColor;
+    this.qrmenu.sectionsToShow = qrMenu.sectionsToShow;
 
-        this.qrmenu.urlSuffix = menu.urlSuffix;
-        this.urlSuffixControl.setValue(menu.urlSuffix);
-        this.menuNameControl.setValue(menu.name ?? '');
+    this.qrmenu.urlSuffix = qrMenu.urlSuffix;
+    this.urlSuffixControl.setValue(qrMenu.urlSuffix);
+    this.qrMenuNameControl.setValue(qrMenu.name ?? '');
 
-        restPromise.subscribe((rests: any) => {
-          let restId = rests.findIndex(
-            (r: Restaurant) => r.id == menu.restaurant!.id
-          );
-          this.qrmenu.restaurant = this.rests[restId];
-          this.restControl.setValue(this.qrmenu.restaurant?.name ?? '');
-          this.onRestaurantChange(this.qrmenu.restaurant, menu.hideSections);
-          menusPromise.subscribe((menus: Menu[]) => {
-            menu.items?.forEach((item: QrMenuItem) => {
-              let title = item.title;
-              let firstImage = item.menu!.pages![0].imageUrl;
-              let menuIdx = menus.findIndex(
-                (m: any) => m.images[0] == firstImage
-              );
-              let menuItem = this.menus[menuIdx];
-              let qrItem = {
-                title: title,
-                thumbnailIndex: item.thumbnailIndex,
-                menu: menuItem,
-              } as QrMenuItem;
-              this.qrmenu.items!.push(qrItem);
-              this.loading = false;
-            });
-
-            if (this.qrmenu.previewIndex! >= 0) {
-              let previewMenuItem =
-                this.qrmenu.items![this.qrmenu.previewIndex!];
-              this.previewImage =
-                previewMenuItem.menu!.pages![
-                  previewMenuItem.thumbnailIndex!
-                ]!.imageUrl;
-              this.previewIndexControl.setValue(this.qrmenu.previewIndex + '');
-            }
-          });
+    restaurantsPromise.subscribe((rests: any) => {
+      let restId = rests.findIndex(
+        (r: Restaurant) => r.id == qrMenu.restaurant!.id
+      );
+      this.qrmenu.restaurant = this.restaurants[restId];
+      this.restaurantNameControl.setValue(this.qrmenu.restaurant?.name ?? '');
+      this.onRestaurantChange(this.qrmenu.restaurant, qrMenu.sectionsToShow);
+      menusPromise.subscribe((menus: Menu[]) => {
+        qrMenu.items?.forEach((item: QrMenuItem) => {
+          let title = item.title;
+          let firstImage = item.menu!.pages![0].imageUrl;
+          let menuIdx = menus.findIndex((m: any) => m.images[0] == firstImage);
+          let menuItem = this.menus[menuIdx];
+          let qrItem = {
+            title: title,
+            thumbnailIndex: item.thumbnailIndex,
+            menu: menuItem,
+          } as QrMenuItem;
+          this.qrmenu.items!.push(qrItem);
+          this.loading = false;
         });
+
+        if (this.qrmenu.previewIndex! >= 0) {
+          let previewMenuItem = this.qrmenu.items![this.qrmenu.previewIndex!];
+          this.previewImage =
+            previewMenuItem.menu!.pages![
+              previewMenuItem.thumbnailIndex!
+            ]!.imageUrl;
+          this.previewIndexControl.setValue(this.qrmenu.previewIndex + '');
+        }
       });
+    });
   }
 
   ngAfterViewInit(): void {
@@ -195,7 +203,7 @@ export class QrMenuFormComponent {
     }
   }
 
-  onRestaurantChange(rest: Restaurant, hideSections: string[] = []) {
+  onRestaurantChange(rest: Restaurant, sectionsToShow: string[] = []) {
     this.qrmenu.restaurant = rest;
     this.restaurantSections = [];
     if (rest.address) {
@@ -231,20 +239,20 @@ export class QrMenuFormComponent {
         checked: true,
       });
     }
-    if (hideSections.length == 0) {
-      this.qrmenu.hideSections = this.restaurantSections
-        .filter((s: any) => !s.checked)
+    if (sectionsToShow.length == 0) {
+      this.qrmenu.sectionsToShow = this.restaurantSections
+        .filter((s: any) => s.checked)
         .map((s: any) => s.key);
     } else {
       this.restaurantSections.forEach((s: any) => {
-        s.checked = !hideSections.includes(s.key);
+        s.checked = sectionsToShow.includes(s.key);
       });
     }
   }
 
-  updateRestSections() {
-    this.qrmenu.hideSections = this.restaurantSections
-      .filter((s: any) => !s.checked)
+  updateRestaurantSections() {
+    this.qrmenu.sectionsToShow = this.restaurantSections
+      .filter((s: any) => s.checked)
       .map((s: any) => s.key);
   }
 
@@ -277,8 +285,9 @@ export class QrMenuFormComponent {
     } as QrMenuItem);
   }
 
-  removeMenuField() {
-    this.qrmenu.items = this.qrmenu.items!.slice(0, -1);
+  removeMenuField(i: number) {
+    // this.qrmenu.items = this.qrmenu.items!.slice(0, -1);
+    this.qrmenu.items = this.qrmenu.items!.filter((item, index) => index !== i);
   }
 
   async createCode() {
@@ -308,14 +317,14 @@ export class QrMenuFormComponent {
     // this.addQrMenuToFormData(formData, qrModel);
 
     const creationRequest = {
-      name: this.menuNameControl.value ?? '',
+      name: this.qrMenuNameControl.value ?? '',
       displayName: this.qrmenu.displayName,
       restaurantId: this.qrmenu.restaurant!.id,
       primaryColor: this.qrmenu.primaryColor,
       secondaryColor: this.qrmenu.secondaryColor,
       fontColor: this.qrmenu.fontColor,
       urlSuffix: this.urlSuffixControl.value ?? '',
-      hideSections: this.qrmenu.hideSections,
+      sectionsToShow: this.qrmenu.sectionsToShow,
       items: menuItems,
     } as CreateQrMenuRequest;
 
@@ -336,14 +345,14 @@ export class QrMenuFormComponent {
     );
 
     let qrModel = {
-      name: this.menuNameControl.value ?? '',
+      name: this.qrMenuNameControl.value ?? '',
       displayName: this.qrmenu.displayName,
       restaurant: this.qrmenu.restaurant,
       primaryColor: this.qrmenu.primaryColor,
       secondaryColor: this.qrmenu.secondaryColor,
       fontColor: this.qrmenu.fontColor,
       urlSuffix: this.urlSuffixControl.value ?? '',
-      hideSections: this.qrmenu.hideSections,
+      sectionsToShow: this.qrmenu.sectionsToShow,
       items: menuItems,
       previewIndex: this.qrmenu.previewIndex,
     } as QrMenu;
@@ -364,14 +373,14 @@ export class QrMenuFormComponent {
 
   validate() {
     let isValid = true;
-    if (!this.menuNameControl.value) {
-      this.menuNameControl.setErrors({ empty: true });
-      this.menuNameControl.markAsTouched();
+    if (!this.qrMenuNameControl.value) {
+      this.qrMenuNameControl.setErrors({ empty: true });
+      this.qrMenuNameControl.markAsTouched();
       isValid = false;
     }
-    if (!this.restControl.value) {
+    if (!this.restaurantNameControl.value) {
       isValid = false;
-      this.restControl.setErrors({ empty: true });
+      this.restaurantNameControl.setErrors({ empty: true });
     }
 
     if (this.isAnyMenuItem()) {

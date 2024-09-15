@@ -16,6 +16,8 @@ import { NgxKjuaComponent } from 'ngx-kjua';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { QrmenuCardComponent } from './qrmenu-card/qrmenu-card.component';
+import { QrmenuPreviewComponent } from './qrmenu-preview/qrmenu-preview.component';
+import { MccColorPickerModule } from 'material-community-components/color-picker';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,7 @@ import { QrmenuCardComponent } from './qrmenu-card/qrmenu-card.component';
     EditMealsComponent,
     QrMenuComponent,
     SearchFilterPipe,
+    QrmenuPreviewComponent,
   ],
   imports: [
     NgxKjuaComponent,
@@ -34,6 +37,7 @@ import { QrmenuCardComponent } from './qrmenu-card/qrmenu-card.component';
     AngularMaterialModule,
     ReactiveFormsModule,
     FormsModule,
+    MccColorPickerModule,
     TranslateModule.forRoot({
       defaultLanguage: 'ru',
       loader: {

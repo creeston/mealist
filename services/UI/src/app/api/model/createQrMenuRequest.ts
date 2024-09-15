@@ -22,5 +22,6 @@ export interface CreateQrMenuRequest {
     urlSuffix?: string;
     items?: Array<CreateQrMenuItem>;
     restaurantId: string;
+    sectionsToShow?: Array<string>;
 }
 

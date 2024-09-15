@@ -1,0 +1,102 @@
+.preview-container {
+  width: 466px;
+}
+
+.col-fixed {
+  flex: initial;
+}
+
+.col-preview {
+  transition: width 0.3s ease-in-out;
+}
+
+.col {
+  box-sizing: border-box;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  -ms-flex-preferred-size: 0;
+  -webkit-flex-basis: 0;
+  flex-basis: 0;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 12px 0 12px;
+  position: relative;
+}
+
+.redesign {
+  line-height: normal;
+}
+
+.data__mockup {
+  margin-left: 0px;
+}
+
+.redesign .preview .preview-smartphone .preview-smartphone-wrapper {
+  position: absolute;
+  top: 70px;
+  left: 17px;
+  width: 320px;
+  height: 516px;
+}
+
+.col-preview .redesign .preview .mockup__smartphone-wrapper {
+  position: relative;
+}
+
+.col-preview .redesign .preview.mockup__preview.active {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  visibility: visible;
+  overflow: visible;
+}
+
+.redesign .preview-smartphone {
+  background-image: url("/assets/preview-iphone-new.png") !important;
+  background-repeat: no-repeat;
+  height: 670px;
+}
+
+#smartphonePlaceholder iframe {
+  height: 516px;
+  width: 100%;
+  border: 0;
+}
+
+#smartphonePlaceholder .angularPreviewWrapper {
+  overflow: scroll;
+  overflow-x: hidden;
+  width: 320px;
+  height: 100%;
+}
+
+.redesign
+  .preview
+  .preview-smartphone
+  .preview-smartphone-wrapper
+  #smartphonePlaceholder {
+  border: none;
+  width: 320px;
+  height: 516px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.state-generator-data #smartphonePlaceholder {
+  display: block !important;
+}
+
+#smartphonePlaceholder {
+  overflow: scroll !important;
+  overflow-x: hidden !important;
+}
+
+.ratchet {
+  position: relative;
+  text-align: left;
+}

@@ -1,0 +1,29 @@
+<div class="preview-container col col-fixed col-preview">
+  <div class="redesign data__mockup">
+    <div
+      class="preview clearfix mockup__preview active affix-top"
+      data-spy="affix"
+      data-offset-top="26"
+    >
+      <div
+        class="preview-smartphone clearfix active mockup__smartphone animation_none"
+      >
+        <div
+          class="preview-smartphone-wrapper noVideo mockup__smartphone-wrapper ng-scope"
+          style="display: block"
+        >
+          <div id="smartphonePlaceholder" class="placeholder ratchet">
+            <div class="angularPreviewWrapper compiled custom-scrollbar">
+              <app-qr-menu
+                (qrMenuParam)="(qrmenu)"
+                (previewImageParam)="(previewImageParam)"
+                (menuLoading)="(menuLoading)"
+                (colorDetected)="onColorDetected($event)"
+              ></app-qr-menu>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

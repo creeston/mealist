@@ -9,11 +9,7 @@ import {
   ElementRef,
   HostListener,
 } from '@angular/core';
-import {
-  QrItem,
-  QrMenuService,
-  QrRoutingParams,
-} from '../../services/qrmenu.service';
+import { QrMenuService, QrRoutingParams } from '../../services/qrmenu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
 import { QrMenu, QrMenuItem } from '../../api';
@@ -102,11 +98,13 @@ export class QrMenuComponent implements OnInit {
       } else {
         this.menuId = p.menuId;
         this.userId = p.userId;
-        this.service.getMenu(this.menuId!, this.userId!).then((r: QrMenu) => {
-          this.menu = r;
-          this.setMenuColors();
-          this.initializeMenuImages();
-        });
+        if (this.menuId && this.userId) {
+          this.service.getMenu(this.menuId!, this.userId!).then((r: QrMenu) => {
+            this.menu = r;
+            this.setMenuColors();
+            this.initializeMenuImages();
+          });
+        }
       }
     });
   }

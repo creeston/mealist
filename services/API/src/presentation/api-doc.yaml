@@ -153,7 +153,7 @@ components:
           type: array
           items:
             type: string
-        hideSections:
+        sectionsToShow:
           type: array
           items:
             type: string
@@ -206,6 +206,10 @@ components:
             $ref: "#/components/schemas/CreateQrMenuItem"
         restaurantId:
           type: string
+        sectionsToShow:
+          type: array
+          items:
+            type: string
       required:
         - menuId
         - restaurantId

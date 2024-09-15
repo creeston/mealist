@@ -6,9 +6,10 @@
   margin-top: 5px;
 }
 
-
 .field {
   width: 100%;
+  max-width: 450px;
+  display: block;
 }
 
 .menuThumbnail {
@@ -17,20 +18,10 @@
   margin-left: 10px;
 }
 
-.menuPreview {
-  width: 80px;
-  display: block;
-}
-
-.menuPreviewContainer {
-  width: 100px;
-}
-
 h4,
 h5 {
   margin: 0px;
 }
-
 
 .grid {
   box-sizing: border-box;
@@ -52,7 +43,6 @@ h5 {
   flex-wrap: wrap;
 }
 
-
 .col {
   box-sizing: border-box;
   -webkit-flex: 0 0 auto;
@@ -71,116 +61,10 @@ h5 {
   position: relative;
 }
 
-.col-fixed {
-  flex: initial;
-}
-
-.col-preview {
-  transition: width .3s ease-in-out;
-}
-
-.preview-container {
-  width: 466px;
-}
-
-.overflow_base {
-  background-color: #FFF;
-  border-color: #d4d4d4;
-  border-style: solid;
-  border-width: 0 1px;
-  position: fixed;
-  width: 468px;
-  top: 0;
-  z-index: 5;
-  min-height: 100vh;
-  -webkit-box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
-  -moz-box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.1);
-  box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
-  opacity: 0;
-  transition: opacity .3s ease-in-out;
-}
-
-.redesign {
-  line-height: normal;
-}
-
-
-.data__mockup {
-  margin-left: 0px;
-}
-
-#smartphonePlaceholder iframe {
-  height: 516px;
-  width: 100%;
-  border: 0;
-}
-
-#smartphonePlaceholder .angularPreviewWrapper {
-  overflow: scroll;
-  overflow-x: hidden;
-  width: 320px;
-  height: 100%;
-}
-
-.redesign .preview .preview-smartphone .preview-smartphone-wrapper #smartphonePlaceholder {
-  border: none;
-  /* background-color: #000; */
-  width: 320px;
-  height: 516px;
-  overflow: scroll;
-  overflow-x: hidden;
-}
-
-.state-generator-data #smartphonePlaceholder {
-  display: block !important;
-}
-
-#smartphonePlaceholder {
-  overflow: scroll !important;
-  overflow-x: hidden !important;
-  /* background: #eee !important; */
-}
-
-.ratchet {
-  position: relative;
-  text-align: left;
-}
-
-.redesign .preview .preview-smartphone .preview-smartphone-wrapper {
-  position: absolute;
-  top: 70px;
-  left: 17px;
-  width: 320px;
-  height: 516px;
-}
-
-.col-preview .redesign .preview .mockup__smartphone-wrapper {
-  /*border: 1px solid #d3d3d3;
-  top: 45px !important;
-  left: 12px !important;
-  width: 322px !important;*/
-  position: relative;
-}
-
-.col-preview .redesign .preview.mockup__preview.active {
-  width: 100%;
-  height: 100%;
-  opacity: 1;
-  visibility: visible;
-  overflow: visible;
-}
-
-.redesign .preview-smartphone {
-  background-image: url("/assets/preview-iphone-new.png") !important;
-  background-repeat: no-repeat;
-  height: 670px;
-}
-
 .create-button {
   text-align: center;
   margin-right: 90px;
 }
-
 
 /* custom scrollbar */
 ::-webkit-scrollbar {
@@ -202,7 +86,6 @@ h5 {
   background-color: #a8bbbf;
 }
 
-
 .page-selector {
   margin-left: 10px;
 }
@@ -217,7 +100,6 @@ h5 {
   margin-left: 20px;
 }
 
-
 .round-slider {
   width: 245px;
 }
@@ -226,7 +108,7 @@ h5 {
   width: 240px;
 }
 
-.round-container>p {
+.round-container > p {
   margin-bottom: -15px;
 }
 
@@ -242,29 +124,15 @@ h5 {
   margin-right: 10px;
 }
 
-
 ::ng-deep .mat-step-header .mat-step-icon-selected {
-  background-color: #A0B454b0;
+  background-color: #a0b454b0;
 }
 
 ::ng-deep .mat-step-header .mat-step-icon-state-edit {
-  background-color: #A0B454b0;
+  background-color: #a0b454b0;
 }
 
 .menu-name-field {
-  width: 100%;
-  margin-left: 36px;
-  margin-top: 20px;
-}
-
-.menu-name-field .mat-form-field,
-.menu-url-field .mat-form-field {
-  max-width: 70%;
-  width: 500px;
-}
-
-.menu-url-field {
-  width: 100%;
   margin-left: 36px;
   margin-top: 20px;
 }
@@ -273,25 +141,39 @@ ul {
   list-style-type: none;
 }
 
-
-::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+::ng-deep
+  .mat-checkbox-checked.mat-accent
+  .mat-checkbox-ripple
+  .mat-ripple-element {
   opacity: 0.03 !important;
-  background-color: #A0B454b0 !important;
+  background-color: #a0b454b0 !important;
 }
 
 ::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,
 .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  background-color: #A0B454b0;
+  background-color: #a0b454b0;
 }
-
 
 .next-button {
   display: block;
 }
 
-
 .url-preifx {
   font-size: 15px;
   padding-bottom: 8px;
   border-bottom: 1px solid #00000085;
+}
+
+.stepper-content {
+  margin-top: 10px;
+}
+
+.menu-item-section {
+  padding-top: 10px;
+  border: 1px solid #d3d3d3;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
 }
