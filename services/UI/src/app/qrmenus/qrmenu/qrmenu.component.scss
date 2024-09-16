@@ -36,7 +36,7 @@
   margin-right: 20px;
 }
 
-.menu-restaurant>p {
+.menu-restaurant > p {
   margin: 0px;
 }
 
@@ -84,43 +84,6 @@
   // margin-top: 50px; // 20vh
   // height: calc(100% - 50px);
   top: 50px;
-}
-
-.gradient-border {
-  --border-width: 5px;
-
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Lato, sans-serif;
-  font-size: 2.5rem;
-  text-transform: uppercase;
-  color: white;
-  background: #222;
-  border-radius: var(--border-width);
-
-  height: 80%;
-}
-
-.gradient-border-after {
-  position: absolute;
-  content: "";
-  top: calc(-1 * var(--border-width));
-  left: calc(-1 * var(--border-width));
-  z-index: -1;
-  width: calc(100% + var(--border-width) * 2);
-  height: calc(100% + var(--border-width) * 2);
-  background-size: 300% 300%;
-  background-position: 0 50%;
-  border-radius: calc(2 * var(--border-width));
-  animation: moveGradient 4s alternate infinite;
-}
-
-@keyframes moveGradient {
-  50% {
-    background-position: 100% 50%;
-  }
 }
 
 .menu-thumbnail {
@@ -218,28 +181,28 @@ a {
   cursor: default;
 }
 
-.wifi-data>* .mat-icon {
+.wifi-data > * .mat-icon {
   height: 10px !important;
   width: 10px !important;
   font-size: 10px !important;
   line-height: 10px !important;
 }
 
-.wifi-data>.mat-icon-button {
-  height: 10px !important;
-  width: 10px !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+.wifi-data > .mat-icon-button {
+  // height: 10px !important;
+  // width: 10px !important;
+  // font-size: 10px !important;
+  // line-height: 10px !important;
 
   margin-left: 5px;
 }
 
-.wifi-data>.iconify {
+.wifi-data > .iconify {
   width: 10px;
   height: 10px;
 }
 
-.wifi-data>span {
+.wifi-data > span {
   margin-left: 2px;
 }
 
@@ -272,6 +235,10 @@ a {
   position: absolute;
   width: 100%;
   min-width: 200px;
+}
+
+.loading-image {
+  position: relative;
 }
 
 ::ng-deep .mat-progress-bar-fill::after {

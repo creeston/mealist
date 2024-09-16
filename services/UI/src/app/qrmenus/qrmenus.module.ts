@@ -19,6 +19,7 @@ import { QrmenuCardComponent } from './qrmenu-card/qrmenu-card.component';
 import { QrmenuPreviewComponent } from './qrmenu-preview/qrmenu-preview.component';
 import { MccColorPickerModule } from 'material-community-components/color-picker';
 import { ColorInputComponent } from '../components/color-input/color-input.component';
+import { GradientBorderComponent } from '../components/gradient-border/gradient-border.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ColorInputComponent } from '../components/color-input/color-input.compo
   imports: [
     NgxKjuaComponent,
     ColorInputComponent,
+    GradientBorderComponent,
     CommonModule,
     MatStepperModule,
     MatFormFieldModule,

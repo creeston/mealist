@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import ColorThief from 'colorthief';
 import {
   Directive,
   Output,
@@ -13,8 +12,6 @@ import { QrMenuService, QrRoutingParams } from '../../services/qrmenu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
 import { QrMenu, QrMenuItem } from '../../api';
-
-const colorThief = new ColorThief();
 
 @Component({
   selector: 'app-qr-menu',
@@ -48,12 +45,6 @@ export class QrMenuComponent implements OnInit {
   imagesData: any[] = [];
   previewMode = true;
   loading = true;
-  isColorDetected = false;
-  public color1 = '';
-  public color2 = '';
-  public color3 = '';
-  public color4 = '';
-
   Arr = Array;
 
   constructor(
@@ -134,42 +125,6 @@ export class QrMenuComponent implements OnInit {
       }
       this.loading = false;
     });
-  }
-
-  rgbToHex(r: number, g: number, b: number) {
-    return (
-      '#' +
-      [r, g, b]
-        .map((x) => {
-          const hex = x.toString(16);
-          return hex.length === 1 ? '0' + hex : hex;
-        })
-        .join('')
-    );
-  }
-
-  checkMenuColors() {
-    const img = document.querySelector('img.menu-thumbnail') as any;
-    img.crossOrigin = 'Anonymous';
-    let result = colorThief.getColor(img);
-    let palette = colorThief.getPalette(img);
-    let color1 = this.rgbToHex(result[0], result[1], result[2]);
-    let color2 = this.rgbToHex(palette[0][0], palette[0][1], palette[0][2]);
-    let color3 = this.rgbToHex(palette[1][0], palette[1][1], palette[1][2]);
-    let color4 = this.rgbToHex(palette[2][0], palette[2][1], palette[2][2]);
-    this.colorDetected.emit([color1, color2, color3, color4]);
-  }
-
-  checkColors() {
-    const img = document.querySelector('img.menu-thumbnail') as any;
-    img.crossOrigin = 'Anonymous';
-    let result = colorThief.getColor(img);
-    let palette = colorThief.getPalette(img);
-    this.color1 = this.rgbToHex(result[0], result[1], result[2]);
-    this.color2 = this.rgbToHex(palette[0][0], palette[0][1], palette[0][2]);
-    this.color3 = this.rgbToHex(palette[1][0], palette[1][1], palette[1][2]);
-    this.color4 = this.rgbToHex(palette[2][0], palette[2][1], palette[2][2]);
-    this.isColorDetected = true;
   }
 
   openMenu(menuItem: QrMenuItem) {

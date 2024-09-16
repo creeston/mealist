@@ -1,47 +1,27 @@
 <div #container class="container">
-  <mat-spinner
-    *ngIf="!qrMenu || menuLoading"
-    class="loading-spinner"
-  ></mat-spinner>
   <div
     *ngIf="!qrMenu || menuLoading"
-    class="gradient-border"
+    class="loading-image"
     [class.loadingplaceholder]="!previewMode"
     [class.previewloadingplaceholder]="previewMode"
     [class.menuloadingpreview]="menuLoading"
     [class.menuloading]="!menuLoading"
   >
-    <img
-      *ngIf="!previewImageParam"
-      [src]="
-        'https://qrmenuapistorage.blob.core.windows.net/preview/' +
-        urlSuffix +
-        '.jpg'
-      "
-      class="menu-thumbnail"
-      (loaded)="checkColors()"
-    />
-    <img
-      *ngIf="previewImageParam"
-      [src]="previewImageParam"
-      class="menu-thumbnail"
-      (loaded)="checkColors()"
-    />
-    <div
-      *ngIf="isColorDetected"
-      class="gradient-border-after"
-      [style.background-image]="
-        'linear-gradient(60deg,' +
-        color1 +
-        ',' +
-        color2 +
-        ',' +
-        color3 +
-        ',' +
-        color4 +
-        ')'
-      "
-    ></div>
+    <app-gradient-border *ngIf="previewImageParam">
+      <img #image [src]="previewImageParam" class="menu-thumbnail" />
+    </app-gradient-border>
+
+    <app-gradient-border *ngIf="!previewImageParam">
+      <img
+        #image
+        [src]="
+          'https://qrmenuapistorage.blob.core.windows.net/preview/' +
+          urlSuffix +
+          '.jpg'
+        "
+        class="menu-thumbnail"
+      />
+    </app-gradient-border>
   </div>
   <div class="back-button-container" *ngIf="selectedMenu">
     <button
@@ -83,7 +63,7 @@
         <span class="iconify" data-icon="mdi-wifi"></span>
         <span>WIFI: {{ qrMenu.restaurant.wifiName }}</span>
         <span>PASWORD: {{ qrMenu.restaurant.wifiPassword }}</span>
-        <button mat-icon-button>
+        <button mat-icon-button class="small-icon-button">
           <mat-icon>content_copy</mat-icon>
         </button>
       </div>
@@ -172,7 +152,6 @@
             *ngIf="
               item.thumbnailIndex !== undefined && item.thumbnailIndex >= 0
             "
-            (loaded)="checkMenuColors()"
           />
           <img
             src="assets/placeholder.png"
