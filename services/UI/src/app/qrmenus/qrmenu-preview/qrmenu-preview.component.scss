@@ -40,7 +40,7 @@
   position: absolute;
   top: 70px;
   left: 17px;
-  width: 320px;
+  width: 340px;
   height: 516px;
 }
 
@@ -62,16 +62,10 @@
   height: 670px;
 }
 
-#smartphonePlaceholder iframe {
-  height: 516px;
-  width: 100%;
-  border: 0;
-}
-
 #smartphonePlaceholder .angularPreviewWrapper {
   overflow: scroll;
   overflow-x: hidden;
-  width: 320px;
+  width: 340px;
   height: 100%;
 }
 
@@ -81,7 +75,7 @@
   .preview-smartphone-wrapper
   #smartphonePlaceholder {
   border: none;
-  width: 320px;
+  width: 340px;
   height: 516px;
   overflow: scroll;
   overflow-x: hidden;

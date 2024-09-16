@@ -1,7 +1,10 @@
 <div #container class="container">
-  <!-- <mat-spinner *ngIf="(!menu || menuLoading) && !userId" class="loading-spinner"></mat-spinner> -->
+  <mat-spinner
+    *ngIf="!qrMenu || menuLoading"
+    class="loading-spinner"
+  ></mat-spinner>
   <div
-    *ngIf="!menu || menuLoading"
+    *ngIf="!qrMenu || menuLoading"
     class="gradient-border"
     [class.loadingplaceholder]="!previewMode"
     [class.previewloadingplaceholder]="previewMode"
@@ -44,8 +47,8 @@
     <button
       type="button"
       mat-button
-      [style.backgroundColor]="menu!.secondaryColor"
-      [style.color]="menu!.fontColor"
+      [style.backgroundColor]="qrMenu!.secondaryColor"
+      [style.color]="qrMenu!.fontColor"
       (click)="container.scrollTop = 0; back()"
       [ngClass]="{
         'back-button': !previewMode,
@@ -56,111 +59,158 @@
     </button>
   </div>
   <div
-    *ngIf="menu && !menuLoading"
+    *ngIf="qrMenu && !menuLoading"
     class="menu"
     [ngStyle]="{
-      'box-shadow': '0px 0px 17px 0px ' + menu.primaryColor + ', 0 0px 0px 0px'
+      'box-shadow':
+        '0px 0px 17px 0px ' + qrMenu.primaryColor + ', 0 0px 0px 0px'
     }"
   >
     <div
       class="menu-metadata"
-      *ngIf="!selectedMenu"
-      [style.backgroundColor]="menu.primaryColor"
+      *ngIf="!selectedMenu && qrMenu.sectionsToShow"
+      [style.backgroundColor]="qrMenu.primaryColor"
     >
-      <!--  <div *ngIf="
-          menu.restaurant &&
-          !menu.sectionsToShow.includes('wifi') &&
-          menu.restaurant.wifiName &&
-          menu.restaurant.wifiPassword
-        " class="wifi-data">
+      <div
+        *ngIf="
+          qrMenu.restaurant &&
+          qrMenu.sectionsToShow.includes('wifi') &&
+          qrMenu.restaurant.wifiName &&
+          qrMenu.restaurant.wifiPassword
+        "
+        class="wifi-data"
+      >
         <span class="iconify" data-icon="mdi-wifi"></span>
-        <span>WIFI: {{ menu.restaurant.wifiName }}</span>
-        <span>PASWORD: {{ menu.restaurant.wifiPassword }}</span>
-        <button
-          mat-icon-button
-          [cdkCopyToClipboard]="menu.restaurant.wifiPassword"
-        >
+        <span>WIFI: {{ qrMenu.restaurant.wifiName }}</span>
+        <span>PASWORD: {{ qrMenu.restaurant.wifiPassword }}</span>
+        <button mat-icon-button>
           <mat-icon>content_copy</mat-icon>
         </button>
-      </div> -->
-      <!-- <h1 *ngIf="menu.restaurant && !menu.sectionsToShow.includes('name')" class="rest-name"
-        [style.color]="menu.fontColor">
-        {{ menu.restaurant.name }}
-      </h1> -->
-      <!-- <div class="rest-social flex-container" *ngIf="menu.restaurant && !menu.sectionsToShow.includes('social')">
-        <a href="{{ menu.restaurant.facebookUrl }}" target="_blank" *ngIf="menu.restaurant.facebookUrl"
-          [style.color]="menu.fontColor">
-          <span class="iconify" data-icon="mdi-facebook" data-inline="false"></span>
+      </div>
+      <h1
+        *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('name')"
+        class="rest-name"
+        [style.color]="qrMenu.fontColor"
+      >
+        {{ qrMenu.restaurant.name }}
+      </h1>
+      <div
+        class="rest-social flex-container"
+        *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('social')"
+      >
+        <a
+          href="{{ qrMenu.restaurant.facebookUrl }}"
+          target="_blank"
+          *ngIf="qrMenu.restaurant.facebookUrl"
+          [style.color]="qrMenu.fontColor"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi-facebook"
+            data-inline="false"
+          ></span>
         </a>
-        <a href="{{ menu.restaurant.instagramUrl }}" target="_blank" *ngIf="menu.restaurant.instagramUrl"
-          [style.color]="menu.fontColor">
-          <span class="iconify" data-icon="mdi-instagram" data-inline="false"></span>
+        <a
+          href="{{ qrMenu.restaurant.instagramUrl }}"
+          target="_blank"
+          *ngIf="qrMenu.restaurant.instagramUrl"
+          [style.color]="qrMenu.fontColor"
+        >
+          <span
+            class="iconify"
+            data-icon="mdi-instagram"
+            data-inline="false"
+          ></span>
         </a>
-        <a href="{{ menu.restaurant.vkUrl }}" target="_blank" *ngIf="menu.restaurant.vkUrl"
-          [style.color]="menu.fontColor">
+        <a
+          href="{{ qrMenu.restaurant.vkUrl }}"
+          target="_blank"
+          *ngIf="qrMenu.restaurant.vkUrl"
+          [style.color]="qrMenu.fontColor"
+        >
           <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
         </a>
-        <a href="{{ menu.restaurant.tripAdvisorUrl }}" target="_blank" *ngIf="menu.restaurant.tripAdvisorUrl"
-          [style.color]="menu.fontColor">
-          <span class="iconify" data-icon="fa:tripadvisor" data-inline="false"></span>
+        <a
+          href="{{ qrMenu.restaurant.tripAdvisorUrl }}"
+          target="_blank"
+          *ngIf="qrMenu.restaurant.tripAdvisorUrl"
+          [style.color]="qrMenu.fontColor"
+        >
+          <span
+            class="iconify"
+            data-icon="fa:tripadvisor"
+            data-inline="false"
+          ></span>
         </a>
-      </div> -->
+      </div>
       <div class="menu-restaurant">
         <p
-          *ngIf="menu.displayName"
+          *ngIf="qrMenu.displayName"
           class="menu-name"
-          [style.color]="menu.fontColor"
+          [style.color]="qrMenu.fontColor"
         >
-          {{ menu.displayName }}
+          {{ qrMenu.displayName }}
         </p>
-        <!-- <p *ngIf="menu.restaurant && !menu.sectionsToShow.includes('address')" class="rest-address"
-          [style.color]="menu.fontColor">
-          {{ menu.restaurant.address }}
-        </p> -->
+        <p
+          *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('address')"
+          class="rest-address"
+          [style.color]="qrMenu.fontColor"
+        >
+          {{ qrMenu.restaurant.address }}
+        </p>
       </div>
     </div>
     <div class="menus-container flex-container" *ngIf="!selectedMenu">
-      <!-- <div *ngFor="let item of menu.menuItems" class="menu-item">
-        <div class="menu-image-container" (click)="container.scrollTop = 0; openMenu(item)">
-          <img [src]="item.images[item.thumbnailIndex]" class="menu-thumbnail" *ngIf="item.thumbnailIndex >= 0"
-            (loaded)="checkMenuColors()" />
-          <img src="assets/placeholder.png" class="menu-thumbnail" *ngIf="item.thumbnailIndex < 0" />
-          <div class="menu-item-name" [style.backgroundColor]="menu.secondaryColor">
-            <p [style.color]="menu.fontColor">{{ item.title }}</p>
-            <mat-icon [style.color]="menu.fontColor">visibility</mat-icon>
+      <div *ngFor="let item of qrMenu.items" class="menu-item">
+        <div
+          class="menu-image-container"
+          (click)="container.scrollTop = 0; openMenu(item)"
+        >
+          <img
+            [src]="item.menu!.pages![item.thumbnailIndex!]!.imageUrl"
+            class="menu-thumbnail"
+            *ngIf="
+              item.thumbnailIndex !== undefined && item.thumbnailIndex >= 0
+            "
+            (loaded)="checkMenuColors()"
+          />
+          <img
+            src="assets/placeholder.png"
+            class="menu-thumbnail"
+            *ngIf="item.thumbnailIndex !== undefined && item.thumbnailIndex < 0"
+          />
+          <div
+            class="menu-item-name"
+            [style.backgroundColor]="qrMenu.secondaryColor"
+          >
+            <p [style.color]="qrMenu.fontColor">{{ item.title }}</p>
+            <mat-icon [style.color]="qrMenu.fontColor">visibility</mat-icon>
           </div>
-        </div> -->
+        </div>
+      </div>
     </div>
-  </div>
-  <!-- <div *ngIf="selectedMenu">
-      <div *ngFor="let image of selectedMenu.images; let i = index" #menuContent>
-         <pinch-zoom [wheel]="false"> 
-        <img crossorigin="anonymous" class="menu-image" [src]="image" [id]="'image_' + i" />
-         </pinch-zoom>
-        <img crossorigin="anonymous" class="menu-image-original" [src]="image" [id]="'image_original_' + i"
-          (loaded)="drawCanvas(i)" />
+    <div *ngIf="selectedMenu && selectedMenu.menu && selectedMenu.menu.pages">
+      <div
+        *ngFor="let page of selectedMenu.menu.pages; let i = index"
+        #menuContent
+      >
+        <!-- <pinch-zoom [wheel]="false">  -->
+        <img
+          crossorigin="anonymous"
+          class="menu-image"
+          [src]="page.imageUrl"
+          [id]="'image_' + i"
+        />
+        <!-- </pinch-zoom> -->
+        <img
+          crossorigin="anonymous"
+          class="menu-image-original"
+          [src]="page.imageUrl"
+          [id]="'image_original_' + i"
+          (loaded)="drawCanvas(i)"
+        />
         <canvas [id]="'canvas_' + i" class="markup-canvas"> </canvas>
       </div>
-    </div> 
-  </div> -->
-</div>
-
-<!-- Invisible canvas for rending PDF -->
-<div
-  *ngIf="menu && !previewMode"
-  [style.visibility]="'hidden'"
-  [style.position]="'absolute'"
->
-  <div *ngFor="let menu of menu.items; let i = index">
-    <canvas
-      *ngFor="
-        let k of Arr(menu.menu?.pages?.length ?? 0).fill(1);
-        let j = index
-      "
-      [id]="'viewcanvas_' + i + '_' + j"
-      [style.height.px]="0"
-      [style.width.px]="0"
-    >
-    </canvas>
+    </div>
   </div>
 </div>

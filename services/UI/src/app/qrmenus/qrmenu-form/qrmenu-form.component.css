@@ -177,3 +177,7 @@ ul {
   align-items: center;
   margin-bottom: 10px;
 }
+
+.file-input {
+  display: none;
+}

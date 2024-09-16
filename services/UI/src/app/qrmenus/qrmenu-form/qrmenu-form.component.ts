@@ -17,6 +17,7 @@ import {
   QrMenuItem,
   Restaurant,
 } from '../../api/model/models';
+import { IdGenerator } from '../../utils/IdGenerator';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
@@ -26,19 +27,20 @@ const PLACEHOLDER_URL = 'assets/placeholder.png';
   styleUrls: ['./qrmenu-form.component.css'],
 })
 export class QrMenuFormComponent {
+  selectedFile: Blob | null = null;
+
   public disabled = false;
   public restaurantsLoaded = false;
   public menusLoaded = false;
   public creationAttempt = false;
   public restaurants: Restaurant[] = [];
   public menus: Menu[] = [];
-  public menuFieldsCount = 1;
   public loading: boolean = true;
-  public qrmenu: QrMenu = {
+  public previewQrMenu: QrMenu = {
     primaryColor: '#989089',
     secondaryColor: '#A0B454b0',
     fontColor: '#FFFFFF',
-    urlSuffix: this.makeid(5),
+    urlSuffix: IdGenerator.generateId(5),
     items: [],
   };
   public previewImage: string = PLACEHOLDER_URL;
@@ -47,19 +49,21 @@ export class QrMenuFormComponent {
   public mode: string = 'plain';
 
   public qrMenuNameControl = new FormControl('', []);
+  public qrMenuDisplayNameControl = new FormControl('', []);
   public restaurantNameControl = new FormControl('', []);
   public primaryColorControl = new FormControl('989089');
+  public secondaryColorControl = new FormControl('A0B454b0');
+  public fontColorControl = new FormControl('FFFFFF');
   public previewIndexControl = new FormControl('', []);
   public urlSuffixControl = new FormControl({
-    value: this.qrmenu.urlSuffix,
+    value: this.previewQrMenu.urlSuffix,
     disabled: this.restaurantsLoaded,
   });
-  public fileControl = new FormControl(null, []);
+  public fileControl = new FormControl('', []);
 
-  @ViewChild('removableInput') removableInput: any;
+  @ViewChild('fileUpload') fileUploadInput: any;
   @ViewChild('imgBuffer') imageElement!: ElementRef;
   @ViewChild('stepper') stepper!: MatStepper;
-  imgNativeElement = undefined;
 
   environment = environment;
 
@@ -102,14 +106,6 @@ export class QrMenuFormComponent {
   ) {}
 
   ngOnInit() {
-    this.primaryColorControl.valueChanges.subscribe((value) => {
-      if (value && value.startsWith('#')) {
-        // Prepend the '#' if it is missing
-        value = value.substr(1);
-        this.primaryColorControl.setValue(`${value}`, { emitEvent: false });
-      }
-    });
-
     let restaurantsPromise = this.restService.listRestaurants();
     let menusPromise = this.menuService.listMenus();
 
@@ -134,6 +130,50 @@ export class QrMenuFormComponent {
         );
       }
     });
+
+    this.qrMenuNameControl.valueChanges.subscribe((value) => {
+      this.previewQrMenu.name = value ?? '';
+    });
+
+    this.qrMenuDisplayNameControl.valueChanges.subscribe((value) => {
+      this.previewQrMenu.displayName = value ?? '';
+    });
+
+    this.restaurantNameControl.valueChanges.subscribe((value) => {
+      let restaurant = this.restaurants.find((r) => r.name === value);
+      this.previewQrMenu.restaurant = restaurant;
+      this.previewQrMenu.sectionsToShow = this.restaurantSections;
+    });
+
+    this.primaryColorControl.valueChanges.subscribe((value) => {
+      if (value) {
+        if (value.startsWith('#')) {
+          this.previewQrMenu.primaryColor = value;
+        } else {
+          this.previewQrMenu.primaryColor = '#' + value;
+        }
+      }
+    });
+
+    this.secondaryColorControl.valueChanges.subscribe((value) => {
+      if (value) {
+        if (value.startsWith('#')) {
+          this.previewQrMenu.secondaryColor = value;
+        } else {
+          this.previewQrMenu.secondaryColor = '#' + value;
+        }
+      }
+    });
+
+    this.fontColorControl.valueChanges.subscribe((value) => {
+      if (value) {
+        if (value.startsWith('#')) {
+          this.previewQrMenu.fontColor = value;
+        } else {
+          this.previewQrMenu.fontColor = '#' + value;
+        }
+      }
+    });
   }
 
   async loadExistingQrMenu(restaurantsPromise: any, menusPromise: any) {
@@ -141,20 +181,20 @@ export class QrMenuFormComponent {
       this.menuId!,
       this.globals.userId
     );
-    this.qrmenu.previewIndex = qrMenu.previewIndex;
+    this.previewQrMenu.previewIndex = qrMenu.previewIndex;
     if (qrMenu.previewIndex === -1) {
       this.previewImage =
         'https://qrmenuapistorage.blob.core.windows.net/preview/' +
         qrMenu.urlSuffix +
         '.jpg';
     }
-    this.qrmenu.name = qrMenu.name;
-    this.qrmenu.displayName = qrMenu.displayName;
-    this.qrmenu.primaryColor = qrMenu.primaryColor;
-    this.qrmenu.secondaryColor = qrMenu.secondaryColor;
-    this.qrmenu.sectionsToShow = qrMenu.sectionsToShow;
+    this.previewQrMenu.name = qrMenu.name;
+    this.previewQrMenu.displayName = qrMenu.displayName;
+    this.previewQrMenu.primaryColor = qrMenu.primaryColor;
+    this.previewQrMenu.secondaryColor = qrMenu.secondaryColor;
+    this.previewQrMenu.sectionsToShow = qrMenu.sectionsToShow;
 
-    this.qrmenu.urlSuffix = qrMenu.urlSuffix;
+    this.previewQrMenu.urlSuffix = qrMenu.urlSuffix;
     this.urlSuffixControl.setValue(qrMenu.urlSuffix);
     this.qrMenuNameControl.setValue(qrMenu.name ?? '');
 
@@ -162,9 +202,14 @@ export class QrMenuFormComponent {
       let restId = rests.findIndex(
         (r: Restaurant) => r.id == qrMenu.restaurant!.id
       );
-      this.qrmenu.restaurant = this.restaurants[restId];
-      this.restaurantNameControl.setValue(this.qrmenu.restaurant?.name ?? '');
-      this.onRestaurantChange(this.qrmenu.restaurant, qrMenu.sectionsToShow);
+      this.previewQrMenu.restaurant = this.restaurants[restId];
+      this.restaurantNameControl.setValue(
+        this.previewQrMenu.restaurant?.name ?? ''
+      );
+      this.onRestaurantChange(
+        this.previewQrMenu.restaurant,
+        qrMenu.sectionsToShow
+      );
       menusPromise.subscribe((menus: Menu[]) => {
         qrMenu.items?.forEach((item: QrMenuItem) => {
           let title = item.title;
@@ -176,17 +221,20 @@ export class QrMenuFormComponent {
             thumbnailIndex: item.thumbnailIndex,
             menu: menuItem,
           } as QrMenuItem;
-          this.qrmenu.items!.push(qrItem);
+          this.previewQrMenu.items!.push(qrItem);
           this.loading = false;
         });
 
-        if (this.qrmenu.previewIndex! >= 0) {
-          let previewMenuItem = this.qrmenu.items![this.qrmenu.previewIndex!];
+        if (this.previewQrMenu.previewIndex! >= 0) {
+          let previewMenuItem =
+            this.previewQrMenu.items![this.previewQrMenu.previewIndex!];
           this.previewImage =
             previewMenuItem.menu!.pages![
               previewMenuItem.thumbnailIndex!
             ]!.imageUrl;
-          this.previewIndexControl.setValue(this.qrmenu.previewIndex + '');
+          this.previewIndexControl.setValue(
+            this.previewQrMenu.previewIndex + ''
+          );
         }
       });
     });
@@ -203,24 +251,24 @@ export class QrMenuFormComponent {
     }
   }
 
-  onRestaurantChange(rest: Restaurant, sectionsToShow: string[] = []) {
-    this.qrmenu.restaurant = rest;
+  onRestaurantChange(restaurant: Restaurant, sectionsToShow: string[] = []) {
+    this.previewQrMenu.restaurant = restaurant;
     this.restaurantSections = [];
-    if (rest.address) {
+    if (restaurant.address) {
       this.restaurantSections.push({
         key: 'address',
         name: this.translate.instant('code.sections.address'),
         checked: true,
       });
     }
-    if (rest.name) {
+    if (restaurant.name) {
       this.restaurantSections.push({
         key: 'name',
         name: this.translate.instant('code.sections.name'),
         checked: true,
       });
     }
-    if (rest.wifiName && rest.wifiPassword) {
+    if (restaurant.wifiName && restaurant.wifiPassword) {
       this.restaurantSections.push({
         key: 'wifi',
         name: this.translate.instant('code.sections.wifi'),
@@ -228,10 +276,10 @@ export class QrMenuFormComponent {
       });
     }
     if (
-      rest.facebookUrl ||
-      rest.instagramUrl ||
-      rest.vkUrl ||
-      rest.tripAdvisorUrl
+      restaurant.facebookUrl ||
+      restaurant.instagramUrl ||
+      restaurant.vkUrl ||
+      restaurant.tripAdvisorUrl
     ) {
       this.restaurantSections.push({
         key: 'social',
@@ -240,7 +288,7 @@ export class QrMenuFormComponent {
       });
     }
     if (sectionsToShow.length == 0) {
-      this.qrmenu.sectionsToShow = this.restaurantSections
+      this.previewQrMenu.sectionsToShow = this.restaurantSections
         .filter((s: any) => s.checked)
         .map((s: any) => s.key);
     } else {
@@ -251,43 +299,22 @@ export class QrMenuFormComponent {
   }
 
   updateRestaurantSections() {
-    this.qrmenu.sectionsToShow = this.restaurantSections
+    this.previewQrMenu.sectionsToShow = this.restaurantSections
       .filter((s: any) => s.checked)
       .map((s: any) => s.key);
   }
 
-  async getMenuImages(menu: Menu) {
-    let images: any[] = [];
-    let i = this.menus.indexOf(menu);
-    let pagesCount = menu.pages?.length ?? 0;
-    // let pdfDoc = await getDocument(menu.originalFileUrl!).promise;
-    // for (let j = 0; j < pagesCount; j++) {
-    //   let page = await pdfDoc.getPage(j + 1);
-    //   var viewport = page.getViewport({ scale: 1 });
-    //   var canvas = document.getElementById('canvas_' + i + '_' + j) as any;
-    //   var context = canvas.getContext('2d');
-    //   canvas.height = viewport.height;
-    //   canvas.width = viewport.width;
-    //   await page.render({ canvasContext: context, viewport: viewport }).promise;
-    //   images.push(canvas.toDataURL('image/jpeg'));
-    //   canvas.width = 0;
-    //   canvas.height = 0;
-    // }
-    return images;
-  }
-
   addMenuField() {
-    this.qrmenu.items!.push({
+    this.previewQrMenu.items!.push({
       title: '',
       thumbnailIndex: -1,
-      images: [],
-      entity: '',
     } as QrMenuItem);
   }
 
   removeMenuField(i: number) {
-    // this.qrmenu.items = this.qrmenu.items!.slice(0, -1);
-    this.qrmenu.items = this.qrmenu.items!.filter((item, index) => index !== i);
+    this.previewQrMenu.items = this.previewQrMenu.items!.filter(
+      (item, index) => index !== i
+    );
   }
 
   async createCode() {
@@ -298,7 +325,7 @@ export class QrMenuFormComponent {
       return;
     }
 
-    let menuItems = this.qrmenu
+    let menuItems = this.previewQrMenu
       .items!.filter(
         (i: QrMenuItem) =>
           i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages
@@ -318,13 +345,13 @@ export class QrMenuFormComponent {
 
     const creationRequest = {
       name: this.qrMenuNameControl.value ?? '',
-      displayName: this.qrmenu.displayName,
-      restaurantId: this.qrmenu.restaurant!.id,
-      primaryColor: this.qrmenu.primaryColor,
-      secondaryColor: this.qrmenu.secondaryColor,
-      fontColor: this.qrmenu.fontColor,
+      displayName: this.previewQrMenu.displayName,
+      restaurantId: this.previewQrMenu.restaurant!.id,
+      primaryColor: this.previewQrMenu.primaryColor,
+      secondaryColor: this.previewQrMenu.secondaryColor,
+      fontColor: this.previewQrMenu.fontColor,
       urlSuffix: this.urlSuffixControl.value ?? '',
-      sectionsToShow: this.qrmenu.sectionsToShow,
+      sectionsToShow: this.previewQrMenu.sectionsToShow,
       items: menuItems,
     } as CreateQrMenuRequest;
 
@@ -339,22 +366,22 @@ export class QrMenuFormComponent {
       return;
     }
 
-    let menuItems = this.qrmenu.items!.filter(
+    let menuItems = this.previewQrMenu.items!.filter(
       (i: QrMenuItem) =>
         i.thumbnailIndex && i.thumbnailIndex >= 0 && i.menu?.pages
     );
 
     let qrModel = {
       name: this.qrMenuNameControl.value ?? '',
-      displayName: this.qrmenu.displayName,
-      restaurant: this.qrmenu.restaurant,
-      primaryColor: this.qrmenu.primaryColor,
-      secondaryColor: this.qrmenu.secondaryColor,
-      fontColor: this.qrmenu.fontColor,
+      displayName: this.previewQrMenu.displayName,
+      restaurant: this.previewQrMenu.restaurant,
+      primaryColor: this.previewQrMenu.primaryColor,
+      secondaryColor: this.previewQrMenu.secondaryColor,
+      fontColor: this.previewQrMenu.fontColor,
       urlSuffix: this.urlSuffixControl.value ?? '',
-      sectionsToShow: this.qrmenu.sectionsToShow,
+      sectionsToShow: this.previewQrMenu.sectionsToShow,
       items: menuItems,
-      previewIndex: this.qrmenu.previewIndex,
+      previewIndex: this.previewQrMenu.previewIndex,
     } as QrMenu;
 
     const formData = new FormData();
@@ -385,7 +412,7 @@ export class QrMenuFormComponent {
 
     if (this.isAnyMenuItem()) {
       if (
-        this.qrmenu.previewIndex === -1 &&
+        this.previewQrMenu.previewIndex === -1 &&
         !this.uploadedCustomPreview &&
         !this.menuId
       ) {
@@ -413,10 +440,14 @@ export class QrMenuFormComponent {
 
   isAnyMenuItem() {
     let isValid = false;
-    this.qrmenu.items!.forEach((item) => {
+    this.previewQrMenu.items!.forEach((item) => {
       isValid =
         isValid ||
-        !!(item.menu?.id && item.thumbnailIndex && item.thumbnailIndex >= 0);
+        !!(
+          item.menu?.id &&
+          item.thumbnailIndex != undefined &&
+          item.thumbnailIndex >= 0
+        );
     });
 
     return isValid;
@@ -457,24 +488,10 @@ export class QrMenuFormComponent {
   }
 
   addPreviewimageToFormData(formData: FormData) {
-    if (this.qrmenu.previewIndex === -1 && this.uploadedCustomPreview) {
+    if (this.previewQrMenu.previewIndex === -1 && this.uploadedCustomPreview) {
       const file = this.fileControl.value;
       formData.append('preview_image', file!);
     }
-  }
-
-  DataURIToBlob(dataURI: string) {
-    const splitDataURI = dataURI.split(',');
-    const byteString =
-      splitDataURI[0].indexOf('base64') >= 0
-        ? atob(splitDataURI[1])
-        : decodeURI(splitDataURI[1]);
-    const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
-    const ia = new Uint8Array(byteString.length);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ia], { type: mimeString });
   }
 
   goForward(stepper: MatStepper) {
@@ -483,20 +500,16 @@ export class QrMenuFormComponent {
 
   async onMenuSelected(menuItem: QrMenuItem, event: any) {
     let menu = event.value as Menu;
-    // menuItem.images = await this.getMenuImages(menu);
     menuItem.thumbnailIndex = 0;
     menuItem.menu = menu;
-    // menuItem.menuId = menu.id!;
-    // menuItem.originalFileUrl = menu.originalFileUrl!;
-    // menuItem.pagesCount = menu.pages?.length!;
   }
 
   onPreviewSelected(menuIndex: number) {
     if (menuIndex >= 0) {
-      let menuItem = this.qrmenu.items![menuIndex];
+      let menuItem = this.previewQrMenu.items![menuIndex];
       this.previewImage =
         menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
-      this.qrmenu.previewIndex = menuIndex;
+      this.previewQrMenu.previewIndex = menuIndex;
     } else if (this.uploadedCustomPreview) {
       this.previewImage = this.uploadedCustomPreview;
     } else {
@@ -511,7 +524,11 @@ export class QrMenuFormComponent {
       this.menuLoading = false;
     }
 
-    if (event.selectedIndex === 1 && this.qrmenu.items) {
+    if (
+      event.selectedIndex === 1 &&
+      this.previewQrMenu.items &&
+      this.previewQrMenu.items.length === 0
+    ) {
       this.addMenuField();
     }
   }
@@ -525,29 +542,17 @@ export class QrMenuFormComponent {
     reader.readAsDataURL(file);
     reader.onload = (event2: any) => {
       this.uploadedCustomPreview = event2.target.result;
-      this.qrmenu.previewIndex = -1;
+      this.previewQrMenu.previewIndex = -1;
       this.previewImage = this.uploadedCustomPreview;
     };
   }
 
-  makeid(length: number) {
-    var result = [];
-    var characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result.push(
-        characters.charAt(Math.floor(Math.random() * charactersLength))
-      );
-    }
-    return result.join('');
-  }
-
   clearFileInput(event: any) {
-    this.removableInput._inputValueRef.nativeElement.value = '';
+    this.fileUploadInput._inputValueRef.nativeElement.value = '';
     this.uploadedCustomPreview = '';
-    if (this.isAnyMenuItem() && this.qrmenu.previewIndex! >= 0) {
-      let menuItem = this.qrmenu.items![this.qrmenu.previewIndex!];
+    if (this.isAnyMenuItem() && this.previewQrMenu.previewIndex! >= 0) {
+      let menuItem =
+        this.previewQrMenu.items![this.previewQrMenu.previewIndex!];
       this.previewImage =
         menuItem.menu!.pages![menuItem.thumbnailIndex!].imageUrl;
     } else {
@@ -557,8 +562,20 @@ export class QrMenuFormComponent {
 
   onColorDetected(event: any) {
     const [color1, color2, color3, color4] = event;
-    this.qrmenu.primaryColor = color1;
-    this.qrmenu.secondaryColor = this.draw.addAlpha(color2, 0.7);
-    this.qrmenu.fontColor = color3;
+    this.previewQrMenu.primaryColor = color1;
+    this.previewQrMenu.secondaryColor = this.draw.addAlpha(color2, 0.7);
+    this.previewQrMenu.fontColor = color3;
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+
+    if (file && file.name) {
+      this.uploadedCustomPreview = file.name;
+      if (!this.fileControl.value) {
+        this.fileControl.setValue(file.name);
+      }
+      this.selectedFile = file;
+    }
   }
 }

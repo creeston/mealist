@@ -1,0 +1,24 @@
+<div class="color-field-container">
+  <mcc-color-picker
+    mccConnectedColorPicker
+    [mccConnectedColorPickerOrigin]="trigger"
+    alpha
+    hideEmptyUsedColors
+    hideUsedColors
+    hideHexForms
+    hideTransparentUsedColors
+    hideButtons
+    class="color-picker"
+  >
+  </mcc-color-picker>
+  <mat-form-field appearance="fill" class="color-field">
+    <mat-label [translate]="label"></mat-label>
+    <span matTextPrefix>#</span>
+    <input
+      matInput
+      mccColorPickerOrigin
+      #trigger="mccColorPickerOrigin"
+      [formControl]="colorControl"
+    />
+  </mat-form-field>
+</div>

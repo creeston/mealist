@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { QrmenuCardComponent } from './qrmenu-card/qrmenu-card.component';
 import { QrmenuPreviewComponent } from './qrmenu-preview/qrmenu-preview.component';
 import { MccColorPickerModule } from 'material-community-components/color-picker';
+import { ColorInputComponent } from '../components/color-input/color-input.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { MccColorPickerModule } from 'material-community-components/color-picker
   ],
   imports: [
     NgxKjuaComponent,
+    ColorInputComponent,
     CommonModule,
     MatStepperModule,
     MatFormFieldModule,

@@ -48,7 +48,7 @@
             [translate]="'code.choose_rest'"
           ></mat-error>
         </mat-form-field>
-        <div *ngIf="qrmenu.restaurant">
+        <div *ngIf="previewQrMenu.restaurant">
           <p>{{ "code.sections_to_show" | translate }}:</p>
           <ul>
             <li *ngFor="let section of restaurantSections">
@@ -66,8 +66,7 @@
           <input
             matInput
             [placeholder]="'code.header_ph' | translate"
-            #description="ngModel"
-            [(ngModel)]="qrmenu.displayName"
+            [formControl]="qrMenuDisplayNameControl"
           />
           <mat-icon matSuffix>create</mat-icon>
         </mat-form-field>
@@ -98,12 +97,12 @@
     <!-- Step 2. Add menu items to QR menu. -->
     <mat-step
       [errorMessage]="'code.menu.add' | translate"
-      [hasError]="creationAttempt && !areMenuItemsValid(qrmenu)"
+      [hasError]="creationAttempt && !areMenuItemsValid(previewQrMenu)"
     >
       <ng-template matStepLabel>{{ "code.menu.add" | translate }}</ng-template>
       <div class="stepper-content">
         <div
-          *ngFor="let menuItem of qrmenu.items; let i = index"
+          *ngFor="let menuItem of previewQrMenu.items; let i = index"
           class="menu-item-section"
         >
           <mat-form-field appearance="fill" class="field">
@@ -155,89 +154,24 @@
     <!-- Step 3. Choose colors for QR menu. -->
     <mat-step
       [errorMessage]="'code.design.required' | translate"
-      [hasError]="creationAttempt && !areColorsSelected(qrmenu)"
+      [hasError]="creationAttempt && !areColorsSelected(previewQrMenu)"
     >
       <ng-template matStepLabel>{{
         "code.design.title" | translate
       }}</ng-template>
       <div class="stepper-content">
-        <mcc-color-picker
-          mccConnectedColorPicker
-          [mccConnectedColorPickerOrigin]="trigger"
-          alpha
-          hideEmptyUsedColors
-          hideUsedColors
-          hideHexForms
-          hideTransparentUsedColors
-          hideButtons
-          [usedColorLabel]="'color.used' | translate"
-          [btnCancelLabel]="'cancel' | translate"
-          [btnConfirmLabel]="'submit' | translate"
-        >
-        </mcc-color-picker>
-        <mat-form-field appearance="fill">
-          <mat-label [translate]="'color.main_color'"></mat-label>
-          <span matTextPrefix>#</span>
-          <input
-            matInput
-            mccColorPickerOrigin
-            #trigger="mccColorPickerOrigin"
-            [formControl]="primaryColorControl"
-          />
-        </mat-form-field>
-        <mcc-color-picker
-          mccConnectedColorPicker
-          [mccConnectedColorPickerOrigin]="trigger2"
-          alpha
-          hideEmptyUsedColors
-          (change)="qrmenu.secondaryColor = $event + ''"
-          [usedColorLabel]="'color.used' | translate"
-          [btnCancelLabel]="'cancel' | translate"
-          [btnConfirmLabel]="'submit' | translate"
-          [hideButtons]="true"
-          [hideTransparentUsedColors]="true"
-          class="color-picker"
-          [hideHexForms]="true"
-        >
-          <mcc-color-picker-collection
-            [label]="'colors.second_colors' | translate"
-            [colors]="secondaryColors"
-          >
-          </mcc-color-picker-collection>
-        </mcc-color-picker>
-        <mat-form-field>
-          <mat-label [translate]="'color.second_color'"></mat-label>
-          <input
-            matInput
-            mccColorPickerOrigin
-            #trigger2="mccColorPickerOrigin"
-            [(ngModel)]="qrmenu.secondaryColor"
-          />
-        </mat-form-field>
-        <mcc-color-picker
-          mccConnectedColorPicker
-          [mccConnectedColorPickerOrigin]="trigger3"
-          alpha
-          hideEmptyUsedColors
-          (change)="qrmenu.fontColor = $event + ''"
-          [usedColorLabel]="'color.used' | translate"
-          [btnCancelLabel]="'cancel' | translate"
-          [btnConfirmLabel]="'submit' | translate"
-          [hideButtons]="true"
-          [hideTransparentUsedColors]="true"
-          class="color-picker"
-          [hideHexForms]="true"
-        >
-        </mcc-color-picker>
-        <mat-form-field>
-          <mat-label [translate]="'color.font_color'"></mat-label>
-          <input
-            matInput
-            mccColorPickerOrigin
-            #trigger3="mccColorPickerOrigin"
-            [(ngModel)]="qrmenu.fontColor"
-          />
-        </mat-form-field>
+        <app-color-input
+          [colorControl]="primaryColorControl"
+          [label]="'color.main_color'"
+        ></app-color-input>
+        <app-color-input
+          [colorControl]="secondaryColorControl"
+          [label]="'color.second_color'"
+        ></app-color-input>
+        <app-color-input
+          [colorControl]="fontColorControl"
+          [label]="'color.font_color'"
+        ></app-color-input>
         <button mat-button (click)="goForward(stepper)" class="next-button">
           {{ "next" | translate }}
         </button>
@@ -262,28 +196,52 @@
         >
           <mat-label [translate]="'code.preview.choose'"></mat-label>
           <mat-select
-            [(ngModel)]="qrmenu.previewIndex"
+            [(ngModel)]="previewQrMenu.previewIndex"
             (selectionChange)="onPreviewSelected($event.value)"
             [formControl]="previewIndexControl"
           >
-            <mat-option [value]="-1"></mat-option>
+            <mat-option [value]="-1">
+              <span>N/A</span>
+            </mat-option>
             <mat-option
-              *ngFor="let menuItem of qrmenu.items; let i = index"
+              *ngFor="let menuItem of previewQrMenu.items; let i = index"
               [value]="i"
             >
-              <!-- <span *ngIf="menuItem.entity">{{ menuItem.entity }}</span> -->
+              <span *ngIf="menuItem.menu">{{ menuItem.menu.name }}</span>
             </mat-option>
           </mat-select>
         </mat-form-field>
         <p *ngIf="isAnyMenuItem()" [translate]="'or'"></p>
-        <!-- <mat-form-field class="logo-upload-field">
-        <ngx-mat-file-input #removableInput [formControl]="fileControl" accept="image/png,image/jpeg"
-          [placeholder]="'code.preview.ph' | translate">
-        </ngx-mat-file-input>
-        <button mat-icon-button matSuffix (click)="clearFileInput($event)">
-          <mat-icon>clear</mat-icon>
-        </button>
-      </mat-form-field> -->
+        <div class="logo-upload-field">
+          <input
+            type="file"
+            multiple="false"
+            [formControl]="fileControl"
+            accept="image/png,image/jpeg"
+            class="file-input"
+            (change)="onFileSelected($event)"
+            #fileUpload
+          />
+          <button
+            mat-mini-fab
+            color="primary"
+            class="upload-btn"
+            (click)="fileUpload.click()"
+          >
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <span
+            *ngIf="fileControl.invalid"
+            [translate]="'code.preview.ph'"
+            class="upload-placeholder"
+          ></span>
+          <span *ngIf="!fileControl.invalid" class="upload-placeholder">{{
+            fileControl.value
+          }}</span>
+          <button mat-icon-button matSuffix (click)="clearFileInput($event)">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </div>
         <div class="create-button">
           <button
             mat-raised-button
@@ -310,7 +268,7 @@
 
   <!-- Preview of QR Menu -->
   <app-qrmenu-preview
-    [qrmenu]="qrmenu"
+    [qrmenu]="previewQrMenu"
     [previewImageParam]="previewImage"
     [menuLoading]="menuLoading"
     (colorDetected)="onColorDetected($event)"

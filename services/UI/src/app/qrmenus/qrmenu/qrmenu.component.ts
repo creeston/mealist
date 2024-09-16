@@ -43,7 +43,7 @@ export class QrMenuComponent implements OnInit {
   menuId: string | undefined;
   userId: string | undefined;
   urlSuffix: string | undefined;
-  menu: QrMenu | undefined = undefined;
+  qrMenu: QrMenu | undefined = undefined;
   selectedMenu: QrMenuItem | undefined = undefined;
   imagesData: any[] = [];
   previewMode = true;
@@ -71,7 +71,7 @@ export class QrMenuComponent implements OnInit {
     if (this.qrMenuParam) {
       this.previewMode = true;
       this.globals.role = 'client';
-      this.menu = this.qrMenuParam;
+      this.qrMenu = this.qrMenuParam;
       this.loading = false;
     } else {
       this.globals.role = 'guest';
@@ -90,7 +90,7 @@ export class QrMenuComponent implements OnInit {
             this.menuId = r.qrMenuId;
             this.userId = r.userId;
             this.service.getMenu(this.menuId, this.userId).then((r: QrMenu) => {
-              this.menu = r;
+              this.qrMenu = r;
               this.setMenuColors();
               this.initializeMenuImages();
             });
@@ -100,7 +100,7 @@ export class QrMenuComponent implements OnInit {
         this.userId = p.userId;
         if (this.menuId && this.userId) {
           this.service.getMenu(this.menuId!, this.userId!).then((r: QrMenu) => {
-            this.menu = r;
+            this.qrMenu = r;
             this.setMenuColors();
             this.initializeMenuImages();
           });
@@ -110,25 +110,25 @@ export class QrMenuComponent implements OnInit {
   }
 
   setMenuColors() {
-    if (!this.menu) {
+    if (!this.qrMenu) {
       return;
     }
-    if (!this.menu.primaryColor) {
-      this.menu.primaryColor = '#3f51b5';
+    if (!this.qrMenu.primaryColor) {
+      this.qrMenu.primaryColor = '#3f51b5';
     }
-    if (!this.menu.secondaryColor) {
-      this.menu.secondaryColor = '#3f51b5c0';
+    if (!this.qrMenu.secondaryColor) {
+      this.qrMenu.secondaryColor = '#3f51b5c0';
     }
-    if (!this.menu.fontColor) {
-      this.menu.fontColor = '#ffffff';
+    if (!this.qrMenu.fontColor) {
+      this.qrMenu.fontColor = '#ffffff';
     }
   }
 
   initializeMenuImages() {
-    if (!this.menu) {
+    if (!this.qrMenu) {
       return;
     }
-    this.menu.items!.forEach((item: QrMenuItem) => {
+    this.qrMenu.items!.forEach((item: QrMenuItem) => {
       if (!item.thumbnailIndex) {
         item.thumbnailIndex = 0;
       }
@@ -181,7 +181,7 @@ export class QrMenuComponent implements OnInit {
   }
 
   drawCanvas(i: number) {
-    if (!this.menu || !this.selectedMenu) {
+    if (!this.qrMenu || !this.selectedMenu) {
       return;
     }
 
@@ -203,10 +203,10 @@ export class QrMenuComponent implements OnInit {
     let rate = canvas.height / realHeight;
 
     context.lineWidth = 3;
-    let menuindex = this.menu.items!.indexOf(this.selectedMenu);
+    let menuindex = this.qrMenu.items!.indexOf(this.selectedMenu);
     // TODO Consider using separate stop list
     // let markup = this.menu.stopMarkup[menuindex][i];
-    let markup = this.menu.items![menuindex].menu!.pages![i].markup!;
+    let markup = this.qrMenu.items![menuindex].menu!.pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
       let x1 = line.x1 * rate;
@@ -235,7 +235,7 @@ export class QrMenuComponent implements OnInit {
   }
 
   setCanvasWidthHeight(i: number) {
-    if (!this.menu || !this.selectedMenu) {
+    if (!this.qrMenu || !this.selectedMenu) {
       return;
     }
 
@@ -249,10 +249,10 @@ export class QrMenuComponent implements OnInit {
     let rate = canvas.height / realHeight;
 
     context.lineWidth = 3;
-    let menuindex = this.menu.items!.indexOf(this.selectedMenu);
+    let menuindex = this.qrMenu.items!.indexOf(this.selectedMenu);
     // TODO Consider using separate stop list
     // let markup = this.menu.stopMarkup[menuindex][i];
-    let markup = this.menu.items![menuindex].menu!.pages![i].markup!;
+    let markup = this.qrMenu.items![menuindex].menu!.pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
       let x1 = line.x1 * rate;

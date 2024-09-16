@@ -57,7 +57,6 @@ import { ConfirmationDialog } from './components/confirmation-dialog/confirmatio
 import { AppRoutingModule } from './app-routing.module';
 import { LogInComponent } from './components/log-in/log-in.component';
 import { RegisterComponent } from './components/register/register.component';
-import { SearchFilterPipe } from './qrmenus/edit-meals/edit-meals.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ApiModule } from './api/api.module';
 import { Configuration, ConfigurationParameters } from './api/configuration';
@@ -67,6 +66,8 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { MenusModule } from './menus/menus.module';
 import { GeocodingService } from './services/geocoding.service';
 import { QrMenusModule } from './qrmenus/qrmenus.module';
+import { ColorInputComponent } from './components/color-input/color-input.component';
+import { MccColorPickerModule } from 'material-community-components/color-picker';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);
