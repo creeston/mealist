@@ -65,13 +65,14 @@ export interface components {
       name?: string;
       displayName?: string;
       restaurant?: components["schemas"]["Restaurant"];
+      sectionsToShow?: string[];
       primaryColor?: string;
       secondaryColor?: string;
       fontColor?: string;
       scanCount?: number;
       stopList?: string[];
-      hideSections?: string[];
-      previewIndex?: number;
+      loadingPlaceholderIndex?: number;
+      loadingPlaceholderUrl?: string;
       urlSuffix?: string;
       items?: components["schemas"]["QrMenuItem"][];
       /** Format: date-time */
@@ -87,17 +88,19 @@ export interface components {
     CreateQrMenuRequest: {
       name?: string;
       displayName?: string;
+      restaurantId: string;
+      sectionsToShow?: string[];
       primaryColor?: string;
       secondaryColor?: string;
       fontColor?: string;
-      previewIndex?: number;
+      loadingPlaceholderIndex?: number;
+      /** Format: binary */
+      loadingPlaceholderFile?: string;
       urlSuffix?: string;
       items?: components["schemas"]["CreateQrMenuItem"][];
-      restaurantId: string;
     };
     CreateQrMenuItem: {
       title: string;
-      thumbnailIndex: number;
       menuId: string;
     };
   };

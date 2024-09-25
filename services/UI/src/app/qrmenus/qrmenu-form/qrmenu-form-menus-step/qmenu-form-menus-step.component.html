@@ -1,0 +1,30 @@
+<div *ngFor="let menuItem of previewQrMenu.items; let i = index">
+  <form [formGroup]="menusFormArray.controls[i]" class="menu-item-section">
+    <mat-form-field appearance="fill" class="field">
+      <mat-label [translate]="'code.menu.choose'"></mat-label>
+      <mat-select
+        (selectionChange)="onMenuSelected(menuItem, $event)"
+        formControlName="menuControl"
+      >
+        <mat-option *ngFor="let menu of menus; let i = index" [value]="menu">{{
+          menu.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="field">
+      <mat-label [translate]="'code.menu.title'"></mat-label>
+      <input
+        formControlName="titleControl"
+        matInput
+        [placeholder]="'code.menu.ph' | translate"
+      />
+      <mat-icon matSuffix>create</mat-icon>
+    </mat-form-field>
+    <button mat-icon-button (click)="removeMenuField(i)">
+      <mat-icon>remove</mat-icon>
+    </button>
+  </form>
+</div>
+<button mat-icon-button (click)="addMenuField()">
+  <mat-icon>add</mat-icon>
+</button>

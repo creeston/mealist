@@ -141,6 +141,10 @@ components:
           type: string
         restaurant:
           $ref: "#/components/schemas/Restaurant"
+        sectionsToShow:
+          type: array
+          items:
+            type: string
         primaryColor:
           type: string
         secondaryColor:
@@ -153,12 +157,10 @@ components:
           type: array
           items:
             type: string
-        sectionsToShow:
-          type: array
-          items:
-            type: string
-        previewIndex:
+        loadingPlaceholderIndex:
           type: integer
+        loadingPlaceholderUrl:
+          type: string
         urlSuffix:
           type: string
         items:
@@ -190,26 +192,29 @@ components:
           type: string
         displayName:
           type: string
-        primaryColor:
-          type: string
-        secondaryColor:
-          type: string
-        fontColor:
-          type: string
-        previewIndex:
-          type: integer
-        urlSuffix:
-          type: string
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/CreateQrMenuItem"
         restaurantId:
           type: string
         sectionsToShow:
           type: array
           items:
             type: string
+        primaryColor:
+          type: string
+        secondaryColor:
+          type: string
+        fontColor:
+          type: string
+        loadingPlaceholderIndex:
+          type: integer
+        loadingPlaceholderFile:
+          type: string
+          format: binary
+        urlSuffix:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateQrMenuItem"
       required:
         - menuId
         - restaurantId
@@ -218,11 +223,8 @@ components:
       properties:
         title:
           type: string
-        thumbnailIndex:
-          type: integer
         menuId:
           type: string
       required:
         - title
-        - thumbnailIndex
         - menuId

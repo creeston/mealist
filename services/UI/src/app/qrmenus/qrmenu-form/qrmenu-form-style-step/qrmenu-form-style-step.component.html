@@ -1,0 +1,18 @@
+<form [formGroup]="form">
+  <app-color-input
+    [colorControl]="$any(form.controls.primaryColorControl)"
+    [label]="'color.main_color'"
+  ></app-color-input>
+  <app-color-input
+    [colorControl]="$any(form.controls.secondaryColorControl)"
+    [label]="'color.second_color'"
+  ></app-color-input>
+  <app-color-input
+    [colorControl]="$any(form.controls.backgroundColorControl)"
+    [label]="'color.background_color'"
+  ></app-color-input>
+  <app-color-input
+    [colorControl]="$any(form.controls.fontColorControl)"
+    [label]="'color.font_color'"
+  ></app-color-input>
+</form>

@@ -17,14 +17,14 @@ export class QrMenuService {
         primaryColor: creationRequest.primaryColor,
         secondaryColor: creationRequest.secondaryColor,
         fontColor: creationRequest.fontColor,
-        previewIndex: creationRequest.previewIndex,
+        previewIndex: creationRequest.loadingPlaceholderIndex,
       } as QrMenuStyle,
       urlSuffix: creationRequest.urlSuffix,
       items:
         creationRequest.items?.map((item) => ({
           menuId: item.menuId,
           style: {
-            thumbnailIndex: item.thumbnailIndex,
+            thumbnailIndex: 0,
             title: item.title,
           },
         })) ?? [],
@@ -61,7 +61,7 @@ export class QrMenuService {
       secondaryColor: qrMenu.style.secondaryColor,
       fontColor: qrMenu.style.fontColor,
       scanCount: qrMenu.stats.scanCount,
-      previewIndex: qrMenu.style.previewIndex,
+      loadingPlaceholderIndex: qrMenu.style.previewIndex,
       urlSuffix: qrMenu.urlSuffix,
       items: qrMenu.items.map((item) => ({
         menuId: item.menu.id,

@@ -34,9 +34,6 @@ export class QrMenuComponent implements OnInit {
   @Input()
   menuLoading!: boolean;
 
-  @Output()
-  public colorDetected = new EventEmitter<any>();
-
   menuId: string | undefined;
   userId: string | undefined;
   urlSuffix: string | undefined;
@@ -120,9 +117,6 @@ export class QrMenuComponent implements OnInit {
       return;
     }
     this.qrMenu.items!.forEach((item: QrMenuItem) => {
-      if (!item.thumbnailIndex) {
-        item.thumbnailIndex = 0;
-      }
       this.loading = false;
     });
   }

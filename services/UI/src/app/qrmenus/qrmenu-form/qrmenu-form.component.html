@@ -26,126 +26,48 @@
     <!-- Step 1. General information in QR menu. -->
     <mat-step
       [errorMessage]="'code.choose_rest' | translate"
-      [hasError]="restaurantNameControl.invalid && creationAttempt"
+      [hasError]="formGroup1.invalid && creationAttempt"
+      [completed]="formGroup1.valid"
     >
       <ng-template matStepLabel>{{ "code.general" | translate }}</ng-template>
       <div class="stepper-content">
-        <mat-form-field appearance="fill" class="field">
-          <mat-label [translate]="'code.choose_rest'"></mat-label>
-          <mat-select
-            (selectionChange)="onRestaurantChange($event.value)"
-            [formControl]="restaurantNameControl"
+        <form [formGroup]="formGroup1">
+          <app-qmenu-form-general-step
+            [previewQrMenu]="previewQrMenu"
+            [form]="formGroup1"
+          ></app-qmenu-form-general-step>
+          <button
+            mat-button
+            (click)="goForward(stepper)"
+            class="next-button"
+            [disabled]="!formGroup1.valid"
           >
-            <mat-option
-              *ngFor="let restaurant of restaurants"
-              [value]="restaurant"
-            >
-              {{ restaurant.name }}
-            </mat-option>
-          </mat-select>
-          <mat-error
-            *ngIf="restaurantNameControl.invalid"
-            [translate]="'code.choose_rest'"
-          ></mat-error>
-        </mat-form-field>
-        <div *ngIf="previewQrMenu.restaurant">
-          <p>{{ "code.sections_to_show" | translate }}:</p>
-          <ul>
-            <li *ngFor="let section of restaurantSections">
-              <mat-checkbox
-                [(ngModel)]="section.checked"
-                (ngModelChange)="updateRestaurantSections()"
-              >
-                {{ section.name }}
-              </mat-checkbox>
-            </li>
-          </ul>
-        </div>
-        <mat-form-field class="field">
-          <mat-label [translate]="'code.header'"></mat-label>
-          <input
-            matInput
-            [placeholder]="'code.header_ph' | translate"
-            [formControl]="qrMenuDisplayNameControl"
-          />
-          <mat-icon matSuffix>create</mat-icon>
-        </mat-form-field>
-        <mat-form-field class="field">
-          <mat-label [translate]="'code.qr.url'"></mat-label>
-          <input
-            matInput
-            [placeholder]="'code.qr.ph' | translate"
-            [formControl]="urlSuffixControl"
-          />
-          <span matTextPrefix>{{ environment.selfUrl }}/menu/</span>
-          <mat-error
-            [translate]="'code.qr.required'"
-            *ngIf="urlSuffixControl.errors?.empty"
-          ></mat-error>
-          <mat-error
-            [translate]="'code.qr.invalid'"
-            *ngIf="urlSuffixControl.errors?.invalid"
-          ></mat-error>
-          <mat-icon matSuffix>create</mat-icon>
-        </mat-form-field>
-        <button mat-button (click)="goForward(stepper)" class="next-button">
-          {{ "next" | translate }}
-        </button>
+            {{ "next" | translate }}
+          </button>
+        </form>
       </div>
     </mat-step>
 
     <!-- Step 2. Add menu items to QR menu. -->
     <mat-step
       [errorMessage]="'code.menu.add' | translate"
-      [hasError]="creationAttempt && !areMenuItemsValid(previewQrMenu)"
+      [hasError]="creationAttempt && formGroup2.invalid"
+      [completed]="formGroup2.valid"
     >
       <ng-template matStepLabel>{{ "code.menu.add" | translate }}</ng-template>
       <div class="stepper-content">
-        <div
-          *ngFor="let menuItem of previewQrMenu.items; let i = index"
-          class="menu-item-section"
-        >
-          <mat-form-field appearance="fill" class="field">
-            <mat-label [translate]="'code.menu.choose'"></mat-label>
-            <mat-select
-              (selectionChange)="onMenuSelected(menuItem, $event)"
-              [(ngModel)]="menuItem.menu"
-            >
-              <mat-option
-                *ngFor="let menu of menus; let i = index"
-                [value]="menu"
-                >{{ menu.name }}</mat-option
-              >
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field *ngIf="menuItem.menu" class="field">
-            <mat-label [translate]="'code.menu.title'"></mat-label>
-            <input
-              [(ngModel)]="menuItem.title"
-              matInput
-              [placeholder]="'code.menu.ph' | translate"
-            />
-            <mat-icon matSuffix>create</mat-icon>
-          </mat-form-field>
-          <mat-form-field *ngIf="menuItem.menu" class="field">
-            <mat-label [translate]="'code.menu.choose_page'"></mat-label>
-            <mat-select [(ngModel)]="menuItem.thumbnailIndex">
-              <mat-option
-                *ngFor="let image of menuItem.menu!.pages!; let i = index"
-                [value]="i"
-                >{{ i + 1 }}</mat-option
-              >
-            </mat-select>
-          </mat-form-field>
-          <button mat-icon-button (click)="removeMenuField(i)">
-            <mat-icon>remove</mat-icon>
-          </button>
-        </div>
-        <button mat-icon-button (click)="addMenuField()">
-          <mat-icon>add</mat-icon>
-        </button>
+        <app-qmenu-form-menus-step
+          [form]="formGroup2"
+          [previewQrMenu]="previewQrMenu"
+          [isStepActive]="currentStep === 1"
+        ></app-qmenu-form-menus-step>
 
-        <button mat-button (click)="goForward(stepper)" class="next-button">
+        <button
+          mat-button
+          (click)="goForward(stepper)"
+          class="next-button"
+          [disabled]="!formGroup2.valid"
+        >
           {{ "next" | translate }}
         </button>
       </div>
@@ -154,98 +76,49 @@
     <!-- Step 3. Choose colors for QR menu. -->
     <mat-step
       [errorMessage]="'code.design.required' | translate"
-      [hasError]="creationAttempt && !areColorsSelected(previewQrMenu)"
+      [hasError]="creationAttempt && formGroup3.invalid"
     >
       <ng-template matStepLabel>{{
         "code.design.title" | translate
       }}</ng-template>
       <div class="stepper-content">
-        <app-color-input
-          [colorControl]="primaryColorControl"
-          [label]="'color.main_color'"
-        ></app-color-input>
-        <app-color-input
-          [colorControl]="secondaryColorControl"
-          [label]="'color.second_color'"
-        ></app-color-input>
-        <app-color-input
-          [colorControl]="fontColorControl"
-          [label]="'color.font_color'"
-        ></app-color-input>
-        <button mat-button (click)="goForward(stepper)" class="next-button">
-          {{ "next" | translate }}
-        </button>
+        <app-qrmenu-form-style-step
+          [form]="formGroup3"
+          [previewQrMenu]="previewQrMenu"
+        >
+        </app-qrmenu-form-style-step>
       </div>
+      <button
+        mat-button
+        (click)="goForward(stepper)"
+        class="next-button"
+        [disabled]="!formGroup3.valid"
+      >
+        {{ "next" | translate }}
+      </button>
     </mat-step>
 
     <!-- Step 4. Choose preview for QR menu. -->
     <mat-step
       [errorMessage]="'code.preview.required' | translate"
-      [hasError]="
-        creationAttempt && previewIndexControl.invalid && !uploadedCustomPreview
-      "
+      [completed]="formGroup4.valid"
+      [hasError]="creationAttempt && formGroup4.invalid"
     >
       <ng-template matStepLabel>{{
         "code.preview.title" | translate
       }}</ng-template>
       <div class="stepper-content">
-        <mat-form-field
-          appearance="fill"
-          class="logo-upload-field"
-          *ngIf="isAnyMenuItem()"
-        >
-          <mat-label [translate]="'code.preview.choose'"></mat-label>
-          <mat-select
-            [(ngModel)]="previewQrMenu.previewIndex"
-            (selectionChange)="onPreviewSelected($event.value)"
-            [formControl]="previewIndexControl"
-          >
-            <mat-option [value]="-1">
-              <span>N/A</span>
-            </mat-option>
-            <mat-option
-              *ngFor="let menuItem of previewQrMenu.items; let i = index"
-              [value]="i"
-            >
-              <span *ngIf="menuItem.menu">{{ menuItem.menu.name }}</span>
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <p *ngIf="isAnyMenuItem()" [translate]="'or'"></p>
-        <div class="logo-upload-field">
-          <input
-            type="file"
-            multiple="false"
-            [formControl]="fileControl"
-            accept="image/png,image/jpeg"
-            class="file-input"
-            (change)="onFileSelected($event)"
-            #fileUpload
-          />
-          <button
-            mat-mini-fab
-            color="primary"
-            class="upload-btn"
-            (click)="fileUpload.click()"
-          >
-            <mat-icon>attach_file</mat-icon>
-          </button>
-          <span
-            *ngIf="fileControl.invalid"
-            [translate]="'code.preview.ph'"
-            class="upload-placeholder"
-          ></span>
-          <span *ngIf="!fileControl.invalid" class="upload-placeholder">{{
-            fileControl.value
-          }}</span>
-          <button mat-icon-button matSuffix (click)="clearFileInput($event)">
-            <mat-icon>clear</mat-icon>
-          </button>
-        </div>
+        <app-qrmenu-form-loading-preview-step
+          [form]="formGroup4"
+          [previewQrMenu]="previewQrMenu"
+          (previewImageChange)="previewImage = $event"
+          [isStepActive]="currentStep === 3"
+        ></app-qrmenu-form-loading-preview-step>
+
         <div class="create-button">
           <button
             mat-raised-button
-            class="addCodeButton"
+            class="create-button"
             (click)="createCode()"
             [disabled]="disabled"
             *ngIf="!menuId"
@@ -254,7 +127,7 @@
           </button>
           <button
             mat-raised-button
-            class="addCodeButton"
+            class="create-button"
             (click)="updateCode()"
             [disabled]="disabled"
             *ngIf="menuId"
@@ -271,13 +144,12 @@
     [qrmenu]="previewQrMenu"
     [previewImageParam]="previewImage"
     [menuLoading]="menuLoading"
-    (colorDetected)="onColorDetected($event)"
   ></app-qrmenu-preview>
 </div>
 <div class="create-button">
   <button
     mat-raised-button
-    class="addCodeButton"
+    class="create-button"
     (click)="updateCode()"
     [disabled]="disabled"
     *ngIf="menuId"
@@ -285,4 +157,3 @@
     <span>Обновить</span>
   </button>
 </div>
-<img class="img-buffer" #imgBuffer />

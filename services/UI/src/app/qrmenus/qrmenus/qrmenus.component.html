@@ -1,23 +1,49 @@
-<mat-progress-bar mode="indeterminate" *ngIf="loading" class="progress-bar"></mat-progress-bar>
+<mat-progress-bar
+  mode="indeterminate"
+  *ngIf="loading"
+  class="progress-bar"
+></mat-progress-bar>
 <div class="manage">
   <div class="manage-bar">
     <div class="manager-bar-left">
       <mat-icon aria-hidden="false">qr_code</mat-icon>
       <div class="description-container">
-        <span class="manage-description" *ngIf="screen.width > 800" [translate]="'codes.description'"></span>
-        <span class="manage-description" *ngIf="screen.width <= 800" [translate]="'codes.description_short_1'"></span>
-        <span class="manage-description-1" *ngIf="screen.width <= 800" [translate]="'codes.description_short_2'"></span>
+        <span
+          class="manage-description"
+          *ngIf="screen.width > 800"
+          [translate]="'codes.description'"
+        ></span>
+        <span
+          class="manage-description"
+          *ngIf="screen.width <= 800"
+          [translate]="'codes.description_short_1'"
+        ></span>
+        <span
+          class="manage-description-1"
+          *ngIf="screen.width <= 800"
+          [translate]="'codes.description_short_2'"
+        ></span>
       </div>
       <span class="manage-label" [translate]="'codes.label'"></span>
-      <span *ngIf="globals.qrMenusCount >= 0">({{ globals.qrMenusCount }})</span>
+      <span *ngIf="globals.qrMenusCount >= 0"
+        >({{ globals.qrMenusCount }})</span
+      >
     </div>
     <div class="manage-bar-right">
-      <button mat-icon-button (click)="createCode()" [class.smallbutton]="screen.width < 800">
+      <button
+        mat-icon-button
+        (click)="createCode()"
+        [class.smallbutton]="screen.width < 800"
+      >
         <mat-icon>add</mat-icon>
       </button>
     </div>
     <div class="manage-bar-right">
-      <button mat-icon-button (click)="refresh()" [class.smallbutton]="screen.width < 800">
+      <button
+        mat-icon-button
+        (click)="refresh()"
+        [class.smallbutton]="screen.width < 800"
+      >
         <mat-icon>refresh</mat-icon>
       </button>
     </div>

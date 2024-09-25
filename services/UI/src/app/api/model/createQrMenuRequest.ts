@@ -15,13 +15,14 @@ import { CreateQrMenuItem } from './createQrMenuItem';
 export interface CreateQrMenuRequest { 
     name?: string;
     displayName?: string;
+    restaurantId: string;
+    sectionsToShow?: Array<string>;
     primaryColor?: string;
     secondaryColor?: string;
     fontColor?: string;
-    previewIndex?: number;
+    loadingPlaceholderIndex?: number;
+    loadingPlaceholderFile?: Blob;
     urlSuffix?: string;
     items?: Array<CreateQrMenuItem>;
-    restaurantId: string;
-    sectionsToShow?: Array<string>;
 }
 

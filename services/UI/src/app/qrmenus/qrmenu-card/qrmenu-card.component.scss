@@ -1,178 +1,174 @@
 .codeCard {
-    margin-top: 20px;
-    width: 350px;
-    padding: 20px 30px;
-
+  margin-top: 20px;
+  width: 350px;
+  padding: 20px 30px;
 }
 
-.addCodeButton {
-    margin: 0 auto;
-    display: block;
-    margin-top: 30px;
+.create-button {
+  margin: 0 auto;
+  display: block;
+  margin-top: 30px;
 }
 
 .loadingSpinner {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }
 
 .newCode {
-    color: grey;
+  color: grey;
 }
 
 .field {
-    width: 350px;
+  width: 350px;
 }
 
 .menu-row {
-    background: #fff;
-    border: 1px solid #eaeaea;
-    border-radius: 2px;
-    margin-bottom: 10px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 2px;
+  margin-bottom: 10px;
 }
 
 .menu-row:hover {
-    border: 1px solid #d4d4d4;
+  border: 1px solid #d4d4d4;
 }
 
 .menu-date {
-    font-size: 14px;
-    color: #a4a6a8;
-    white-space: nowrap;
-    position: relative;
-    cursor: default;
-    margin-bottom: 5px;
+  font-size: 14px;
+  color: #a4a6a8;
+  white-space: nowrap;
+  position: relative;
+  cursor: default;
+  margin-bottom: 5px;
 }
 
 .menu-link {
-    font-size: 14px;
-    color: #a4a6a8;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-bottom: 5px;
-    max-width: 250px;
-    text-decoration: none;
+  font-size: 14px;
+  color: #a4a6a8;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+  max-width: 250px;
+  text-decoration: none;
 }
 
-.menu-link>span {
-    padding-left: 27px;
+.menu-link > span {
+  padding-left: 27px;
 }
 
 .link-icon {
-    font-size: 22px;
-    color: #d4d4d4;
-    position: absolute;
-    top: -2px;
+  font-size: 22px;
+  color: #d4d4d4;
+  position: absolute;
+  top: -2px;
 }
 
 .menu-metadata {
-    width: calc(100% - 65px);
-    height: 100%;
-    padding-top: 75px;
-    padding-left: 65px;
-    padding-right: 20px;
+  width: calc(100% - 65px);
+  height: 100%;
+  padding-top: 75px;
+  padding-left: 65px;
+  padding-right: 20px;
 }
 
 .menu-title-icon {
-    font-size: 25px;
-    color: #797d80;
-    position: absolute;
-    left: -30px;
-    top: -2px;
+  font-size: 25px;
+  color: #797d80;
+  position: absolute;
+  left: -30px;
+  top: -2px;
 }
 
 .menu-image-container {
-    position: relative;
-    height: 20em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  height: 20em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu-button {
-    color: #797d80;
-    font-size: 25px;
+  color: #797d80;
+  font-size: 25px;
 }
 
 .date-icon {
-    font-size: 22px;
-    color: #d4d4d4;
-    position: absolute;
-    left: -30px;
-    top: -2px;
+  font-size: 22px;
+  color: #d4d4d4;
+  position: absolute;
+  left: -30px;
+  top: -2px;
 }
 
 .menu-title {
-    color: #797d80;
-    border-color: transparent;
-    /* overflow: hidden; */
-    position: relative;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 24px;
-    margin-bottom: 10px;
+  color: #797d80;
+  border-color: transparent;
+  /* overflow: hidden; */
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 24px;
+  margin-bottom: 10px;
 }
 
 .link-date-container {
-    width: 100%;
+  width: 100%;
 }
 
 .float-left {
-    float: left;
+  float: left;
 }
 
 .float-right {
-    float: right;
+  float: right;
 }
 
 .qr-code-stats {
-    font-size: 14px;
-    color: #a4a6a8;
-    width: 100%;
-    text-align: center;
-    border-left: 1px solid #f7f7f7;
-    padding-left: 20px;
+  font-size: 14px;
+  color: #a4a6a8;
+  width: 100%;
+  text-align: center;
+  border-left: 1px solid #f7f7f7;
+  padding-left: 20px;
 }
 
-.qr-code-stats>p {
-    text-align: left;
+.qr-code-stats > p {
+  text-align: left;
 }
 
 p.qr-stats-value {
-    font-size: 23px;
-    font-weight: 700;
-    margin-bottom: 5px;
+  font-size: 23px;
+  font-weight: 700;
+  margin-bottom: 5px;
 }
 
-
 ::ng-deep .mat-progress-bar-fill::after {
-    background-color: #A0B454b0;
+  background-color: #a0b454b0;
 }
 
 ::ng-deep .mat-progress-bar-buffer {
-    background: #E4E8EB;
+  background: #e4e8eb;
 }
 
 .progress-bar {
-    position: absolute !important;
+  position: absolute !important;
 }
 
-
-
 .icon-button {
-    min-width: 40px;
-    margin-right: 10px;
-    padding: 0px;
+  min-width: 40px;
+  margin-right: 10px;
+  padding: 0px;
 }
 
 .preview-image {
-    height: calc(100% - 10px);
-    border: 5px solid white;
-    opacity: 0.4;
-    cursor: pointer;
+  height: calc(100% - 10px);
+  border: 5px solid white;
+  opacity: 0.4;
+  cursor: pointer;
 }

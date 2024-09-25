@@ -20,6 +20,10 @@ import { QrmenuPreviewComponent } from './qrmenu-preview/qrmenu-preview.componen
 import { MccColorPickerModule } from 'material-community-components/color-picker';
 import { ColorInputComponent } from '../components/color-input/color-input.component';
 import { GradientBorderComponent } from '../components/gradient-border/gradient-border.component';
+import { QrMenuFormGeneralStepComponent } from './qrmenu-form/qrmenu-form-general-step/qrmenu-form-general-step.component';
+import { QrMenuFormMenusStepComponent } from './qrmenu-form/qrmenu-form-menus-step/qrmenu-form-menus-step.component';
+import { QrMenuFormStyleStepComponent } from './qrmenu-form/qrmenu-form-style-step/qrmenu-form-style-step.component';
+import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form/qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +31,10 @@ import { GradientBorderComponent } from '../components/gradient-border/gradient-
     QrMenusComponent,
     QrMenuFormComponent,
     EditMealsComponent,
+    QrMenuFormGeneralStepComponent,
+    QrMenuFormMenusStepComponent,
+    QrMenuFormStyleStepComponent,
+    QrMenuFormLoadingPreviewStepComponent,
     QrMenuComponent,
     SearchFilterPipe,
     QrmenuPreviewComponent,

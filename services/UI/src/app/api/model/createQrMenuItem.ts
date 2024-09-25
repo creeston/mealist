@@ -13,7 +13,6 @@
 
 export interface CreateQrMenuItem { 
     title: string;
-    thumbnailIndex: number;
     menuId: string;
 }
 

@@ -1,0 +1,51 @@
+<form [formGroup]="form">
+  <mat-form-field appearance="fill" class="logo-upload-field">
+    <mat-label [translate]="'code.preview.choose'"></mat-label>
+    <mat-select
+      (selectionChange)="onPreviewSelected($event.value)"
+      formControlName="loadingPlaceholderIndexControl"
+    >
+      <mat-option
+        *ngFor="let menuItem of previewQrMenu.items; let i = index"
+        [value]="i"
+      >
+        <span *ngIf="menuItem.menu">{{ menuItem.menu.name }}</span>
+      </mat-option>
+      <mat-option [value]="-1">
+        <span [translate]="'code.preview.custom'"></span>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div
+    class="logo-upload-field"
+    *ngIf="previewQrMenu.loadingPlaceholderIndex === -1"
+  >
+    <input
+      type="file"
+      multiple="false"
+      formControlName="fileControl"
+      accept="image/png,image/jpeg"
+      class="file-input"
+      (change)="onFileSelected($event)"
+      #fileUpload
+    />
+    <button
+      mat-mini-fab
+      color="primary"
+      class="upload-btn"
+      (click)="fileUpload.click()"
+    >
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <mat-error
+      *ngIf="form.controls.fileControl.invalid"
+      class="upload-placeholder"
+    >
+      <span [translate]="'code.preview.ph'"></span>
+    </mat-error>
+    <span *ngIf="selectedFile" class="upload-placeholder">{{
+      selectedFilename
+    }}</span>
+  </div>
+</form>
+<img class="img-buffer" #imgBuffer />
