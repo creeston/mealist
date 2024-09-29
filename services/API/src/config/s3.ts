@@ -8,3 +8,4 @@ export const s3config = {
 };
 
 export const mealistBucket = 'mealist';
+export const mealistPublicBucket = 'mealist-public';

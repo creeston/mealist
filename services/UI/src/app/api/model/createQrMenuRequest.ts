@@ -9,20 +9,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { CreateLoadingPlaceholderRequest } from './createLoadingPlaceholderRequest';
+import { QrMenuStyle } from './qrMenuStyle';
 import { CreateQrMenuItem } from './createQrMenuItem';
 
 
 export interface CreateQrMenuRequest { 
-    name?: string;
-    displayName?: string;
+    name: string;
+    urlSuffix: string;
+    title?: string;
     restaurantId: string;
-    sectionsToShow?: Array<string>;
-    primaryColor?: string;
-    secondaryColor?: string;
-    fontColor?: string;
-    loadingPlaceholderIndex?: number;
-    loadingPlaceholderFile?: Blob;
-    urlSuffix?: string;
-    items?: Array<CreateQrMenuItem>;
+    sectionsToShow: Array<string>;
+    style: QrMenuStyle;
+    loadingPlaceholder: CreateLoadingPlaceholderRequest;
+    menus: Array<CreateQrMenuItem>;
 }
 

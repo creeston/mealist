@@ -1,5 +1,5 @@
 import { model, Schema, Model, Document } from 'mongoose';
-import { Menu } from '../../domain/models/menu';
+import { Menu, MenuPage } from '../../domain/models/menu';
 
 const OcrBoxSchema = new Schema({
   x1: Number,
@@ -61,14 +61,18 @@ export function mapToMenu(document: any): Menu {
     modifiedDate: document.modifiedDate,
     language: document.language,
     status: document.status,
-    pages: document.pages.map((page: any) => ({
-      pageNumber: page.pageNumber,
-      imagePath: page.imagePath,
-      markup: page.markup.map((line: any) => ({
-        blockId: line.blockId,
-        text: line.text,
-        box: line.box,
-      })),
+    pages: document.pages.map(mapMenuPageModelToMenuPage),
+  };
+}
+
+export function mapMenuPageModelToMenuPage(pageModel: any): MenuPage {
+  return {
+    pageNumber: pageModel.pageNumber,
+    imagePath: pageModel.imagePath,
+    markup: pageModel.markup.map((line: any) => ({
+      blockId: line.blockId,
+      text: line.text,
+      box: line.box,
     })),
   };
 }

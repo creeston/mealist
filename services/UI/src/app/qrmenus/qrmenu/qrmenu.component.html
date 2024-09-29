@@ -27,8 +27,8 @@
     <button
       type="button"
       mat-button
-      [style.backgroundColor]="qrMenu!.secondaryColor"
-      [style.color]="qrMenu!.fontColor"
+      [style.backgroundColor]="qrMenu!.style.actionsColor"
+      [style.color]="qrMenu!.style.fontColor"
       (click)="container.scrollTop = 0; back()"
       [ngClass]="{
         'back-button': !previewMode,
@@ -43,14 +43,14 @@
     class="menu"
     [ngStyle]="{
       'box-shadow':
-        '0px 0px 17px 0px ' + qrMenu.primaryColor + ', 0 0px 0px 0px'
+        '0px 0px 17px 0px ' + qrMenu.style.headerColor + ', 0 0px 0px 0px'
     }"
-    [style.backgroundColor]="qrMenu.backgroundColor"
+    [style.backgroundColor]="qrMenu.style.backgroundColor"
   >
     <div
       class="menu-metadata"
       *ngIf="!selectedMenu && qrMenu.sectionsToShow"
-      [style.backgroundColor]="qrMenu.primaryColor"
+      [style.backgroundColor]="qrMenu.style.headerColor"
     >
       <div
         *ngIf="
@@ -71,7 +71,7 @@
       <h1
         *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('name')"
         class="rest-name"
-        [style.color]="qrMenu.fontColor"
+        [style.color]="qrMenu.style.fontColor"
       >
         {{ qrMenu.restaurant.name }}
       </h1>
@@ -83,7 +83,7 @@
           href="{{ qrMenu.restaurant.facebookUrl }}"
           target="_blank"
           *ngIf="qrMenu.restaurant.facebookUrl"
-          [style.color]="qrMenu.fontColor"
+          [style.color]="qrMenu.style.fontColor"
         >
           <span
             class="iconify"
@@ -95,7 +95,7 @@
           href="{{ qrMenu.restaurant.instagramUrl }}"
           target="_blank"
           *ngIf="qrMenu.restaurant.instagramUrl"
-          [style.color]="qrMenu.fontColor"
+          [style.color]="qrMenu.style.fontColor"
         >
           <span
             class="iconify"
@@ -107,7 +107,7 @@
           href="{{ qrMenu.restaurant.vkUrl }}"
           target="_blank"
           *ngIf="qrMenu.restaurant.vkUrl"
-          [style.color]="qrMenu.fontColor"
+          [style.color]="qrMenu.style.fontColor"
         >
           <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
         </a>
@@ -115,7 +115,7 @@
           href="{{ qrMenu.restaurant.tripAdvisorUrl }}"
           target="_blank"
           *ngIf="qrMenu.restaurant.tripAdvisorUrl"
-          [style.color]="qrMenu.fontColor"
+          [style.color]="qrMenu.style.fontColor"
         >
           <span
             class="iconify"
@@ -126,16 +126,16 @@
       </div>
       <div class="menu-restaurant">
         <p
-          *ngIf="qrMenu.displayName"
+          *ngIf="qrMenu.title"
           class="menu-name"
-          [style.color]="qrMenu.fontColor"
+          [style.color]="qrMenu.style.fontColor"
         >
-          {{ qrMenu.displayName }}
+          {{ qrMenu.title }}
         </p>
         <p
           *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('address')"
           class="rest-address"
-          [style.color]="qrMenu.fontColor"
+          [style.color]="qrMenu.style.fontColor"
         >
           {{ qrMenu.restaurant.address }}
         </p>
@@ -145,38 +145,35 @@
       class="menus-container flex-container"
       *ngIf="!selectedMenu && qrMenu.restaurant"
     >
-      <div *ngFor="let item of qrMenu.items" class="menu-item">
+      <div *ngFor="let menu of qrMenu.menus" class="menu-item">
         <div
           class="menu-image-container"
-          (click)="container.scrollTop = 0; openMenu(item)"
+          (click)="container.scrollTop = 0; openMenu(menu)"
         >
           <img
-            [src]="item.menu!.pages![0]!.imageUrl"
+            [src]="menu.pages![0]!.imageUrl"
             class="menu-thumbnail"
-            *ngIf="item.menu && item.menu.pages && item.menu.pages.length > 0"
+            *ngIf="menu && menu.pages && menu.pages.length > 0"
           />
           <img
             src="assets/placeholder.png"
             class="menu-thumbnail"
-            *ngIf="
-              !item.menu || !item.menu.pages || item.menu.pages.length === 0
-            "
+            *ngIf="!menu || !menu.pages || menu.pages.length === 0"
           />
           <div
             class="menu-item-name"
-            [style.backgroundColor]="qrMenu.secondaryColor"
+            [style.backgroundColor]="qrMenu.style.actionsColor"
           >
-            <p [style.color]="qrMenu.fontColor">{{ item.title }}</p>
-            <mat-icon [style.color]="qrMenu.fontColor">visibility</mat-icon>
+            <p [style.color]="qrMenu.style.fontColor">{{ menu.title }}</p>
+            <mat-icon [style.color]="qrMenu.style.fontColor"
+              >visibility</mat-icon
+            >
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="selectedMenu && selectedMenu.menu && selectedMenu.menu.pages">
-      <div
-        *ngFor="let page of selectedMenu.menu.pages; let i = index"
-        #menuContent
-      >
+    <div *ngIf="selectedMenu && selectedMenu.pages">
+      <div *ngFor="let page of selectedMenu.pages; let i = index" #menuContent>
         <!-- <pinch-zoom [wheel]="false">  -->
         <img
           crossorigin="anonymous"

@@ -2,16 +2,28 @@ import { Operation } from 'express-openapi';
 import { components } from '../api';
 import { QrMenuService } from '../../services/qrMenuService';
 import { QrMenusRepository } from '../../data-access/repositories/qrMenusRepository';
+import { StorageService } from '../../data-access/storage/storageService';
+import { MenusRepository } from '../../data-access/repositories/menusRepository';
+import { logInfo } from '../../utils/logging/logger';
+import { menusService } from './menus';
 
 type CreateQrMenuRequest = components['schemas']['CreateQrMenuRequest'];
 
-export const qrMenuService = new QrMenuService(new QrMenusRepository());
+export const qrMenuService = new QrMenuService(
+  menusService,
+  new QrMenusRepository(),
+  new StorageService(),
+  new MenusRepository()
+);
 
 export const POST: Operation = [
   async (req, res) => {
-    const creationRequest = req.body as CreateQrMenuRequest;
-    const result = await qrMenuService.createQrMenu(creationRequest);
-    res.status(201).json(result.id);
+    const { body } = req;
+    const files = req.files as Express.Multer.File[];
+    const customLoadingPlaceholderFile = files[0];
+    const creationRequest = body as CreateQrMenuRequest;
+    const result = await qrMenuService.createQrMenu(creationRequest, customLoadingPlaceholderFile);
+    res.status(201).json(result);
   },
 ];
 
@@ -21,7 +33,7 @@ POST.apiDoc = {
   tags: ['qrmenus'],
   requestBody: {
     content: {
-      'application/json': {
+      'multipart/form-data': {
         schema: {
           $ref: '#/components/schemas/CreateQrMenuRequest',
         },
@@ -44,6 +56,13 @@ POST.apiDoc = {
 
 export const GET: Operation = [
   async (req, res) => {
+    const urlSuffix = req.query.urlSuffix as string;
+    logInfo(`GET /qrmenus urlSuffix: ${urlSuffix}`);
+    if (urlSuffix) {
+      const qrMenu = await qrMenuService.getQrMenuByUrlSuffix(urlSuffix);
+      res.status(200).json([qrMenu]);
+      return;
+    }
     const qrMenus = await qrMenuService.listQrMenus();
     res.status(200).json(qrMenus);
   },

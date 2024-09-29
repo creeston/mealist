@@ -1,13 +1,14 @@
 import { CreateQrMenuRequest, QrMenu } from '../../domain/models/qrmenu';
-import { QrMenuModel, mapCreationRequestToQrMenuModel, mapToQrMenu, mapToQrMenuModel } from '../models/qrMenuModel';
+import { QrMenuModel, mapCreationRequestToQrMenuModel, mapModelToQrMenu } from '../models/qrMenuModel';
 
 export class QrMenusRepository {
-  async createQrMenu(creationRequest: CreateQrMenuRequest): Promise<QrMenu> {
-    const qrMenuDocument = new QrMenuModel(mapCreationRequestToQrMenuModel(creationRequest));
+  async createQrMenu(creationRequest: CreateQrMenuRequest): Promise<string> {
+    const creationDate = new Date().toISOString();
+    const qrMenuModel = mapCreationRequestToQrMenuModel(creationRequest, creationDate);
+    const qrMenuDocument = new QrMenuModel(qrMenuModel);
     const result = await qrMenuDocument.save();
-    const qrMenu = await mapToQrMenu(result);
-    qrMenu.id = result._id.toString();
-    return qrMenu;
+    const id = result._id.toString();
+    return id;
   }
 
   async getQrMenuById(qrMenuId: string): Promise<QrMenu | null> {
@@ -16,15 +17,24 @@ export class QrMenusRepository {
       throw new Error('Menu not found');
     }
 
-    return await mapToQrMenu(document);
+    return await mapModelToQrMenu(document);
+  }
+
+  async getQrMenuByUrlSuffix(urlSuffix: string): Promise<QrMenu | null> {
+    const document = await QrMenuModel.findOne({ urlSuffix });
+    if (!document) {
+      return null;
+    }
+
+    return await mapModelToQrMenu(document);
   }
 
   async listQrMenus(): Promise<QrMenu[]> {
     const documents = await QrMenuModel.find();
-    return await Promise.all(documents.map(mapToQrMenu));
+    return await Promise.all(documents.map(mapModelToQrMenu));
   }
 
-  async updateQrMenu(qrMenu: QrMenu): Promise<void> {
-    await QrMenuModel.findByIdAndUpdate(qrMenu.id, mapToQrMenuModel(qrMenu));
-  }
+  // async updateQrMenu(qrMenu: QrMenu): Promise<void> {
+  //   await QrMenuModel.findByIdAndUpdate(qrMenu.id, mapToQrMenuModel(qrMenu));
+  // }
 }

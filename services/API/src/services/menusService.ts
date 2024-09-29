@@ -177,28 +177,35 @@ export class MenusService {
     } as MenuApiModel;
 
     if (menu.pages && menu.pages.length > 0) {
-      const pages: MenuPageApiModel[] = [];
-      for (let page of menu.pages) {
-        const imageUrl = await this.storageService.getFileUrl(page.imagePath);
-        const responseMarkup = page.markup?.map((line) => {
-          return {
-            text: line.text,
-            x1: line.box.x1,
-            y1: line.box.y1,
-            x2: line.box.x2,
-            y2: line.box.y2,
-          } as MenuLineApiModel;
-        });
-        pages.push({
-          pageNumber: page.pageNumber,
-          imageUrl: imageUrl,
-          markup: responseMarkup,
-        } as MenuPageApiModel);
-      }
-
-      response.pages = pages;
+      response.pages = await this.mapMenusPagesToApiModel(menu.pages);
     }
 
     return response;
+  }
+
+  public async mapMenusPagesToApiModel(pages: MenuPage[]): Promise<MenuPageApiModel[]> {
+    const apiPages: MenuPageApiModel[] = [];
+    for (let page of pages) {
+      apiPages.push(await this.mapMenuPageToApiModel(page));
+    }
+    return apiPages;
+  }
+
+  public async mapMenuPageToApiModel(page: MenuPage): Promise<MenuPageApiModel> {
+    const imageUrl = await this.storageService.getFileUrl(page.imagePath);
+    const responseMarkup = page.markup?.map((line) => {
+      return {
+        text: line.text,
+        x1: line.box.x1,
+        y1: line.box.y1,
+        x2: line.box.x2,
+        y2: line.box.y2,
+      } as MenuLineApiModel;
+    });
+    return {
+      pageNumber: page.pageNumber,
+      imageUrl: imageUrl,
+      markup: responseMarkup,
+    } as MenuPageApiModel;
   }
 }

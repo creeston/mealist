@@ -137,7 +137,9 @@ components:
           type: string
         name:
           type: string
-        displayName:
+        urlSuffix:
+          type: string
+        title:
           type: string
         restaurant:
           $ref: "#/components/schemas/Restaurant"
@@ -145,25 +147,13 @@ components:
           type: array
           items:
             type: string
-        primaryColor:
-          type: string
-        secondaryColor:
-          type: string
-        fontColor:
-          type: string
+        style:
+          $ref: "#/components/schemas/QrMenuStyle"
         scanCount:
-          type: integer
-        stopList:
-          type: array
-          items:
-            type: string
-        loadingPlaceholderIndex:
           type: integer
         loadingPlaceholderUrl:
           type: string
-        urlSuffix:
-          type: string
-        items:
+        menus:
           type: array
           items:
             $ref: "#/components/schemas/QrMenuItem"
@@ -174,23 +164,48 @@ components:
           type: string
           format: date-time
       required:
-        - menuId
-        - restaurantId
+        - id
+        - name
+        - restaurant
+        - urlSuffix
+        - sectionsToShow
+        - style
+        - scanCount
+        - loadingPlaceholderUrl
+        - menus
+        - creationDate
     QrMenuItem:
       type: "object"
       properties:
-        menu:
-          $ref: "#/components/schemas/Menu"
+        stopColor:
+          type: string
+        stopStyle:
+          type: string
         title:
           type: string
-        thumbnailIndex:
-          type: integer
+        pages:
+          type: array
+          items:
+            $ref: "#/components/schemas/MenuPage"
+    QrMenuStyle:
+      type: "object"
+      properties:
+        headerColor:
+          type: string
+        actionsColor:
+          type: string
+        fontColor:
+          type: string
+        backgroundColor:
+          type: string
     CreateQrMenuRequest:
       type: "object"
       properties:
         name:
           type: string
-        displayName:
+        urlSuffix:
+          type: string
+        title:
           type: string
         restaurantId:
           type: string
@@ -198,26 +213,30 @@ components:
           type: array
           items:
             type: string
-        primaryColor:
-          type: string
-        secondaryColor:
-          type: string
-        fontColor:
-          type: string
-        loadingPlaceholderIndex:
-          type: integer
-        loadingPlaceholderFile:
-          type: string
-          format: binary
-        urlSuffix:
-          type: string
-        items:
+        style:
+          $ref: "#/components/schemas/QrMenuStyle"
+        loadingPlaceholder:
+          $ref: "#/components/schemas/CreateLoadingPlaceholderRequest"
+        menus:
           type: array
           items:
             $ref: "#/components/schemas/CreateQrMenuItem"
+        file:
+          type: string
+          format: binary
       required:
-        - menuId
         - restaurantId
+        - name
+        - urlSuffix
+        - sectionsToShow
+        - style
+        - loadingPlaceholder
+        - menus
+    CreateLoadingPlaceholderRequest:
+      type: "object"
+      properties:
+        menuIndex:
+          type: integer
     CreateQrMenuItem:
       type: "object"
       properties:

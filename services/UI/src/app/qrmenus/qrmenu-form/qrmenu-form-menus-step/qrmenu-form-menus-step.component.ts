@@ -1,13 +1,24 @@
 import {
   Component,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { Menu, QrMenu, QrMenuItem } from '../../../api';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MenuService } from '../../../services/menu.service';
+
+export interface MenusConfiguration {
+  menus: QrMenuSelectedMenu[];
+}
+
+export interface QrMenuSelectedMenu {
+  menuId: string;
+  title: string;
+}
 
 @Component({
   selector: 'app-qmenu-form-menus-step',
@@ -18,6 +29,7 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
   @Input({ required: true }) previewQrMenu!: QrMenu;
   @Input({ required: true }) form!: FormGroup;
   @Input({ required: true }) isStepActive!: boolean;
+  @Output() menusConfigurationChange = new EventEmitter<MenusConfiguration>();
 
   public menus: Menu[] = [];
   public menusLoaded = false;
@@ -45,7 +57,7 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
     if (
       changes.isStepActive &&
       this.isStepActive &&
-      this.previewQrMenu.items?.length == 0
+      this.previewQrMenu.menus?.length == 0
     ) {
       this.addMenuField();
     }
@@ -53,7 +65,9 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
 
   async onMenuSelected(menuItem: QrMenuItem, event: any) {
     let menu = event.value as Menu;
-    menuItem.menu = menu;
+    menuItem.pages = menu.pages;
+    menuItem.stopColor = menu.stopColor;
+    menuItem.stopStyle = menu.stopStyle;
   }
 
   addMenuField() {
@@ -62,7 +76,7 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
       menu: undefined,
     } as QrMenuItem;
 
-    this.previewQrMenu.items!.push(qrMenuItem);
+    this.previewQrMenu.menus!.push(qrMenuItem);
 
     const formGroup = this.fb.group({
       menuControl: this.fb.control('', [Validators.required]),
@@ -77,10 +91,19 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
   }
 
   removeMenuField(i: number) {
-    this.previewQrMenu.items = this.previewQrMenu.items!.filter(
+    this.previewQrMenu.menus = this.previewQrMenu.menus!.filter(
       (item, index) => index !== i
     );
 
     this.menusFormArray.removeAt(i);
+  }
+
+  notifyMenusConfigurationChange() {
+    this.menusConfigurationChange.emit({
+      menus: this.menusFormArray.controls.map((menuFormGroup) => ({
+        menuId: menuFormGroup.get('menuControl')?.value?.id,
+        title: menuFormGroup.get('titleControl')?.value,
+      })),
+    });
   }
 }

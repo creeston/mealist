@@ -3,7 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
-import { CreateQrMenuRequest, QrMenu } from '../api/model/models';
+import {
+  CreateLoadingPlaceholderRequest,
+  CreateQrMenuItem,
+  QrMenu,
+  QrMenuStyle,
+} from '../api/model/models';
 import { QrmenusService } from '../api';
 
 @Injectable()
@@ -18,8 +23,30 @@ export class QrMenuService {
     private api: QrmenusService
   ) {}
 
-  async create(qrMenuFormData: CreateQrMenuRequest) {
-    await firstValueFrom(this.api.createQrMenu(qrMenuFormData));
+  async create(
+    name: string,
+    urlSuffix: string,
+    restaurantId: string,
+    sectionsToShow: Array<string>,
+    style: QrMenuStyle,
+    loadingPlaceholder: CreateLoadingPlaceholderRequest,
+    menus: Array<CreateQrMenuItem>,
+    title?: string,
+    file?: Blob
+  ) {
+    await firstValueFrom(
+      this.api.createQrMenu(
+        name,
+        urlSuffix,
+        restaurantId,
+        sectionsToShow,
+        style,
+        loadingPlaceholder,
+        menus,
+        title,
+        file
+      )
+    );
   }
 
   update(qrMenuFormData: any, id: string) {

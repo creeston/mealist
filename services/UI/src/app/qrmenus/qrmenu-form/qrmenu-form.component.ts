@@ -10,13 +10,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
-import {
-  CreateQrMenuItem,
-  CreateQrMenuRequest,
-  QrMenu,
-  QrMenuItem,
-} from '../../api/model/models';
+import { CreateQrMenuItem, QrMenu } from '../../api/model/models';
 import { IdGenerator } from '../../utils/IdGenerator';
+import { GeneralConfiguration } from './qrmenu-form-general-step/qrmenu-form-general-step.component';
+import {
+  MenusConfiguration,
+  QrMenuSelectedMenu,
+} from './qrmenu-form-menus-step/qrmenu-form-menus-step.component';
+import { LoadingPlaceholderConfiguration } from './qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
 
 @Component({
   selector: 'qrmenu-form-component',
@@ -30,13 +31,21 @@ export class QrMenuFormComponent {
   public previewImage: string = '';
   public currentStep: number = 0;
   public previewQrMenu: QrMenu = {
-    primaryColor: '#989089',
-    secondaryColor: '#A0B454b0',
-    fontColor: '#FFFFFF',
-    backgroundColor: '#FFFFFF',
+    id: '-1',
+    name: '',
+    style: {
+      headerColor: '#989089',
+      actionsColor: '#A0B454b0',
+      fontColor: '#FFFFFF',
+      backgroundColor: '#FFFFFF',
+    },
+    restaurant: null as any,
+    sectionsToShow: [],
     urlSuffix: IdGenerator.generateId(5),
-    items: [],
-    loadingPlaceholderIndex: -1,
+    menus: [],
+    loadingPlaceholderUrl: '',
+    scanCount: 0,
+    creationDate: new Date().toISOString(),
   };
   public menuLoading: boolean = false;
   public mode: string = 'plain';
@@ -48,34 +57,17 @@ export class QrMenuFormComponent {
   environment = environment;
 
   menuId: string | undefined;
-
-  primaryColors: string[] = [
-    '#3f51b5',
-    '#da5167',
-    '#45606f',
-    '#704b4b',
-    '#4caf50',
-    '#e6c026',
-  ];
-
-  secondaryColors: string[] = [
-    '#3f51b5c0',
-    '#464154',
-    '#0288d1',
-    '#d72feb',
-    '#e04712',
-    '#12bce0',
-  ];
-
-  fontColors: string[] = ['#ffffff', '#000000'];
-
-  urlSuffixRegex = new RegExp('^[0-9A-z_]+$');
-
   restaurantSections: any = [];
 
+  generalConfiguration: GeneralConfiguration | null = null;
   formGroup1: FormGroup;
+
+  menusConfiguration: MenusConfiguration | null = null;
   formGroup2: FormGroup;
   formGroup3: FormGroup;
+
+  loadingPlaceholderConfiguration: LoadingPlaceholderConfiguration | null =
+    null;
   formGroup4: FormGroup;
 
   constructor(
@@ -182,38 +174,58 @@ export class QrMenuFormComponent {
   async createCode() {
     this.creationAttempt = true;
     this.disabled = true;
-    if (!this.validate()) {
+    if (
+      !this.validate() ||
+      !this.generalConfiguration ||
+      !this.menusConfiguration ||
+      !this.loadingPlaceholderConfiguration
+    ) {
       this.disabled = false;
       return;
     }
 
-    let menuItems = this.previewQrMenu
-      .items!.filter((i: QrMenuItem) => i.menu?.pages)
-      .map((i: QrMenuItem) => {
+    let menuItems = this.menusConfiguration.menus.map(
+      (i: QrMenuSelectedMenu) => {
         let item = {
           title: i.title,
-          menuId: i.menu!.id,
+          menuId: i.menuId,
         } as CreateQrMenuItem;
         return item;
-      });
+      }
+    );
 
-    // const formData = new FormData();
-    // this.addPreviewimageToFormData(formData);
-    // this.addQrMenuToFormData(formData, qrModel);
+    const name = this.qrMenuNameControl.value ?? '';
 
-    const creationRequest = {
-      name: this.qrMenuNameControl.value ?? '',
-      displayName: this.previewQrMenu.displayName,
-      restaurantId: this.previewQrMenu.restaurant!.id,
-      primaryColor: this.previewQrMenu.primaryColor,
-      secondaryColor: this.previewQrMenu.secondaryColor,
-      fontColor: this.previewQrMenu.fontColor,
-      urlSuffix: this.formGroup1.controls.urlSuffixControl.value ?? '',
-      sectionsToShow: this.previewQrMenu.sectionsToShow,
-      items: menuItems,
-    } as CreateQrMenuRequest;
+    const urlSuffix = this.generalConfiguration.urlSuffix;
+    const title = this.generalConfiguration.title;
+    const restaurantId = this.generalConfiguration.restaurant.id!;
+    const sectionsToShow = this.generalConfiguration.sections;
 
-    await this.qrMenuService.create(creationRequest);
+    const style = {
+      headerColor: this.previewQrMenu.style.headerColor,
+      actionsColor: this.previewQrMenu.style.actionsColor,
+      fontColor: this.previewQrMenu.style.fontColor,
+      backgroundColor: this.previewQrMenu.style.backgroundColor,
+    };
+
+    const loadingPlaceholder = {
+      menuIndex: this.loadingPlaceholderConfiguration.loadingPlaceholderIndex,
+      file: this.loadingPlaceholderConfiguration.file,
+    };
+
+    const menus = menuItems;
+
+    await this.qrMenuService.create(
+      name,
+      urlSuffix,
+      restaurantId,
+      sectionsToShow,
+      style,
+      loadingPlaceholder,
+      menus,
+      title,
+      loadingPlaceholder.file ?? undefined
+    );
     this.router.navigate(['qrmenus']);
   }
 
@@ -224,36 +236,36 @@ export class QrMenuFormComponent {
       return;
     }
 
-    let menuItems = this.previewQrMenu.items!.filter(
-      (i: QrMenuItem) => i.menu?.pages
-    );
+    // let menuItems = this.previewQrMenu.items!.filter(
+    //   (i: QrMenuItem) => i.menu?.pages
+    // );
 
-    let qrModel = {
-      name: this.qrMenuNameControl.value ?? '',
-      displayName: this.previewQrMenu.displayName,
-      restaurant: this.previewQrMenu.restaurant,
-      primaryColor: this.previewQrMenu.primaryColor,
-      secondaryColor: this.previewQrMenu.secondaryColor,
-      fontColor: this.previewQrMenu.fontColor,
-      backgroundColor: this.previewQrMenu.backgroundColor,
-      urlSuffix: this.formGroup1.controls.urlSuffixControl.value ?? '',
-      sectionsToShow: this.previewQrMenu.sectionsToShow,
-      items: menuItems,
-      previewIndex: this.previewQrMenu.loadingPlaceholderIndex,
-    } as QrMenu;
+    // let qrModel = {
+    //   name: this.qrMenuNameControl.value ?? '',
+    //   displayName: this.previewQrMenu.displayName,
+    //   restaurant: this.previewQrMenu.restaurant,
+    //   primaryColor: this.previewQrMenu.primaryColor,
+    //   secondaryColor: this.previewQrMenu.secondaryColor,
+    //   fontColor: this.previewQrMenu.fontColor,
+    //   backgroundColor: this.previewQrMenu.backgroundColor,
+    //   urlSuffix: this.formGroup1.controls.urlSuffixControl.value ?? '',
+    //   sectionsToShow: this.previewQrMenu.sectionsToShow,
+    //   items: menuItems,
+    //   previewIndex: this.previewQrMenu.loadingPlaceholderIndex,
+    // } as QrMenu;
 
-    const formData = new FormData();
-    this.addQrMenuToFormData(formData, qrModel);
-    this.addPreviewimageToFormData(formData);
+    // const formData = new FormData();
+    // this.addQrMenuToFormData(formData, qrModel);
+    // this.addPreviewimageToFormData(formData);
 
-    this.qrMenuService.update(formData, this.menuId!).subscribe(
-      (r: any) => {
-        this.router.navigate(['qrmenus']);
-      },
-      (error: any) => {
-        this.disabled = false;
-      }
-    );
+    // this.qrMenuService.update(formData, this.menuId!).subscribe(
+    //   (r: any) => {
+    //     this.router.navigate(['qrmenus']);
+    //   },
+    //   (error: any) => {
+    //     this.disabled = false;
+    //   }
+    // );
   }
 
   validate() {
@@ -275,15 +287,6 @@ export class QrMenuFormComponent {
     return isValid;
   }
 
-  isAnyMenuItem() {
-    let isValid = false;
-    this.previewQrMenu.items!.forEach((item) => {
-      isValid = isValid || !!item.menu?.id;
-    });
-
-    return isValid;
-  }
-
   isHexColor(hex: string) {
     hex = hex.substr(1);
     return !isNaN(Number('0x' + hex));
@@ -291,23 +294,11 @@ export class QrMenuFormComponent {
 
   areColorsSelected(qrmenu: QrMenu) {
     return (
-      this.isHexColor(qrmenu.primaryColor!) &&
-      this.isHexColor(qrmenu.secondaryColor!) &&
-      this.isHexColor(qrmenu.fontColor!)
+      this.isHexColor(qrmenu.style.headerColor!) &&
+      this.isHexColor(qrmenu.style.actionsColor!) &&
+      this.isHexColor(qrmenu.style.fontColor!) &&
+      this.isHexColor(qrmenu.style.backgroundColor!)
     );
-  }
-
-  areMenuItemsValid(qrmenu: QrMenu) {
-    if (qrmenu.items?.length == 0) {
-      return false;
-    }
-
-    let isVaild = true;
-    qrmenu.items!.forEach((item) => {
-      isVaild = !!item.menu?.id;
-    });
-
-    return isVaild;
   }
 
   addQrMenuToFormData(formData: any, qrmenu: QrMenu) {

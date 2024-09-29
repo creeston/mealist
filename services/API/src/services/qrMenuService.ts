@@ -1,37 +1,39 @@
 import { CreateQrMenuRequest, QrMenu, QrMenuStyle } from '../domain/models/qrmenu';
 import { components } from '../presentation/api';
 import { QrMenusRepository } from '../data-access/repositories/qrMenusRepository';
+import { StorageService } from '../data-access/storage/storageService';
+import { MenusRepository } from '../data-access/repositories/menusRepository';
+import { MenusService } from './menusService';
 
 type QrMenuResponseModel = components['schemas']['QrMenu'];
 type CreateQrMenuApiRequest = components['schemas']['CreateQrMenuRequest'];
 
 export class QrMenuService {
-  constructor(private qrMenusRepository: QrMenusRepository) {}
+  constructor(
+    private menusService: MenusService,
+    private qrMenusRepository: QrMenusRepository,
+    private storageService: StorageService,
+    private menusRepository: MenusRepository
+  ) {}
 
-  async createQrMenu(creationRequest: CreateQrMenuApiRequest): Promise<QrMenuResponseModel> {
-    const qrMenu = await this.qrMenusRepository.createQrMenu({
+  async createQrMenu(
+    creationRequest: CreateQrMenuApiRequest,
+    customLoadingPlaceholderFile: Express.Multer.File
+  ): Promise<string> {
+    const loadingPlaceholderPath = await this.uploadLoadingPlaceholder(creationRequest, customLoadingPlaceholderFile);
+    const createMenuRequest = {
       name: creationRequest.name,
-      restaurantId: creationRequest.restaurantId,
-      style: {
-        displayName: creationRequest.displayName,
-        primaryColor: creationRequest.primaryColor,
-        secondaryColor: creationRequest.secondaryColor,
-        fontColor: creationRequest.fontColor,
-        previewIndex: creationRequest.loadingPlaceholderIndex,
-      } as QrMenuStyle,
       urlSuffix: creationRequest.urlSuffix,
-      items:
-        creationRequest.items?.map((item) => ({
-          menuId: item.menuId,
-          style: {
-            thumbnailIndex: 0,
-            title: item.title,
-          },
-        })) ?? [],
-      creationDate: new Date().toISOString(), // Assuming creationDate is now
-    } as CreateQrMenuRequest);
+      title: creationRequest.title,
+      restaurantId: creationRequest.restaurantId,
+      sectionsToShow: creationRequest.sectionsToShow,
+      style: creationRequest.style as QrMenuStyle,
+      menus: creationRequest.menus,
+      loadingPlaceholderKey: loadingPlaceholderPath,
+    } as CreateQrMenuRequest;
 
-    return this.mapDomainToApiModel(qrMenu);
+    const qrMenuId = await this.qrMenusRepository.createQrMenu(createMenuRequest);
+    return qrMenuId;
   }
 
   async getQrMenuById(qrMenuId: string): Promise<QrMenuResponseModel | null> {
@@ -43,33 +45,87 @@ export class QrMenuService {
     return this.mapDomainToApiModel(qrMenu);
   }
 
+  async getQrMenuByUrlSuffix(urlSuffix: string): Promise<QrMenuResponseModel | null> {
+    const qrMenu = await this.qrMenusRepository.getQrMenuByUrlSuffix(urlSuffix);
+    if (!qrMenu) {
+      return null;
+    }
+
+    return this.mapDomainToApiModel(qrMenu);
+  }
+
   async listQrMenus(): Promise<QrMenuResponseModel[]> {
     const menus = await this.qrMenusRepository.listQrMenus();
-    return menus.map(this.mapDomainToApiModel);
+    return await Promise.all(menus.map(this.mapDomainToApiModel));
   }
 
   async updateQrMenu(qrMenu: QrMenu): Promise<void> {
-    await this.qrMenusRepository.updateQrMenu(qrMenu);
+    await Promise.resolve(0);
+    // await this.qrMenusRepository.updateQrMenu(qrMenu);
   }
 
-  private mapDomainToApiModel(qrMenu: QrMenu): QrMenuResponseModel {
+  private async mapDomainToApiModel(qrMenu: QrMenu): Promise<QrMenuResponseModel> {
+    const loadingPlaceholderUrl = await this.storageService.getFileFromPublicBucket(qrMenu.loadingPlaceholderKey);
+    const menus = [];
+    for (const item of qrMenu.menus) {
+      if (!item.pages) {
+        throw new Error('Menu item does not have any pages');
+      }
+
+      const pages = await this.menusService.mapMenusPagesToApiModel(item.pages);
+      menus.push({
+        stopColor: item.stopColor,
+        stopStyle: item.stopStyle,
+        pages: pages,
+        title: item.title,
+      });
+    }
+
     return {
       id: qrMenu.id,
       name: qrMenu.name,
       restaurant: qrMenu.restaurant,
-      primaryColor: qrMenu.style.primaryColor,
-      secondaryColor: qrMenu.style.secondaryColor,
-      fontColor: qrMenu.style.fontColor,
+      sectionsToShow: qrMenu.sectionsToShow,
+      style: qrMenu.style,
       scanCount: qrMenu.stats.scanCount,
-      loadingPlaceholderIndex: qrMenu.style.previewIndex,
+      loadingPlaceholderUrl: loadingPlaceholderUrl,
       urlSuffix: qrMenu.urlSuffix,
-      items: qrMenu.items.map((item) => ({
-        menuId: item.menu.id,
-        title: item.style.title,
-        thumbnailIndex: item.style.thumbnailIndex,
-      })),
+      menus: menus,
       creationDate: qrMenu.creationDate,
       modificationDate: qrMenu.modificationDate,
     };
+  }
+
+  private async uploadLoadingPlaceholder(
+    creationRequest: CreateQrMenuApiRequest,
+    customLoadingPlaceholderFile: Express.Multer.File
+  ): Promise<string> {
+    const placeholderKey = this.storageService.getLoadingPlaceholderKey(creationRequest.urlSuffix);
+    const menuIndex = creationRequest.loadingPlaceholder.menuIndex;
+
+    if (customLoadingPlaceholderFile && menuIndex === undefined) {
+      this.storageService.uploadFile(placeholderKey, customLoadingPlaceholderFile.buffer);
+    } else if (menuIndex !== undefined) {
+      await this.copyExistingMenuPageToPlaceholderLocation(creationRequest, menuIndex!, placeholderKey);
+    } else {
+      throw new Error('Invalid loading placeholder configuraiton.');
+    }
+
+    return placeholderKey;
+  }
+
+  private async copyExistingMenuPageToPlaceholderLocation(
+    creationRequest: CreateQrMenuApiRequest,
+    menuIndex: number,
+    loadingPlaceholderPath: string
+  ): Promise<void> {
+    const menuId = creationRequest.menus[menuIndex].menuId;
+    const menu = await this.menusRepository.getMenuById(menuId);
+    if (!menu || !menu.pages) {
+      throw new Error('Menu not found');
+    }
+
+    const menuImageKey = menu.pages[0].imagePath;
+    this.storageService.copyFileToPublicBucket(menuImageKey, loadingPlaceholderPath);
   }
 }

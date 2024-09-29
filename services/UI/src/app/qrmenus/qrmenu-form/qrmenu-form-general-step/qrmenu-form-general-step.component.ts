@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -10,6 +10,13 @@ import { QrMenu, Restaurant } from '../../../api';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { RestaurantService } from '../../../services/restaurant.service';
+
+export interface GeneralConfiguration {
+  restaurant: Restaurant;
+  title: string;
+  urlSuffix: string;
+  sections: string[];
+}
 
 @Component({
   selector: 'app-qmenu-form-general-step',
@@ -25,6 +32,8 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
   environment = environment;
   @Input({ required: true }) previewQrMenu!: QrMenu;
   @Input({ required: true }) form!: FormGroup;
+  @Output() generalConfigurationChange =
+    new EventEmitter<GeneralConfiguration>();
 
   constructor(
     private fb: FormBuilder,
@@ -55,14 +64,18 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
 
     this.form.controls.qrMenuDisplayNameControl.valueChanges.subscribe(
       (value) => {
-        this.previewQrMenu.displayName = value ?? '';
+        this.previewQrMenu.title = value ?? '';
+        this.notifyGeneralConfigurationChange();
       }
     );
 
     this.form.controls.restaurantNameControl.valueChanges.subscribe((value) => {
       let restaurant = this.restaurants.find((r) => r.name === value);
-      this.previewQrMenu.restaurant = restaurant;
-      this.previewQrMenu.sectionsToShow = this.restaurantSections;
+      if (restaurant) {
+        this.previewQrMenu.restaurant = restaurant;
+        this.previewQrMenu.sectionsToShow = this.restaurantSections;
+        this.notifyGeneralConfigurationChange();
+      }
     });
   }
 
@@ -133,5 +146,15 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     this.previewQrMenu.sectionsToShow = this.restaurantSections
       .filter((s: any) => s.checked)
       .map((s: any) => s.key);
+    this.notifyGeneralConfigurationChange();
+  }
+
+  notifyGeneralConfigurationChange() {
+    this.generalConfigurationChange.emit({
+      restaurant: this.previewQrMenu.restaurant,
+      title: this.previewQrMenu.title ?? '',
+      urlSuffix: this.previewQrMenu.urlSuffix,
+      sections: this.previewQrMenu.sectionsToShow,
+    });
   }
 }

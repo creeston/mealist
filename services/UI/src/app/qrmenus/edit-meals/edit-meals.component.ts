@@ -38,7 +38,7 @@ export class EditMealsComponent implements OnInit {
     this.menuMeals = this.data.menuMeals;
     this.menu = this.data.menu;
     for (let pageId = 0; pageId < this.menuMeals.length; pageId++) {
-      let stopList = this.menu!.stopList![pageId];
+      let stopList: any[] = []; //; this.menu!.stopList![pageId];
       this.menuMeals[pageId].meals.forEach((m: any) => {
         if (stopList.indexOf(m.text) >= 0) {
           m.enabled = false;

@@ -22,9 +22,9 @@ export class QrMenuFormStyleStepComponent implements OnInit {
     this.form.controls.primaryColorControl.valueChanges.subscribe((value) => {
       if (value) {
         if (value.startsWith('#')) {
-          this.previewQrMenu.primaryColor = value;
+          this.previewQrMenu.style.headerColor = value;
         } else {
-          this.previewQrMenu.primaryColor = '#' + value;
+          this.previewQrMenu.style.headerColor = '#' + value;
         }
       }
     });
@@ -32,9 +32,9 @@ export class QrMenuFormStyleStepComponent implements OnInit {
     this.form.controls.secondaryColorControl.valueChanges.subscribe((value) => {
       if (value) {
         if (value.startsWith('#')) {
-          this.previewQrMenu.secondaryColor = value;
+          this.previewQrMenu.style.actionsColor = value;
         } else {
-          this.previewQrMenu.secondaryColor = '#' + value;
+          this.previewQrMenu.style.actionsColor = '#' + value;
         }
       }
     });
@@ -43,9 +43,9 @@ export class QrMenuFormStyleStepComponent implements OnInit {
       (value) => {
         if (value) {
           if (value.startsWith('#')) {
-            this.previewQrMenu.backgroundColor = value;
+            this.previewQrMenu.style.backgroundColor = value;
           } else {
-            this.previewQrMenu.backgroundColor = '#' + value;
+            this.previewQrMenu.style.backgroundColor = '#' + value;
           }
         }
       }
@@ -54,9 +54,9 @@ export class QrMenuFormStyleStepComponent implements OnInit {
     this.form.controls.fontColorControl.valueChanges.subscribe((value) => {
       if (value) {
         if (value.startsWith('#')) {
-          this.previewQrMenu.fontColor = value;
+          this.previewQrMenu.style.fontColor = value;
         } else {
-          this.previewQrMenu.fontColor = '#' + value;
+          this.previewQrMenu.style.fontColor = '#' + value;
         }
       }
     });

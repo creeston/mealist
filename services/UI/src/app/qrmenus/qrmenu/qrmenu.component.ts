@@ -101,14 +101,17 @@ export class QrMenuComponent implements OnInit {
     if (!this.qrMenu) {
       return;
     }
-    if (!this.qrMenu.primaryColor) {
-      this.qrMenu.primaryColor = '#3f51b5';
+    if (!this.qrMenu.style.headerColor) {
+      this.qrMenu.style.headerColor = '#3f51b5';
     }
-    if (!this.qrMenu.secondaryColor) {
-      this.qrMenu.secondaryColor = '#3f51b5c0';
+    if (!this.qrMenu.style.actionsColor) {
+      this.qrMenu.style.actionsColor = '#3f51b5c0';
     }
-    if (!this.qrMenu.fontColor) {
-      this.qrMenu.fontColor = '#ffffff';
+    if (!this.qrMenu.style.fontColor) {
+      this.qrMenu.style.fontColor = '#ffffff';
+    }
+    if (!this.qrMenu.style.backgroundColor) {
+      this.qrMenu.style.backgroundColor = '#ffffff';
     }
   }
 
@@ -116,14 +119,13 @@ export class QrMenuComponent implements OnInit {
     if (!this.qrMenu) {
       return;
     }
-    this.qrMenu.items!.forEach((item: QrMenuItem) => {
-      this.loading = false;
-    });
+
+    this.loading = false;
   }
 
   openMenu(menuItem: QrMenuItem) {
     this.imagesData = [];
-    for (let pageId = 0; pageId < menuItem.menu!.pages!.length; pageId++) {
+    for (let pageId = 0; pageId < menuItem.pages!.length; pageId++) {
       this.imagesData.push({ width: 0, height: 0 });
     }
     this.selectedMenu = menuItem;
@@ -152,10 +154,10 @@ export class QrMenuComponent implements OnInit {
     let rate = canvas.height / realHeight;
 
     context.lineWidth = 3;
-    let menuindex = this.qrMenu.items!.indexOf(this.selectedMenu);
+    let menuindex = this.qrMenu.menus!.indexOf(this.selectedMenu);
     // TODO Consider using separate stop list
     // let markup = this.menu.stopMarkup[menuindex][i];
-    let markup = this.qrMenu.items![menuindex].menu!.pages![i].markup!;
+    let markup = this.qrMenu.menus![menuindex].pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
       let x1 = line.x1 * rate;
@@ -174,8 +176,8 @@ export class QrMenuComponent implements OnInit {
         y,
         w,
         h,
-        this.selectedMenu!.menu!.stopStyle!,
-        this.selectedMenu!.menu!.stopColor!
+        this.selectedMenu!.stopStyle!,
+        this.selectedMenu!.stopColor!
       );
     });
     imageElement.src = canvas.toDataURL();
@@ -198,10 +200,10 @@ export class QrMenuComponent implements OnInit {
     let rate = canvas.height / realHeight;
 
     context.lineWidth = 3;
-    let menuindex = this.qrMenu.items!.indexOf(this.selectedMenu);
+    let menuindex = this.qrMenu.menus!.indexOf(this.selectedMenu);
     // TODO Consider using separate stop list
     // let markup = this.menu.stopMarkup[menuindex][i];
-    let markup = this.qrMenu.items![menuindex].menu!.pages![i].markup!;
+    let markup = this.qrMenu.menus![menuindex].pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
       let x1 = line.x1 * rate;
@@ -220,8 +222,8 @@ export class QrMenuComponent implements OnInit {
         y,
         w,
         h,
-        this.selectedMenu!.menu!.stopStyle!,
-        this.selectedMenu!.menu!.stopColor!
+        this.selectedMenu!.stopStyle!,
+        this.selectedMenu!.stopColor!
       );
     });
   }

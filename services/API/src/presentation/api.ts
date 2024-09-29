@@ -61,43 +61,47 @@ export interface components {
       menuId: number;
     };
     QrMenu: {
-      id?: string;
-      name?: string;
-      displayName?: string;
-      restaurant?: components["schemas"]["Restaurant"];
-      sectionsToShow?: string[];
-      primaryColor?: string;
-      secondaryColor?: string;
-      fontColor?: string;
-      scanCount?: number;
-      stopList?: string[];
-      loadingPlaceholderIndex?: number;
-      loadingPlaceholderUrl?: string;
-      urlSuffix?: string;
-      items?: components["schemas"]["QrMenuItem"][];
+      id: string;
+      name: string;
+      urlSuffix: string;
+      title?: string;
+      restaurant: components["schemas"]["Restaurant"];
+      sectionsToShow: string[];
+      style: components["schemas"]["QrMenuStyle"];
+      scanCount: number;
+      loadingPlaceholderUrl: string;
+      menus: components["schemas"]["QrMenuItem"][];
       /** Format: date-time */
-      creationDate?: string;
+      creationDate: string;
       /** Format: date-time */
       modificationDate?: string;
     };
     QrMenuItem: {
-      menu?: components["schemas"]["Menu"];
+      stopColor?: string;
+      stopStyle?: string;
       title?: string;
-      thumbnailIndex?: number;
+      pages?: components["schemas"]["MenuPage"][];
+    };
+    QrMenuStyle: {
+      headerColor?: string;
+      actionsColor?: string;
+      fontColor?: string;
+      backgroundColor?: string;
     };
     CreateQrMenuRequest: {
-      name?: string;
-      displayName?: string;
+      name: string;
+      urlSuffix: string;
+      title?: string;
       restaurantId: string;
-      sectionsToShow?: string[];
-      primaryColor?: string;
-      secondaryColor?: string;
-      fontColor?: string;
-      loadingPlaceholderIndex?: number;
+      sectionsToShow: string[];
+      style: components["schemas"]["QrMenuStyle"];
+      loadingPlaceholder: components["schemas"]["CreateLoadingPlaceholderRequest"];
+      menus: components["schemas"]["CreateQrMenuItem"][];
       /** Format: binary */
-      loadingPlaceholderFile?: string;
-      urlSuffix?: string;
-      items?: components["schemas"]["CreateQrMenuItem"][];
+      file?: string;
+    };
+    CreateLoadingPlaceholderRequest: {
+      menuIndex?: number;
     };
     CreateQrMenuItem: {
       title: string;

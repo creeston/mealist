@@ -6,20 +6,17 @@
       formControlName="loadingPlaceholderIndexControl"
     >
       <mat-option
-        *ngFor="let menuItem of previewQrMenu.items; let i = index"
+        *ngFor="let menuItem of previewQrMenu.menus; let i = index"
         [value]="i"
       >
-        <span *ngIf="menuItem.menu">{{ menuItem.menu.name }}</span>
+        <span *ngIf="menuItem.pages">{{ "Menu" + i }}</span>
       </mat-option>
       <mat-option [value]="-1">
         <span [translate]="'code.preview.custom'"></span>
       </mat-option>
     </mat-select>
   </mat-form-field>
-  <div
-    class="logo-upload-field"
-    *ngIf="previewQrMenu.loadingPlaceholderIndex === -1"
-  >
+  <div class="logo-upload-field" *ngIf="loadingPlaceholderMenuIndex === -1">
     <input
       type="file"
       multiple="false"

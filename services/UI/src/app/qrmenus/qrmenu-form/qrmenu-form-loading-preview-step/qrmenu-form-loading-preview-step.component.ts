@@ -20,6 +20,11 @@ import { QrMenu } from '../../../api';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
+export interface LoadingPlaceholderConfiguration {
+  loadingPlaceholderIndex: number;
+  file: Blob | null;
+}
+
 @Component({
   selector: 'app-qrmenu-form-loading-preview-step',
   templateUrl: './qrmenu-form-loading-preview-step.component.html',
@@ -36,12 +41,15 @@ export class QrMenuFormLoadingPreviewStepComponent
   @ViewChild('imgBuffer') imageElement!: ElementRef;
 
   @Output() previewImageChange = new EventEmitter<string>();
+  @Output() loadingPlaceholderConfigurationChange =
+    new EventEmitter<LoadingPlaceholderConfiguration>();
 
   selectedFile: Blob | null = null;
   selectedFilename: string = '';
   selectedFileBase64String: string = '';
   public previewImage: string = PLACEHOLDER_URL;
   public uploadedCustomPreview: string = '';
+  public loadingPlaceholderMenuIndex: number = -1;
 
   constructor(private fb: FormBuilder) {}
 
@@ -50,23 +58,18 @@ export class QrMenuFormLoadingPreviewStepComponent
       return;
     }
 
-    const menuItems = this.previewQrMenu.items;
-    if (
-      !menuItems ||
-      menuItems.length === 0 ||
-      (this.previewQrMenu.loadingPlaceholderIndex !== undefined &&
-        this.previewQrMenu.loadingPlaceholderIndex >= menuItems.length)
-    ) {
-      this.form.controls.loadingPlaceholderIndexControl.setValue(-1);
-      this.onPreviewSelected(-1);
-      return;
+    const menuItems = this.previewQrMenu.menus;
+    if (!menuItems || menuItems.length === 0) {
+      this.loadingPlaceholderMenuIndex = -1;
+    } else {
+      this.loadingPlaceholderMenuIndex = 0;
     }
 
-    if (this.previewQrMenu.loadingPlaceholderIndex === -1) {
-      this.form.controls.loadingPlaceholderIndexControl.setValue(0);
-      this.onPreviewSelected(0);
-      return;
-    }
+    this.onPreviewSelected(this.loadingPlaceholderMenuIndex);
+    this.form.controls.loadingPlaceholderIndexControl.setValue(
+      this.loadingPlaceholderMenuIndex
+    );
+    this.notifyConfigurationChange();
   }
 
   ngOnInit(): void {
@@ -75,7 +78,8 @@ export class QrMenuFormLoadingPreviewStepComponent
 
     this.form.controls.loadingPlaceholderIndexControl.valueChanges.subscribe(
       (value: any) => {
-        this.previewQrMenu.loadingPlaceholderIndex = value;
+        this.loadingPlaceholderMenuIndex = value;
+        this.notifyConfigurationChange();
       }
     );
 
@@ -87,6 +91,7 @@ export class QrMenuFormLoadingPreviewStepComponent
     this.fileUploadInput._inputValueRef.nativeElement.value = '';
     this.previewImage = PLACEHOLDER_URL;
     this.previewImageChange.emit(this.previewImage);
+    this.notifyConfigurationChange();
   }
 
   onFileSelected(event: any) {
@@ -99,20 +104,22 @@ export class QrMenuFormLoadingPreviewStepComponent
       }
       this.selectedFile = file;
       this.readSelectedFileIntoString(this.selectedFile);
+      this.notifyConfigurationChange();
     }
   }
 
   onPreviewSelected(menuIndex: number) {
     if (menuIndex >= 0) {
-      let menuItem = this.previewQrMenu.items![menuIndex];
-      this.previewImage = menuItem.menu!.pages![0].imageUrl;
-      this.previewQrMenu.loadingPlaceholderIndex = menuIndex;
+      let menuItem = this.previewQrMenu.menus![menuIndex];
+      this.previewImage = menuItem.pages![0].imageUrl;
+      this.loadingPlaceholderMenuIndex = menuIndex;
     } else if (this.selectedFileBase64String) {
       this.previewImage = this.selectedFileBase64String;
     } else {
       this.previewImage = PLACEHOLDER_URL;
     }
 
+    this.notifyConfigurationChange();
     this.previewImageChange.emit(this.previewImage);
   }
 
@@ -144,5 +151,12 @@ export class QrMenuFormLoadingPreviewStepComponent
       }
       return {};
     };
+  }
+
+  notifyConfigurationChange() {
+    this.loadingPlaceholderConfigurationChange.emit({
+      loadingPlaceholderIndex: this.loadingPlaceholderMenuIndex,
+      file: this.selectedFile!,
+    });
   }
 }

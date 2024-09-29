@@ -9,13 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MenuPage } from './menuPage';
 
 
-export interface QrMenuItem { 
-    stopColor?: string;
-    stopStyle?: string;
-    title?: string;
-    pages?: Array<MenuPage>;
+export interface CreateLoadingPlaceholderRequest { 
+    menuIndex?: number;
 }
 

@@ -1,13 +1,17 @@
-import { Menu } from './menu';
+import { MenuPage } from './menu';
 import { Restaurant } from './restaurant';
 
 export interface QrMenu {
   id: string;
   name: string;
-  restaurant: Restaurant;
-  style: QrMenuStyle;
-  items: QrMenuItem[];
   urlSuffix: string;
+  restaurant: Restaurant;
+  title: string;
+  sectionsToShow: string[];
+  style: QrMenuStyle;
+  menus: QrMenuItem[];
+  loadingPlaceholderKey: string;
+  loadingPlaceholderMenuIndex: number | null;
   stats: QrStats;
   creationDate: string;
   modificationDate: string;
@@ -15,34 +19,32 @@ export interface QrMenu {
 
 export interface CreateQrMenuRequest {
   name: string;
-  style: QrMenuStyle;
   urlSuffix: string;
-  items: CreateQrMenuItem[];
+  title: string;
   restaurantId: string;
-  creationDate: string;
+  sectionsToShow: string[];
+  style: QrMenuStyle;
+  menus: CreateQrMenuItem[];
+  loadingPlaceholderKey: string;
 }
 
 export interface CreateQrMenuItem {
   menuId: string;
-  style: QrMenuItemStyle;
-}
-
-export interface QrMenuItem {
-  menu: Menu;
-  style: QrMenuItemStyle;
-}
-
-export interface QrMenuItemStyle {
-  thumbnailIndex: number;
   title: string;
 }
 
+export interface QrMenuItem {
+  title: string;
+  pages?: MenuPage[];
+  stopColor: string;
+  stopStyle: string;
+}
+
 export interface QrMenuStyle {
-  displayName: string;
-  primaryColor: string;
-  secondaryColor: string;
+  headerColor: string;
+  actionsColor: string;
   fontColor: string;
-  previewIndex: number;
+  backgroundColor: string;
 }
 
 export interface QrStats {

@@ -1,4 +1,4 @@
-<div *ngFor="let menuItem of previewQrMenu.items; let i = index">
+<div *ngFor="let menuItem of previewQrMenu.menus; let i = index">
   <form [formGroup]="menusFormArray.controls[i]" class="menu-item-section">
     <mat-form-field appearance="fill" class="field">
       <mat-label [translate]="'code.menu.choose'"></mat-label>

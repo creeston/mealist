@@ -57,36 +57,36 @@ export class QrmenuCardComponent implements OnInit {
 
   editMeals(menu: QrMenu) {
     this.editMealsLoading = true;
-    if (!menu.items) {
+    if (!menu.menus) {
       return;
     }
 
-    let menuItems = menu.items;
-    let menuMeals = [];
-    for (let item of menuItems) {
-      const menu = item.menu;
-      if (!menu || !menu.pages) {
-        continue;
-      }
+    let menuItems = menu.menus;
+    let menuMeals: any[] = [];
+    // for (let item of menuItems) {
+    //   const menu = item.menu;
+    //   if (!menu || !menu.pages) {
+    //     continue;
+    //   }
 
-      for (let page of menu.pages) {
-        const markup = page.markup;
-        if (!markup) {
-          continue;
-        }
+    //   for (let page of menu.pages) {
+    //     const markup = page.markup;
+    //     if (!markup) {
+    //       continue;
+    //     }
 
-        const pageMeals = markup.map((line) => {
-          return line.text;
-        });
+    //     const pageMeals = markup.map((line) => {
+    //       return line.text;
+    //     });
 
-        menuMeals.push({
-          menuName: menu.name,
-          menuId: menu.id,
-          meals: pageMeals,
-          id: menuMeals.length,
-        });
-      }
-    }
+    //     menuMeals.push({
+    //       menuName: menu.name,
+    //       menuId: menu.id,
+    //       meals: pageMeals,
+    //       id: menuMeals.length,
+    //     });
+    //   }
+    // }
 
     this.editMealsLoading = false;
     this.dialog
@@ -98,7 +98,7 @@ export class QrmenuCardComponent implements OnInit {
       .afterClosed()
       .subscribe((r: any) => {
         if (r) {
-          menu.stopList = r;
+          // menu.stopList = r;
           this.translate
             .get('codes.stop_list_updated')
             .subscribe((text: string) => {

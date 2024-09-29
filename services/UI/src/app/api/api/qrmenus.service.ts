@@ -19,9 +19,13 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { CreateQrMenuRequest } from '../model/createQrMenuRequest';
+import { CreateLoadingPlaceholderRequest } from '../model/createLoadingPlaceholderRequest';
+// @ts-ignore
+import { CreateQrMenuItem } from '../model/createQrMenuItem';
 // @ts-ignore
 import { QrMenu } from '../model/qrMenu';
+// @ts-ignore
+import { QrMenuStyle } from '../model/qrMenuStyle';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -57,6 +61,19 @@ export class QrmenusService {
         this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
     }
 
+    /**
+     * @param consumes string[] mime-types
+     * @return true: consumes contains 'multipart/form-data', false: otherwise
+     */
+    private canConsumeForm(consumes: string[]): boolean {
+        const form = 'multipart/form-data';
+        for (const consume of consumes) {
+            if (form === consume) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // @ts-ignore
     private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
@@ -96,14 +113,43 @@ export class QrmenusService {
 
     /**
      * Create a new QR menu
-     * @param createQrMenuRequest 
+     * @param name 
+     * @param urlSuffix 
+     * @param restaurantId 
+     * @param sectionsToShow 
+     * @param style 
+     * @param loadingPlaceholder 
+     * @param menus 
+     * @param title 
+     * @param file 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createQrMenu(createQrMenuRequest?: CreateQrMenuRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<string>;
-    public createQrMenu(createQrMenuRequest?: CreateQrMenuRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<string>>;
-    public createQrMenu(createQrMenuRequest?: CreateQrMenuRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<string>>;
-    public createQrMenu(createQrMenuRequest?: CreateQrMenuRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<string>;
+    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<string>>;
+    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<string>>;
+    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (name === null || name === undefined) {
+            throw new Error('Required parameter name was null or undefined when calling createQrMenu.');
+        }
+        if (urlSuffix === null || urlSuffix === undefined) {
+            throw new Error('Required parameter urlSuffix was null or undefined when calling createQrMenu.');
+        }
+        if (restaurantId === null || restaurantId === undefined) {
+            throw new Error('Required parameter restaurantId was null or undefined when calling createQrMenu.');
+        }
+        if (sectionsToShow === null || sectionsToShow === undefined) {
+            throw new Error('Required parameter sectionsToShow was null or undefined when calling createQrMenu.');
+        }
+        if (style === null || style === undefined) {
+            throw new Error('Required parameter style was null or undefined when calling createQrMenu.');
+        }
+        if (loadingPlaceholder === null || loadingPlaceholder === undefined) {
+            throw new Error('Required parameter loadingPlaceholder was null or undefined when calling createQrMenu.');
+        }
+        if (menus === null || menus === undefined) {
+            throw new Error('Required parameter menus was null or undefined when calling createQrMenu.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -129,14 +175,63 @@ export class QrmenusService {
             localVarTransferCache = true;
         }
 
-
         // to determine the Content-Type header
         const consumes: string[] = [
-            'application/json'
+            'multipart/form-data'
         ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let localVarFormParams: { append(param: string, value: any): any; };
+        let localVarUseForm = false;
+        let localVarConvertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        localVarUseForm = canConsumeForm;
+        if (localVarUseForm) {
+            localVarFormParams = new FormData();
+        } else {
+            localVarFormParams = new HttpParams({encoder: this.encoder});
+        }
+
+        if (name !== undefined) {
+            localVarFormParams = localVarFormParams.append('name', <any>name) as any || localVarFormParams;
+        }
+        if (urlSuffix !== undefined) {
+            localVarFormParams = localVarFormParams.append('urlSuffix', <any>urlSuffix) as any || localVarFormParams;
+        }
+        if (title !== undefined) {
+            localVarFormParams = localVarFormParams.append('title', <any>title) as any || localVarFormParams;
+        }
+        if (restaurantId !== undefined) {
+            localVarFormParams = localVarFormParams.append('restaurantId', <any>restaurantId) as any || localVarFormParams;
+        }
+        if (sectionsToShow) {
+            if (localVarUseForm) {
+                sectionsToShow.forEach((element) => {
+                    localVarFormParams = localVarFormParams.append('sectionsToShow', <any>element) as any || localVarFormParams;
+            })
+            } else {
+                localVarFormParams = localVarFormParams.append('sectionsToShow', [...sectionsToShow].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
+            }
+        }
+        if (style !== undefined) {
+            localVarFormParams = localVarFormParams.append('style', localVarUseForm ? new Blob([JSON.stringify(style)], {type: 'application/json'}) : <any>style) as any || localVarFormParams;
+        }
+        if (loadingPlaceholder !== undefined) {
+            localVarFormParams = localVarFormParams.append('loadingPlaceholder', localVarUseForm ? new Blob([JSON.stringify(loadingPlaceholder)], {type: 'application/json'}) : <any>loadingPlaceholder) as any || localVarFormParams;
+        }
+        if (menus) {
+            if (localVarUseForm) {
+                menus.forEach((element) => {
+                    localVarFormParams = localVarFormParams.append('menus', <any>element) as any || localVarFormParams;
+            })
+            } else {
+                localVarFormParams = localVarFormParams.append('menus', [...menus].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
+            }
+        }
+        if (file !== undefined) {
+            localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -154,7 +249,7 @@ export class QrmenusService {
         return this.httpClient.request<string>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: createQrMenuRequest,
+                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
