@@ -35,7 +35,7 @@
           <app-qmenu-form-general-step
             [previewQrMenu]="previewQrMenu"
             [form]="formGroup1"
-            (generalConfigurationChange)="this.generalConfiguration = $event"
+            #generalStep
           ></app-qmenu-form-general-step>
           <button
             mat-button
@@ -61,7 +61,7 @@
           [form]="formGroup2"
           [previewQrMenu]="previewQrMenu"
           [isStepActive]="currentStep === 1"
-          (menusConfigurationChange)="this.menusConfiguration = $event"
+          #menusStep
         ></app-qmenu-form-menus-step>
 
         <button
@@ -87,6 +87,7 @@
         <app-qrmenu-form-style-step
           [form]="formGroup3"
           [previewQrMenu]="previewQrMenu"
+          #styleStep
         >
         </app-qrmenu-form-style-step>
       </div>
@@ -114,10 +115,8 @@
           [form]="formGroup4"
           [previewQrMenu]="previewQrMenu"
           (previewImageChange)="previewImage = $event"
-          (loadingPlaceholderConfigurationChange)="
-            loadingPlaceholderConfiguration = $event
-          "
           [isStepActive]="currentStep === 3"
+          #loadingPreviewStep
         ></app-qrmenu-form-loading-preview-step>
 
         <div class="create-button">

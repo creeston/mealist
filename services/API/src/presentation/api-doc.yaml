@@ -130,6 +130,31 @@ components:
           type: integer
       required:
         - menuId
+    ReadOnlyQrMenu:
+      type: "object"
+      properties:
+        title:
+          type: string
+        restaurant:
+          $ref: "#/components/schemas/Restaurant"
+        sectionsToShow:
+          type: array
+          items:
+            type: string
+        style:
+          $ref: "#/components/schemas/QrMenuStyle"
+        loadingPlaceholderUrl:
+          type: string
+        menus:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadonlyQrMenuItem"
+      required:
+        - restaurant
+        - sectionsToShow
+        - style
+        - loadingPlaceholderUrl
+        - menus
     QrMenu:
       type: "object"
       properties:
@@ -151,6 +176,8 @@ components:
           $ref: "#/components/schemas/QrMenuStyle"
         scanCount:
           type: integer
+        loadingPlaceholderMenuIndex:
+          type: integer
         loadingPlaceholderUrl:
           type: string
         menus:
@@ -170,11 +197,21 @@ components:
         - urlSuffix
         - sectionsToShow
         - style
-        - scanCount
         - loadingPlaceholderUrl
         - menus
         - creationDate
     QrMenuItem:
+      type: "object"
+      properties:
+        stopColor:
+          type: string
+        stopStyle:
+          type: string
+        title:
+          type: string
+        menu:
+          $ref: "#/components/schemas/Menu"
+    ReadonlyQrMenuItem:
       type: "object"
       properties:
         stopColor:

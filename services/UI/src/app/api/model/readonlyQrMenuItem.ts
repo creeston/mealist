@@ -9,13 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Menu } from './menu';
+import { MenuPage } from './menuPage';
 
 
-export interface QrMenuItem { 
+export interface ReadonlyQrMenuItem { 
     stopColor?: string;
     stopStyle?: string;
     title?: string;
-    menu?: Menu;
+    pages?: Array<MenuPage>;
 }
 

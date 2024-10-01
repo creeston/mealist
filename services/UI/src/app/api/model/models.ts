@@ -7,4 +7,6 @@ export * from './menuPage';
 export * from './qrMenu';
 export * from './qrMenuItem';
 export * from './qrMenuStyle';
+export * from './readOnlyQrMenu';
+export * from './readonlyQrMenuItem';
 export * from './restaurant';

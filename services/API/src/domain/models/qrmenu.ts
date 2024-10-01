@@ -1,5 +1,6 @@
-import { MenuPage } from './menu';
+import { Menu } from './menu';
 import { Restaurant } from './restaurant';
+import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 
 export interface QrMenu {
   id: string;
@@ -14,28 +15,30 @@ export interface QrMenu {
   loadingPlaceholderMenuIndex: number | null;
   stats: QrStats;
   creationDate: string;
-  modificationDate: string;
+  modificationDate: string | undefined;
 }
 
-export interface CreateQrMenuRequest {
+export interface CreateQrMenuCommand {
   name: string;
   urlSuffix: string;
   title: string;
   restaurantId: string;
   sectionsToShow: string[];
   style: QrMenuStyle;
-  menus: CreateQrMenuItem[];
-  loadingPlaceholderKey: string;
+  menus: CreateQrMenuItemCommand[];
+  loadingPlaceholderMenuIndex: number | null;
+  customLoadingPlaceholder: StreamingBlobPayloadInputTypes | null;
+  stats: QrStats | null;
 }
 
-export interface CreateQrMenuItem {
+export interface CreateQrMenuItemCommand {
   menuId: string;
   title: string;
 }
 
 export interface QrMenuItem {
   title: string;
-  pages?: MenuPage[];
+  menu: Menu;
   stopColor: string;
   stopStyle: string;
 }

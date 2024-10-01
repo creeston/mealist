@@ -19,12 +19,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 initialize({
-  apiDoc: './src/presentation/api-doc.yaml',
-  // apiDoc: "./API/src/api-doc.yaml",
+  // apiDoc: './src/presentation/api-doc.yaml',
+  apiDoc: './services/API/src/presentation/api-doc.yaml',
   app: app,
   promiseMode: true,
   paths: resolve(__dirname, 'presentation', 'routes'),
-  // paths: "./src/routes",
+  // paths: './src/presentation/routes',
   routesGlob: '**/*.{ts,js}',
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
   consumesMiddleware: {

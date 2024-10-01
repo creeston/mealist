@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { model, Schema } from 'mongoose';
-import { CreateQrMenuRequest, QrMenu, QrMenuItem } from '../../domain/models/qrmenu';
+import { CreateQrMenuCommand, QrMenu, QrMenuItem } from '../../domain/models/qrmenu';
 import { RestaurantModel } from './restaurantModel';
-import { MenuModel, mapMenuPageModelToMenuPage } from './menuModel';
+import { MenuModel, mapMenuPageModelToMenuPage, mapToMenu } from './menuModel';
 import { mapToRestaurant } from './restaurantModel';
 
 const QrMenuItemSchema = new Schema({
@@ -30,6 +30,7 @@ const QrMenuSchema = new Schema({
   style: { type: QrMenuStyleSchema, required: true },
   menus: { type: [QrMenuItemSchema], required: true },
   stats: { type: QrStatsSchema, required: true },
+  loadingPlaceholderKey: { type: String, required: true },
   creationDate: { type: String, required: true },
   modificationDate: { type: String, required: false },
 });
@@ -63,7 +64,11 @@ export const QrMenuModel = model('QrMenu', QrMenuSchema);
 //   };
 // };
 
-export const mapCreationRequestToQrMenuModel = (qrMenu: CreateQrMenuRequest, creationDate: string) => {
+export const mapCreationRequestToQrMenuModel = (
+  qrMenu: CreateQrMenuCommand,
+  creationDate: string,
+  uploadedPlaceholderKey: string
+) => {
   return {
     name: qrMenu.name,
     title: qrMenu.title,
@@ -75,9 +80,8 @@ export const mapCreationRequestToQrMenuModel = (qrMenu: CreateQrMenuRequest, cre
       menuId: new ObjectId(item.menuId),
       title: item.title,
     })),
-    stats: {
-      scanCount: 0,
-    },
+    stats: qrMenu.stats,
+    loadingPlaceholderKey: uploadedPlaceholderKey,
     creationDate: creationDate,
   };
 };
@@ -96,7 +100,7 @@ export const mapModelToQrMenu = async (qrMenu: any) => {
       }
 
       return {
-        pages: menuModel.pages?.map(mapMenuPageModelToMenuPage),
+        menu: mapToMenu(menuModel),
         title: menu.title,
         stopColor: '#fff', // menuModel.stopColor,
         stopStyle: 'underline', //. menuModel.stopStyle,

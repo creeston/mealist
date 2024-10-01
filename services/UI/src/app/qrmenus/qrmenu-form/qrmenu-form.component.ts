@@ -10,14 +10,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
-import { CreateQrMenuItem, QrMenu } from '../../api/model/models';
-import { IdGenerator } from '../../utils/IdGenerator';
-import { GeneralConfiguration } from './qrmenu-form-general-step/qrmenu-form-general-step.component';
 import {
-  MenusConfiguration,
-  QrMenuSelectedMenu,
-} from './qrmenu-form-menus-step/qrmenu-form-menus-step.component';
-import { LoadingPlaceholderConfiguration } from './qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
+  CreateQrMenuItem,
+  QrMenu,
+  QrMenuItem,
+  ReadOnlyQrMenu,
+} from '../../api/model/models';
+import { QrMenuFormGeneralStepComponent } from './qrmenu-form-general-step/qrmenu-form-general-step.component';
+import { QrMenuFormMenusStepComponent } from './qrmenu-form-menus-step/qrmenu-form-menus-step.component';
+import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
+import { QrMenuFormStyleStepComponent } from './qrmenu-form-style-step/qrmenu-form-style-step.component';
 
 @Component({
   selector: 'qrmenu-form-component',
@@ -30,9 +32,7 @@ export class QrMenuFormComponent {
   public loading: boolean = true;
   public previewImage: string = '';
   public currentStep: number = 0;
-  public previewQrMenu: QrMenu = {
-    id: '-1',
-    name: '',
+  public previewQrMenu: ReadOnlyQrMenu = {
     style: {
       headerColor: '#989089',
       actionsColor: '#A0B454b0',
@@ -41,11 +41,8 @@ export class QrMenuFormComponent {
     },
     restaurant: null as any,
     sectionsToShow: [],
-    urlSuffix: IdGenerator.generateId(5),
     menus: [],
     loadingPlaceholderUrl: '',
-    scanCount: 0,
-    creationDate: new Date().toISOString(),
   };
   public menuLoading: boolean = false;
   public mode: string = 'plain';
@@ -54,20 +51,26 @@ export class QrMenuFormComponent {
   @ViewChild('fileUpload') fileUploadInput: any;
   @ViewChild('stepper') stepper!: MatStepper;
 
+  @ViewChild('generalStep')
+  generalStepComponent!: QrMenuFormGeneralStepComponent;
+
+  @ViewChild('menusStep')
+  menusStepComponent!: QrMenuFormMenusStepComponent;
+
+  @ViewChild('styleStep')
+  styleStepComponent!: QrMenuFormStyleStepComponent;
+
+  @ViewChild('loadingPreviewStep')
+  loadingPreviewStepComponent!: QrMenuFormLoadingPreviewStepComponent;
+
   environment = environment;
 
   menuId: string | undefined;
   restaurantSections: any = [];
 
-  generalConfiguration: GeneralConfiguration | null = null;
   formGroup1: FormGroup;
-
-  menusConfiguration: MenusConfiguration | null = null;
   formGroup2: FormGroup;
   formGroup3: FormGroup;
-
-  loadingPlaceholderConfiguration: LoadingPlaceholderConfiguration | null =
-    null;
   formGroup4: FormGroup;
 
   constructor(
@@ -95,10 +98,6 @@ export class QrMenuFormComponent {
         //   }
         // );
       }
-    });
-
-    this.qrMenuNameControl.valueChanges.subscribe((value) => {
-      this.previewQrMenu.name = value ?? '';
     });
   }
 
@@ -174,32 +173,35 @@ export class QrMenuFormComponent {
   async createCode() {
     this.creationAttempt = true;
     this.disabled = true;
+
+    const generalConfiguration = this.generalStepComponent.configuration;
+    const menusConfiguration = this.menusStepComponent.configuration;
+    const loadingPlaceholderConfiguration =
+      this.loadingPreviewStepComponent.configuration;
+
     if (
       !this.validate() ||
-      !this.generalConfiguration ||
-      !this.menusConfiguration ||
-      !this.loadingPlaceholderConfiguration
+      !generalConfiguration ||
+      !menusConfiguration ||
+      !loadingPlaceholderConfiguration
     ) {
       this.disabled = false;
       return;
     }
 
-    let menuItems = this.menusConfiguration.menus.map(
-      (i: QrMenuSelectedMenu) => {
-        let item = {
-          title: i.title,
-          menuId: i.menuId,
-        } as CreateQrMenuItem;
-        return item;
-      }
-    );
+    let menuItems = menusConfiguration.menus.map((i: QrMenuItem) => {
+      let item = {
+        title: i.title,
+        menuId: i.menu!.id,
+      } as CreateQrMenuItem;
+      return item;
+    });
 
     const name = this.qrMenuNameControl.value ?? '';
-
-    const urlSuffix = this.generalConfiguration.urlSuffix;
-    const title = this.generalConfiguration.title;
-    const restaurantId = this.generalConfiguration.restaurant.id!;
-    const sectionsToShow = this.generalConfiguration.sections;
+    const urlSuffix = generalConfiguration.urlSuffix;
+    const title = generalConfiguration.title;
+    const restaurantId = generalConfiguration.restaurant.id!;
+    const sectionsToShow = generalConfiguration.sections;
 
     const style = {
       headerColor: this.previewQrMenu.style.headerColor,
@@ -209,21 +211,23 @@ export class QrMenuFormComponent {
     };
 
     const loadingPlaceholder = {
-      menuIndex: this.loadingPlaceholderConfiguration.loadingPlaceholderIndex,
-      file: this.loadingPlaceholderConfiguration.file,
+      menuIndex: loadingPlaceholderConfiguration.loadingPlaceholderIndex,
+      file: loadingPlaceholderConfiguration.file,
     };
 
     const menus = menuItems;
 
     await this.qrMenuService.create(
-      name,
-      urlSuffix,
-      restaurantId,
-      sectionsToShow,
-      style,
-      loadingPlaceholder,
-      menus,
-      title,
+      {
+        name,
+        urlSuffix,
+        restaurantId,
+        sectionsToShow,
+        style,
+        loadingPlaceholder,
+        menus,
+        title,
+      },
       loadingPlaceholder.file ?? undefined
     );
     this.router.navigate(['qrmenus']);

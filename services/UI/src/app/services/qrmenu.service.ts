@@ -10,6 +10,7 @@ import {
   QrMenuStyle,
 } from '../api/model/models';
 import { QrmenusService } from '../api';
+import { CreateQrMenuRequest } from '../api/model/createQrMenuRequest';
 
 @Injectable()
 export class QrMenuService {
@@ -23,27 +24,17 @@ export class QrMenuService {
     private api: QrmenusService
   ) {}
 
-  async create(
-    name: string,
-    urlSuffix: string,
-    restaurantId: string,
-    sectionsToShow: Array<string>,
-    style: QrMenuStyle,
-    loadingPlaceholder: CreateLoadingPlaceholderRequest,
-    menus: Array<CreateQrMenuItem>,
-    title?: string,
-    file?: Blob
-  ) {
+  async create(creationRequest: CreateQrMenuRequest, file?: Blob) {
     await firstValueFrom(
       this.api.createQrMenu(
-        name,
-        urlSuffix,
-        restaurantId,
-        sectionsToShow,
-        style,
-        loadingPlaceholder,
-        menus,
-        title,
+        creationRequest.name,
+        creationRequest.urlSuffix,
+        creationRequest.restaurantId,
+        creationRequest.sectionsToShow,
+        creationRequest.style,
+        creationRequest.loadingPlaceholder,
+        creationRequest.menus,
+        creationRequest.title,
         file
       )
     );

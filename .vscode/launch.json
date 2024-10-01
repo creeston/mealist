@@ -6,10 +6,10 @@
       "type": "node",
       "request": "launch",
       "name": "API",
-      "program": "${workspaceFolder}/API/src/index.ts",
-      "preLaunchTask": "tsc: build - API/tsconfig.json",
+      "program": "${workspaceFolder}/services/API/src/index.ts",
+      "preLaunchTask": "tsc: build - services/API/tsconfig.json",
       "outFiles": [
-        "${workspaceFolder}/API/dist/**/*.js"
+        "${workspaceFolder}/services/API/dist/**/*.js"
       ]
     },
     {

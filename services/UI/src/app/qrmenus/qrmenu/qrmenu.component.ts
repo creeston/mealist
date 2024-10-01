@@ -8,10 +8,10 @@ import {
   ElementRef,
   HostListener,
 } from '@angular/core';
-import { QrMenuService, QrRoutingParams } from '../../services/qrmenu.service';
+import { QrMenuService } from '../../services/qrmenu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
-import { QrMenu, QrMenuItem } from '../../api';
+import { ReadOnlyQrMenu, ReadonlyQrMenuItem } from '../../api';
 
 @Component({
   selector: 'app-qr-menu',
@@ -26,7 +26,7 @@ export class QrMenuComponent implements OnInit {
   userIdParam!: string;
 
   @Input()
-  qrMenuParam!: QrMenu;
+  qrMenuParam!: ReadOnlyQrMenu;
 
   @Input()
   previewImageParam!: string;
@@ -37,8 +37,8 @@ export class QrMenuComponent implements OnInit {
   menuId: string | undefined;
   userId: string | undefined;
   urlSuffix: string | undefined;
-  qrMenu: QrMenu | undefined = undefined;
-  selectedMenu: QrMenuItem | undefined = undefined;
+  qrMenu: ReadOnlyQrMenu | undefined = undefined;
+  selectedMenu: ReadonlyQrMenuItem | undefined = undefined;
   imagesData: any[] = [];
   previewMode = true;
   loading = true;
@@ -68,33 +68,33 @@ export class QrMenuComponent implements OnInit {
   }
 
   getMenu() {
-    this.route.params.subscribe((p: any) => {
-      this.previewMode = false;
-      if (p.suffix) {
-        this.urlSuffix = p.suffix;
-        this.service
-          .getMenuRoutingParams(p.suffix)
-          .subscribe((r: QrRoutingParams) => {
-            this.menuId = r.qrMenuId;
-            this.userId = r.userId;
-            this.service.getMenu(this.menuId, this.userId).then((r: QrMenu) => {
-              this.qrMenu = r;
-              this.setMenuColors();
-              this.initializeMenuImages();
-            });
-          });
-      } else {
-        this.menuId = p.menuId;
-        this.userId = p.userId;
-        if (this.menuId && this.userId) {
-          this.service.getMenu(this.menuId!, this.userId!).then((r: QrMenu) => {
-            this.qrMenu = r;
-            this.setMenuColors();
-            this.initializeMenuImages();
-          });
-        }
-      }
-    });
+    // this.route.params.subscribe((p: any) => {
+    //   this.previewMode = false;
+    //   if (p.suffix) {
+    //     this.urlSuffix = p.suffix;
+    //     this.service
+    //       .getMenuRoutingParams(p.suffix)
+    //       .subscribe((r: QrRoutingParams) => {
+    //         this.menuId = r.qrMenuId;
+    //         this.userId = r.userId;
+    //         this.service.getMenu(this.menuId, this.userId).then((r: ReadonlyQrMenuItem) => {
+    //           this.qrMenu = r;
+    //           this.setMenuColors();
+    //           this.initializeMenuImages();
+    //         });
+    //       });
+    //   } else {
+    //     this.menuId = p.menuId;
+    //     this.userId = p.userId;
+    //     if (this.menuId && this.userId) {
+    //       this.service.getMenu(this.menuId!, this.userId!).then((r: ReadonlyQrMenuItem) => {
+    //         this.qrMenu = r;
+    //         this.setMenuColors();
+    //         this.initializeMenuImages();
+    //       });
+    //     }
+    //   }
+    // });
   }
 
   setMenuColors() {
@@ -123,7 +123,7 @@ export class QrMenuComponent implements OnInit {
     this.loading = false;
   }
 
-  openMenu(menuItem: QrMenuItem) {
+  openMenu(menuItem: ReadonlyQrMenuItem) {
     this.imagesData = [];
     for (let pageId = 0; pageId < menuItem.pages!.length; pageId++) {
       this.imagesData.push({ width: 0, height: 0 });

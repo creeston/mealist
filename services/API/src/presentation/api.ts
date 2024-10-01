@@ -60,7 +60,7 @@ export interface components {
     Code: {
       menuId: number;
     };
-    QrMenu: {
+    ReadOnlyQrMenu: {
       id: string;
       name: string;
       urlSuffix: string;
@@ -70,6 +70,23 @@ export interface components {
       style: components["schemas"]["QrMenuStyle"];
       scanCount: number;
       loadingPlaceholderUrl: string;
+      menus: components["schemas"]["ReadonlyQrMenuItem"][];
+      /** Format: date-time */
+      creationDate: string;
+      /** Format: date-time */
+      modificationDate?: string;
+    };
+    QrMenu: {
+      id: string;
+      name: string;
+      urlSuffix: string;
+      title?: string;
+      restaurant: components["schemas"]["Restaurant"];
+      sectionsToShow: string[];
+      style: components["schemas"]["QrMenuStyle"];
+      scanCount?: number;
+      loadingPlaceholderMenuIndex?: number;
+      loadingPlaceholderUrl: string;
       menus: components["schemas"]["QrMenuItem"][];
       /** Format: date-time */
       creationDate: string;
@@ -77,6 +94,12 @@ export interface components {
       modificationDate?: string;
     };
     QrMenuItem: {
+      stopColor?: string;
+      stopStyle?: string;
+      title?: string;
+      menu?: components["schemas"]["Menu"];
+    };
+    ReadonlyQrMenuItem: {
       stopColor?: string;
       stopStyle?: string;
       title?: string;

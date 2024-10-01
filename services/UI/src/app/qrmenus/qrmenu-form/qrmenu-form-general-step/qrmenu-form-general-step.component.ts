@@ -6,10 +6,11 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { QrMenu, Restaurant } from '../../../api';
+import { ReadOnlyQrMenu, Restaurant } from '../../../api';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { RestaurantService } from '../../../services/restaurant.service';
+import { IdGenerator } from '../../../utils/IdGenerator';
 
 export interface GeneralConfiguration {
   restaurant: Restaurant;
@@ -30,10 +31,8 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
 
   restaurantSections: any = [];
   environment = environment;
-  @Input({ required: true }) previewQrMenu!: QrMenu;
+  @Input({ required: true }) previewQrMenu!: ReadOnlyQrMenu;
   @Input({ required: true }) form!: FormGroup;
-  @Output() generalConfigurationChange =
-    new EventEmitter<GeneralConfiguration>();
 
   constructor(
     private fb: FormBuilder,
@@ -56,7 +55,7 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     this.form.addControl(
       'urlSuffixControl',
       this.fb.control({
-        value: this.previewQrMenu.urlSuffix,
+        value: IdGenerator.generateId(5),
         disabled: this.restaurantsLoaded,
       })
     );
@@ -65,7 +64,6 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     this.form.controls.qrMenuDisplayNameControl.valueChanges.subscribe(
       (value) => {
         this.previewQrMenu.title = value ?? '';
-        this.notifyGeneralConfigurationChange();
       }
     );
 
@@ -74,7 +72,6 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
       if (restaurant) {
         this.previewQrMenu.restaurant = restaurant;
         this.previewQrMenu.sectionsToShow = this.restaurantSections;
-        this.notifyGeneralConfigurationChange();
       }
     });
   }
@@ -146,15 +143,14 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     this.previewQrMenu.sectionsToShow = this.restaurantSections
       .filter((s: any) => s.checked)
       .map((s: any) => s.key);
-    this.notifyGeneralConfigurationChange();
   }
 
-  notifyGeneralConfigurationChange() {
-    this.generalConfigurationChange.emit({
+  get configuration() {
+    return {
       restaurant: this.previewQrMenu.restaurant,
       title: this.previewQrMenu.title ?? '',
-      urlSuffix: this.previewQrMenu.urlSuffix,
+      urlSuffix: this.form.controls.urlSuffixControl.value,
       sections: this.previewQrMenu.sectionsToShow,
-    });
+    };
   }
 }

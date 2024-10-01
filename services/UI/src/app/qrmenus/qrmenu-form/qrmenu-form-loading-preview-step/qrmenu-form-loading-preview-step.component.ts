@@ -16,7 +16,7 @@ import {
   ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
-import { QrMenu } from '../../../api';
+import { ReadOnlyQrMenu } from '../../../api';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
@@ -33,7 +33,7 @@ export interface LoadingPlaceholderConfiguration {
 export class QrMenuFormLoadingPreviewStepComponent
   implements OnInit, OnChanges
 {
-  @Input({ required: true }) previewQrMenu!: QrMenu;
+  @Input({ required: true }) previewQrMenu!: ReadOnlyQrMenu;
   @Input({ required: true }) form!: FormGroup;
   @Input({ required: true }) isStepActive!: boolean;
 
@@ -41,8 +41,6 @@ export class QrMenuFormLoadingPreviewStepComponent
   @ViewChild('imgBuffer') imageElement!: ElementRef;
 
   @Output() previewImageChange = new EventEmitter<string>();
-  @Output() loadingPlaceholderConfigurationChange =
-    new EventEmitter<LoadingPlaceholderConfiguration>();
 
   selectedFile: Blob | null = null;
   selectedFilename: string = '';
@@ -69,7 +67,6 @@ export class QrMenuFormLoadingPreviewStepComponent
     this.form.controls.loadingPlaceholderIndexControl.setValue(
       this.loadingPlaceholderMenuIndex
     );
-    this.notifyConfigurationChange();
   }
 
   ngOnInit(): void {
@@ -79,7 +76,6 @@ export class QrMenuFormLoadingPreviewStepComponent
     this.form.controls.loadingPlaceholderIndexControl.valueChanges.subscribe(
       (value: any) => {
         this.loadingPlaceholderMenuIndex = value;
-        this.notifyConfigurationChange();
       }
     );
 
@@ -91,7 +87,6 @@ export class QrMenuFormLoadingPreviewStepComponent
     this.fileUploadInput._inputValueRef.nativeElement.value = '';
     this.previewImage = PLACEHOLDER_URL;
     this.previewImageChange.emit(this.previewImage);
-    this.notifyConfigurationChange();
   }
 
   onFileSelected(event: any) {
@@ -104,7 +99,6 @@ export class QrMenuFormLoadingPreviewStepComponent
       }
       this.selectedFile = file;
       this.readSelectedFileIntoString(this.selectedFile);
-      this.notifyConfigurationChange();
     }
   }
 
@@ -119,7 +113,6 @@ export class QrMenuFormLoadingPreviewStepComponent
       this.previewImage = PLACEHOLDER_URL;
     }
 
-    this.notifyConfigurationChange();
     this.previewImageChange.emit(this.previewImage);
   }
 
@@ -153,10 +146,10 @@ export class QrMenuFormLoadingPreviewStepComponent
     };
   }
 
-  notifyConfigurationChange() {
-    this.loadingPlaceholderConfigurationChange.emit({
+  get configuration() {
+    return {
       loadingPlaceholderIndex: this.loadingPlaceholderMenuIndex,
       file: this.selectedFile!,
-    });
+    };
   }
 }

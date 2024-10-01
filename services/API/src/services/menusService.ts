@@ -1,16 +1,9 @@
-import { Menu, MenuPage, OcrBox } from '../domain/models/menu';
-import { components } from '../presentation/api';
+import { CreateMenuCommand, Menu, MenuPage, UpdateMenuPageCommand } from '../domain/models/menu';
 import { logError, logInfo } from '../utils/logging/logger';
 import { StorageService } from '../data-access/storage/storageService';
-import { MenuLanguage } from '../domain/enums/menuLanguage';
 import { MenuProcessingStatus } from '../domain/enums/menuProcessingStatus';
 import { MenusRepository } from '../data-access/repositories/menusRepository';
 import { MessageProducer } from '../queue/producer';
-
-type MenuPageApiModel = components['schemas']['MenuPage'];
-type MenuLineApiModel = components['schemas']['MenuLine'];
-type MenuApiModel = components['schemas']['Menu'];
-type CreateMenuRequest = components['schemas']['CreateMenuRequest'];
 
 export class MenusService {
   constructor(
@@ -19,50 +12,42 @@ export class MenusService {
     private menuParsingProducer: MessageProducer
   ) {}
 
-  async createMenu(menu: CreateMenuRequest, file: any): Promise<MenuApiModel> {
-    const language = menu.language ? (menu.language as MenuLanguage) : MenuLanguage.ENG;
-    const menuName = menu.name ? menu.name : file.originalname;
+  async createMenu(command: CreateMenuCommand): Promise<string> {
+    const menuName = command.name ? command.name : command.fileName;
 
     const createdMenu = await this.menusRepository.createMenu({
       name: menuName,
       creationDate: new Date().toISOString(),
       status: MenuProcessingStatus.NOT_PARSED,
-      language: language,
+      language: command.language,
     });
 
-    createdMenu.menuPath = 'RawMenus/' + createdMenu.id + '/' + file.originalname;
-    await this.storageService.uploadFile(createdMenu.menuPath, file.buffer);
+    createdMenu.menuPath = 'RawMenus/' + createdMenu.id + '/' + command.fileName;
+    await this.storageService.uploadFile(createdMenu.menuPath, command.file);
     await this.menusRepository.updateMenu(createdMenu);
 
     this.menuParsingProducer.publishMenuParsingMessage(createdMenu);
     createdMenu.status = MenuProcessingStatus.PARSING_IN_PROGRESS;
     await this.menusRepository.updateMenu(createdMenu);
 
-    return this.menuToResponseModel(createdMenu);
+    return createdMenu.id!;
   }
 
-  async getMenuById(menuId: string): Promise<MenuApiModel> {
+  async getMenuById(menuId: string): Promise<Menu> {
     const menu = await this.menusRepository.getMenuById(menuId);
-    return await this.menuToResponseModel(menu);
+    return menu;
   }
 
-  async listMenus(): Promise<MenuApiModel[]> {
+  async listMenus(): Promise<Menu[]> {
     const menus = await this.menusRepository.listMenus();
     if (!menus) {
       return [];
     }
 
-    const menusReponse: MenuApiModel[] = await Promise.all(
-      menus!.map(async (menu) => {
-        const response = await this.menuToResponseModel(menu as Menu);
-        return response;
-      })
-    );
-
-    return menusReponse;
+    return menus;
   }
 
-  async updateMenuPages(menuId: string, pages: MenuPageApiModel[]) {
+  async updateMenuPages(menuId: string, updateCommands: UpdateMenuPageCommand[]) {
     const menu = await this.menusRepository.getMenuById(menuId);
     let anyPageUpdated = false;
 
@@ -70,24 +55,12 @@ export class MenusService {
       throw new Error(`Menu with id: ${menuId} does not have any pages`);
     }
 
-    for (const page of pages) {
-      const menuPage = menu.pages.find((p) => p.pageNumber === page.pageNumber);
-      if (menuPage && page.markup) {
-        menuPage.markup = page.markup.map((line: MenuLineApiModel, i: number) => {
-          return {
-            blockId: i + '',
-            text: line.text ?? '',
-            box: {
-              x1: line.x1,
-              y1: line.y1,
-              x2: line.x2,
-              y2: line.y2,
-            } as OcrBox,
-          };
-        });
-
+    for (const command of updateCommands) {
+      const menuPage = menu.pages.find((p) => p.pageNumber === command.pageNumber);
+      if (menuPage && command.markup) {
+        menuPage.markup = command.markup;
         anyPageUpdated = true;
-        logInfo(`Updated page ${page.pageNumber} for menu ${menuId}`);
+        logInfo(`Updated page ${command.pageNumber} for menu ${menuId}`);
       }
     }
 
@@ -162,50 +135,5 @@ export class MenusService {
 
     await this.menusRepository.updateMenu(menu);
     logInfo(`Menu page ${pageNumber} updated with ocr data`);
-  }
-
-  private async menuToResponseModel(menu: Menu) {
-    const url = menu.menuPath ? await this.storageService.getFileUrl(menu.menuPath) : '';
-
-    const response = {
-      id: menu.id,
-      name: menu.name,
-      originalFileUrl: url,
-      creationDate: menu.creationDate,
-      moodifiedDate: menu.modifiedDate,
-      status: menu.status,
-    } as MenuApiModel;
-
-    if (menu.pages && menu.pages.length > 0) {
-      response.pages = await this.mapMenusPagesToApiModel(menu.pages);
-    }
-
-    return response;
-  }
-
-  public async mapMenusPagesToApiModel(pages: MenuPage[]): Promise<MenuPageApiModel[]> {
-    const apiPages: MenuPageApiModel[] = [];
-    for (let page of pages) {
-      apiPages.push(await this.mapMenuPageToApiModel(page));
-    }
-    return apiPages;
-  }
-
-  public async mapMenuPageToApiModel(page: MenuPage): Promise<MenuPageApiModel> {
-    const imageUrl = await this.storageService.getFileUrl(page.imagePath);
-    const responseMarkup = page.markup?.map((line) => {
-      return {
-        text: line.text,
-        x1: line.box.x1,
-        y1: line.box.y1,
-        x2: line.box.x2,
-        y2: line.box.y2,
-      } as MenuLineApiModel;
-    });
-    return {
-      pageNumber: page.pageNumber,
-      imageUrl: imageUrl,
-      markup: responseMarkup,
-    } as MenuPageApiModel;
   }
 }

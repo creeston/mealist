@@ -5,16 +5,17 @@ import { QrMenusRepository } from '../../data-access/repositories/qrMenusReposit
 import { StorageService } from '../../data-access/storage/storageService';
 import { MenusRepository } from '../../data-access/repositories/menusRepository';
 import { logInfo } from '../../utils/logging/logger';
-import { menusService } from './menus';
+import { mapMenusPagesToApiModel, menuToResponseModel } from './menus';
+import { CreateQrMenuCommand, CreateQrMenuItemCommand, QrMenu } from '../../domain/models/qrmenu';
 
 type CreateQrMenuRequest = components['schemas']['CreateQrMenuRequest'];
+type QrMenuResponseModel = components['schemas']['QrMenu'];
+type QrMenuItemResponseModel = components['schemas']['QrMenuItem'];
 
-export const qrMenuService = new QrMenuService(
-  menusService,
-  new QrMenusRepository(),
-  new StorageService(),
-  new MenusRepository()
-);
+const storageService = new StorageService();
+const menusRepository = new MenusRepository();
+const qrMenusRepository = new QrMenusRepository();
+export const qrMenuService = new QrMenuService(qrMenusRepository, storageService, menusRepository);
 
 export const POST: Operation = [
   async (req, res) => {
@@ -22,7 +23,25 @@ export const POST: Operation = [
     const files = req.files as Express.Multer.File[];
     const customLoadingPlaceholderFile = files[0];
     const creationRequest = body as CreateQrMenuRequest;
-    const result = await qrMenuService.createQrMenu(creationRequest, customLoadingPlaceholderFile);
+    const createCommand = {
+      name: creationRequest.name,
+      urlSuffix: creationRequest.urlSuffix,
+      title: creationRequest.title,
+      restaurantId: creationRequest.restaurantId,
+      sectionsToShow: creationRequest.sectionsToShow,
+      style: creationRequest.style,
+      menus: creationRequest.menus.map(
+        (menu) =>
+          ({
+            menuId: menu.menuId,
+            title: menu.title,
+          } as CreateQrMenuItemCommand)
+      ),
+      loadingPlaceholderMenuIndex: creationRequest.loadingPlaceholder.menuIndex,
+      customLoadingPlaceholder: customLoadingPlaceholderFile.buffer,
+    } as CreateQrMenuCommand;
+
+    const result = await qrMenuService.createQrMenu(createCommand);
     res.status(201).json(result);
   },
 ];
@@ -60,11 +79,16 @@ export const GET: Operation = [
     logInfo(`GET /qrmenus urlSuffix: ${urlSuffix}`);
     if (urlSuffix) {
       const qrMenu = await qrMenuService.getQrMenuByUrlSuffix(urlSuffix);
-      res.status(200).json([qrMenu]);
+      if (!qrMenu) {
+        res.status(404).send();
+        return;
+      }
+      res.status(200).json([await mapDomainToApiModel(qrMenu)]);
       return;
     }
     const qrMenus = await qrMenuService.listQrMenus();
-    res.status(200).json(qrMenus);
+    const qrMenusResponse = await Promise.all(qrMenus.map(mapDomainToApiModel));
+    res.status(200).json(qrMenusResponse);
   },
 ];
 
@@ -87,4 +111,36 @@ GET.apiDoc = {
       },
     },
   },
+};
+
+const mapDomainToApiModel = async (qrMenu: QrMenu): Promise<QrMenuResponseModel> => {
+  const loadingPlaceholderUrl = await storageService.getFileFromPublicBucket(qrMenu.loadingPlaceholderKey);
+  const menus: QrMenuItemResponseModel[] = [];
+  for (const item of qrMenu.menus) {
+    if (!item.menu.pages) {
+      continue;
+    }
+
+    const menu = await menuToResponseModel(item.menu);
+    menus.push({
+      stopColor: item.stopColor,
+      stopStyle: item.stopStyle,
+      title: item.title,
+      menu: menu,
+    });
+  }
+
+  return {
+    id: qrMenu.id,
+    name: qrMenu.name,
+    restaurant: qrMenu.restaurant,
+    sectionsToShow: qrMenu.sectionsToShow,
+    style: qrMenu.style,
+    scanCount: qrMenu.stats.scanCount,
+    loadingPlaceholderUrl: loadingPlaceholderUrl,
+    urlSuffix: qrMenu.urlSuffix,
+    menus: menus,
+    creationDate: qrMenu.creationDate,
+    modificationDate: qrMenu.modificationDate,
+  };
 };

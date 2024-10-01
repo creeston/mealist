@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { QrMenu } from '../../../api';
+import { ReadOnlyQrMenu } from '../../../api';
 
 @Component({
   selector: 'app-qrmenu-form-style-step',
@@ -8,7 +8,7 @@ import { QrMenu } from '../../../api';
   styleUrls: ['./qrmenu-form-style-step.component.scss'],
 })
 export class QrMenuFormStyleStepComponent implements OnInit {
-  @Input({ required: true }) previewQrMenu!: QrMenu;
+  @Input({ required: true }) previewQrMenu!: ReadOnlyQrMenu;
   @Input({ required: true }) form!: FormGroup;
 
   constructor(private fb: FormBuilder) {}

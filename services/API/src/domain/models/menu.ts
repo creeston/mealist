@@ -1,5 +1,6 @@
 import { MenuLanguage } from '../enums/menuLanguage';
 import { MenuProcessingStatus } from '../enums/menuProcessingStatus';
+import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 
 export interface Menu {
   id?: string;
@@ -10,6 +11,18 @@ export interface Menu {
   language: MenuLanguage;
   status: MenuProcessingStatus;
   pages?: MenuPage[];
+}
+
+export interface CreateMenuCommand {
+  name?: string;
+  language: MenuLanguage.ENG;
+  file: StreamingBlobPayloadInputTypes;
+  fileName: string;
+}
+
+export interface UpdateMenuPageCommand {
+  pageNumber: number;
+  markup?: MenuLine[];
 }
 
 export interface MenuPage {

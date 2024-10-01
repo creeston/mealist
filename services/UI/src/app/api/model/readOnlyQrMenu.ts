@@ -11,22 +11,15 @@
  */
 import { Restaurant } from './restaurant';
 import { QrMenuStyle } from './qrMenuStyle';
-import { QrMenuItem } from './qrMenuItem';
+import { ReadonlyQrMenuItem } from './readonlyQrMenuItem';
 
 
-export interface QrMenu { 
-    id: string;
-    name: string;
-    urlSuffix: string;
+export interface ReadOnlyQrMenu { 
     title?: string;
     restaurant: Restaurant;
     sectionsToShow: Array<string>;
     style: QrMenuStyle;
-    scanCount?: number;
-    loadingPlaceholderMenuIndex?: number;
     loadingPlaceholderUrl: string;
-    menus: Array<QrMenuItem>;
-    creationDate: string;
-    modificationDate?: string;
+    menus: Array<ReadonlyQrMenuItem>;
 }
 
