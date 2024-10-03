@@ -27,4 +27,8 @@ export class RestaurantsRepository implements IRestaurantsRepository {
     const restaurantDocument = mapToRestaurantModel(restaurant);
     await RestaurantModel.findByIdAndUpdate(restaurant.id, restaurantDocument);
   }
+
+  async deleteRestaurant(restaurantId: string): Promise<void> {
+    await RestaurantModel.findByIdAndDelete(restaurantId);
+  }
 }

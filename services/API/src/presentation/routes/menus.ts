@@ -1,13 +1,13 @@
-import { Operation } from 'express-openapi';
 import { components } from '../api';
-import { Response, Request } from 'express';
 import { MenusService } from '../../services/menusService';
 import { StorageService } from '../../data-access/storage/storageService';
 import { MessageProducer } from '../../queue/producer';
 import { MessageConsumer } from '../../queue/consumer';
 import { MenusRepository } from '../../data-access/repositories/menusRepository';
-import { CreateMenuCommand, Menu, MenuLine, MenuPage, OcrBox } from '../../domain/models/menu';
+import { CreateMenuCommand, Menu, MenuLine, MenuPage, OcrBox, UpdateMenuPageCommand } from '../../domain/models/menu';
 import { MenuLanguage } from '../../domain/enums/menuLanguage';
+import { Router } from 'express';
+import multer = require('multer');
 
 type CreateMenuRequest = components['schemas']['CreateMenuRequest'];
 type MenuPageApiModel = components['schemas']['MenuPage'];
@@ -29,85 +29,51 @@ export const listenToMenuOcrStatusQueue = () => {
   });
 };
 
-export const GET: Operation = [
-  async (req: Request, res: Response): Promise<void> => {
-    const menus = await menusService.listMenus();
-    const menusResponse = await Promise.all(menus.map((menu) => menuToResponseModel(menu)));
-    res.json(menusResponse);
-  },
-];
+export const router = Router();
+const upload = multer();
 
-GET.apiDoc = {
-  description: 'Get Menus',
-  operationId: 'getMenus',
-  tags: ['menus'],
-  responses: {
-    200: {
-      description: 'List of menus',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/Menu',
-            },
-          },
-        },
-      },
-    },
-  },
-};
+router.get('/', async (req, res) => {
+  const menus = await menusService.listMenus();
+  const menusResponse = await Promise.all(menus.map((menu) => menuToResponseModel(menu)));
+  res.json(menusResponse);
+});
 
-export const POST: Operation = [
-  async (req: Request, res: Response): Promise<void> => {
-    const { body } = req;
-    const files = req.files as Express.Multer.File[];
+router.get('/:id', async (req, res) => {
+  const id = req?.params?.id;
+  const menu = await menusService.getMenuById(id);
+  const menuResponse = await menuToResponseModel(menu);
+  res.status(200).json(menuResponse);
+});
 
-    if (!files || files.length === 0) {
-      res.status(400).json({ error: 'No file uploaded' });
-    }
+router.put('/:id/pages', async (req, res) => {
+  const menuId = req?.params?.id;
+  const pages = req.body as MenuPageApiModel[];
 
-    let file = files[0];
-    const menu = body as CreateMenuRequest;
-    const command = {
-      name: menu.name,
-      fileName: file.originalname,
-      file: file.buffer,
-      language: menu.language ? (menu.language as MenuLanguage) : MenuLanguage.ENG,
-    } as CreateMenuCommand;
-    await menusService.createMenu(command);
+  const pagesDomainModel = pages.map(mapPageApiModelToDomainModel);
+  await menusService.updateMenuPages(menuId, pagesDomainModel);
+  res.status(200).send();
+});
 
-    res.status(201).json({ message: 'Menu created' });
-  },
-];
+router.post('/', upload.any(), async (req, res) => {
+  const { body } = req;
+  const files = req.files as Express.Multer.File[];
 
-POST.apiDoc = {
-  description: 'Create a new menu',
-  operationId: 'createMenu',
-  tags: ['menus'],
-  requestBody: {
-    required: true,
-    content: {
-      'multipart/form-data': {
-        schema: {
-          $ref: '#/components/schemas/CreateMenuRequest',
-        },
-      },
-    },
-  },
-  responses: {
-    201: {
-      description: 'Created menu',
-      content: {
-        'application/json': {
-          schema: {
-            $ref: '#/components/schemas/Menu',
-          },
-        },
-      },
-    },
-  },
-};
+  if (!files || files.length === 0) {
+    res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  let file = files[0];
+  const menu = body as CreateMenuRequest;
+  const command = {
+    name: menu.name,
+    fileName: file.originalname,
+    file: file.buffer,
+    language: menu.language ? (menu.language as MenuLanguage) : MenuLanguage.ENG,
+  } as CreateMenuCommand;
+  await menusService.createMenu(command);
+
+  res.status(201).json({ message: 'Menu created' });
+});
 
 export const menuToResponseModel = async (menu: Menu) => {
   const url = menu.menuPath ? await storageService.getFileUrl(menu.menuPath) : '';
@@ -152,4 +118,26 @@ export const mapMenuPageToApiModel = async (page: MenuPage): Promise<MenuPageApi
     imageUrl: imageUrl,
     markup: responseMarkup,
   } as MenuPageApiModel;
+};
+
+export const mapPageApiModelToDomainModel = (page: MenuPageApiModel): UpdateMenuPageCommand => {
+  return {
+    pageNumber: page.pageNumber,
+    markup: page.markup ? mapMarkupToDomain(page.markup) : [],
+  };
+};
+
+export const mapMarkupToDomain = (markup: MenuLineApiModel[]): MenuLine[] => {
+  return markup.map((line: MenuLineApiModel, i: number) => {
+    return {
+      blockId: i + '',
+      text: line.text ?? '',
+      box: {
+        x1: line.x1,
+        y1: line.y1,
+        x2: line.x2,
+        y2: line.y2,
+      } as OcrBox,
+    };
+  });
 };

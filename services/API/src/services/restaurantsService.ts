@@ -22,6 +22,10 @@ export class RestaurantsService {
     return this.mapRestaurantToApiModel(restaurant);
   }
 
+  async deleteRestaurant(restaurantId: string) {
+    await this.restaurantsRepository.deleteRestaurant(restaurantId);
+  }
+
   async listRestaurants(): Promise<RestaurantApiModel[]> {
     const restaurants = await this.restaurantsRepository.listRestaurants();
     return restaurants.map((restaurant) => this.mapRestaurantToApiModel(restaurant));

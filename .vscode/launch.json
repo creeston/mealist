@@ -10,7 +10,10 @@
       "preLaunchTask": "tsc: build - services/API/tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/services/API/dist/**/*.js"
-      ]
+      ],
+      "env": {
+        "YAML_PATH": "./services/API/src/presentation/api-doc.yaml"
+      }
     },
     {
       "name": "ng serve",

@@ -1,10 +1,10 @@
 import { CreateQrMenuCommand, QrMenu } from '../../domain/models/qrmenu';
-import { QrMenuModel, mapCreationRequestToQrMenuModel, mapModelToQrMenu } from '../models/qrMenuModel';
+import { QrMenuModel, mapCreationCommandToQrMenuModel, mapModelToQrMenu } from '../models/qrMenuModel';
 
 export class QrMenusRepository {
   async createQrMenu(creationRequest: CreateQrMenuCommand, uploadedPlaceholderKey: string): Promise<string> {
     const creationDate = new Date().toISOString();
-    const qrMenuModel = mapCreationRequestToQrMenuModel(creationRequest, creationDate, uploadedPlaceholderKey);
+    const qrMenuModel = mapCreationCommandToQrMenuModel(creationRequest, creationDate, uploadedPlaceholderKey);
     const qrMenuDocument = new QrMenuModel(qrMenuModel);
     const result = await qrMenuDocument.save();
     const id = result._id.toString();

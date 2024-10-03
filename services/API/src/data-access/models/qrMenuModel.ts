@@ -14,7 +14,7 @@ const QrMenuStyleSchema = new Schema({
   headerColor: { type: String, required: true },
   actionsColor: { type: String, required: true },
   fontColor: { type: String, required: true },
-  backgroundColor: { type: Number, required: true },
+  backgroundColor: { type: String, required: true },
 });
 
 const QrStatsSchema = new Schema({
@@ -31,6 +31,7 @@ const QrMenuSchema = new Schema({
   menus: { type: [QrMenuItemSchema], required: true },
   stats: { type: QrStatsSchema, required: true },
   loadingPlaceholderKey: { type: String, required: true },
+  loadingPlaceholderMenuIndex: { type: Number, required: false },
   creationDate: { type: String, required: true },
   modificationDate: { type: String, required: false },
 });
@@ -64,24 +65,25 @@ export const QrMenuModel = model('QrMenu', QrMenuSchema);
 //   };
 // };
 
-export const mapCreationRequestToQrMenuModel = (
-  qrMenu: CreateQrMenuCommand,
+export const mapCreationCommandToQrMenuModel = (
+  command: CreateQrMenuCommand,
   creationDate: string,
   uploadedPlaceholderKey: string
 ) => {
   return {
-    name: qrMenu.name,
-    title: qrMenu.title,
-    urlSuffix: qrMenu.urlSuffix,
-    restaurantId: new ObjectId(qrMenu.restaurantId),
-    sectionsToShow: qrMenu.sectionsToShow,
-    style: qrMenu.style,
-    menus: qrMenu.menus.map((item) => ({
+    name: command.name,
+    title: command.title,
+    urlSuffix: command.urlSuffix,
+    restaurantId: new ObjectId(command.restaurantId),
+    sectionsToShow: command.sectionsToShow,
+    style: command.style,
+    menus: command.menus.map((item) => ({
       menuId: new ObjectId(item.menuId),
       title: item.title,
     })),
-    stats: qrMenu.stats,
+    stats: command.stats,
     loadingPlaceholderKey: uploadedPlaceholderKey,
+    loadingPlaceholderMenuIndex: command.loadingPlaceholderMenuIndex,
     creationDate: creationDate,
   };
 };
@@ -120,5 +122,7 @@ export const mapModelToQrMenu = async (qrMenu: any) => {
     stats: qrMenu.stats,
     creationDate: qrMenu.creationDate,
     modificationDate: qrMenu.modificationDate,
+    loadingPlaceholderKey: qrMenu.loadingPlaceholderKey,
+    loadingPlaceholderMenuIndex: qrMenu.loadingPlaceholderMenuIndex,
   } as QrMenu;
 };

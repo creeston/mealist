@@ -4,7 +4,206 @@
  */
 
 
-export type paths = Record<string, never>;
+export interface paths {
+  "/menus": {
+    /** Get all menus */
+    get: {
+      responses: {
+        /** @description A list of menus */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Menu"][];
+          };
+        };
+      };
+    };
+    /** Create a menu */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateMenuRequest"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: {
+            "application/json": components["schemas"]["Menu"];
+          };
+        };
+      };
+    };
+  };
+  "/menus/{menuId}": {
+    /** Get a menu by ID */
+    get: {
+      parameters: {
+        path: {
+          menuId: string;
+        };
+      };
+      responses: {
+        /** @description A menu */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Menu"];
+          };
+        };
+      };
+    };
+    /** Update a menu */
+    put: {
+      parameters: {
+        path: {
+          menuId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Menu"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Menu"];
+          };
+        };
+      };
+    };
+    /** Delete a menu */
+    delete: {
+      parameters: {
+        path: {
+          menuId: string;
+        };
+      };
+      responses: {
+        /** @description No content */
+        204: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/restaurants": {
+    /** Get all restaurants */
+    get: {
+      responses: {
+        /** @description A list of restaurants */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Restaurant"][];
+          };
+        };
+      };
+    };
+    /** Create a restaurant */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Restaurant"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: {
+            "application/json": components["schemas"]["Restaurant"];
+          };
+        };
+      };
+    };
+  };
+  "/restaurants/{restaurantId}": {
+    /** Get a restaurant by ID */
+    get: {
+      parameters: {
+        path: {
+          restaurantId: string;
+        };
+      };
+      responses: {
+        /** @description A restaurant */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Restaurant"];
+          };
+        };
+      };
+    };
+    /** Update a restaurant */
+    put: {
+      parameters: {
+        path: {
+          restaurantId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Restaurant"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Restaurant"];
+          };
+        };
+      };
+    };
+    /** Delete a restaurant */
+    delete: {
+      parameters: {
+        path: {
+          restaurantId: string;
+        };
+      };
+      responses: {
+        /** @description No content */
+        204: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/qrmenus": {
+    /** Get all qr menus */
+    get: {
+      responses: {
+        /** @description A list of qr menus */
+        200: {
+          content: {
+            "application/json": components["schemas"]["QrMenu"][];
+          };
+        };
+      };
+    };
+    /** Create a qr menu */
+    post: {
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** Format: binary */
+            file?: string;
+            createRequest?: components["schemas"]["CreateQrMenuRequest"];
+          };
+          "application/json": components["schemas"]["CreateQrMenuRequest"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: {
+            "application/json": components["schemas"]["QrMenu"];
+          };
+        };
+      };
+    };
+  };
+}
 
 export type webhooks = Record<string, never>;
 
@@ -61,20 +260,12 @@ export interface components {
       menuId: number;
     };
     ReadOnlyQrMenu: {
-      id: string;
-      name: string;
-      urlSuffix: string;
       title?: string;
       restaurant: components["schemas"]["Restaurant"];
       sectionsToShow: string[];
       style: components["schemas"]["QrMenuStyle"];
-      scanCount: number;
       loadingPlaceholderUrl: string;
       menus: components["schemas"]["ReadonlyQrMenuItem"][];
-      /** Format: date-time */
-      creationDate: string;
-      /** Format: date-time */
-      modificationDate?: string;
     };
     QrMenu: {
       id: string;
@@ -120,8 +311,6 @@ export interface components {
       style: components["schemas"]["QrMenuStyle"];
       loadingPlaceholder: components["schemas"]["CreateLoadingPlaceholderRequest"];
       menus: components["schemas"]["CreateQrMenuItem"][];
-      /** Format: binary */
-      file?: string;
     };
     CreateLoadingPlaceholderRequest: {
       menuIndex?: number;

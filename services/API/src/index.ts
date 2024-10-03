@@ -1,12 +1,18 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { initialize } from 'express-openapi';
-import { resolve } from 'path';
 import swaggerUi from 'swagger-ui-express';
-import multer from 'multer';
 import { connectoToRabbitMQ } from './queue/connection';
 import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from './presentation/routes/menus';
 import { connectToDatabase } from './config/db';
+import { router as qrMenusRouter } from './presentation/routes/qrmenus';
+import { router as menusRouter } from './presentation/routes/menus';
+import { router as restaurantsRouter } from './presentation/routes/restaurants';
+import { parse as yamlParse } from 'yaml';
+import fs from 'node:fs';
+
+const yamlPath = process.env.YAML_PATH || './src/presentation/api-doc.yaml';
+const yamlFile = fs.readFileSync(yamlPath, 'utf8');
+const swaggerDocument = yamlParse(yamlFile);
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,30 +23,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
-
-initialize({
-  // apiDoc: './src/presentation/api-doc.yaml',
-  apiDoc: './services/API/src/presentation/api-doc.yaml',
-  app: app,
-  promiseMode: true,
-  paths: resolve(__dirname, 'presentation', 'routes'),
-  // paths: './src/presentation/routes',
-  routesGlob: '**/*.{ts,js}',
-  routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
-  consumesMiddleware: {
-    'multipart/form-data': function (req, res, next) {
-      multer().any()(req, res, function (err) {
-        if (err) return next(err);
-        if (req.files) {
-          (req.files as any).forEach(function (f: any) {
-            req.body[f.fieldname] = ''; // Set to empty string to satisfy OpenAPI spec validation
-          });
-        }
-        return next();
-      });
-    },
-  },
-});
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript Express!');
@@ -53,18 +35,18 @@ app.get('/api/GetUserProfile', (req: Request, res: Response) => {
   });
 });
 
-app.use(
-  '/api-documentation',
-  swaggerUi.serve,
-  swaggerUi.setup(
-    {},
-    {
-      swaggerOptions: {
-        url: 'http://localhost:3000/api-docs',
-      },
-    }
-  )
-);
+const options = {
+  swaggerOptions: {
+    url: '/api-docs/swagger.json',
+  },
+};
+
+app.get('/api-docs/swagger.json', (req, res) => res.json(swaggerDocument));
+app.use('/api-docs', swaggerUi.serveFiles(undefined, options), swaggerUi.setup(undefined, options));
+
+app.use('/qrmenus', qrMenusRouter);
+app.use('/menus', menusRouter);
+app.use('/restaurants', restaurantsRouter);
 
 connectToDatabase()
   .then(() => {

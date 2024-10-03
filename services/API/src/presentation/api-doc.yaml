@@ -2,7 +2,279 @@ openapi: 3.0.0
 info:
   title: Mealist API
   version: 1.0.0
-paths: {}
+paths:
+  /menus:
+    get:
+      operationId: getAllMenus
+      tags:
+        - menus
+      summary: Get all menus
+      responses:
+        "200":
+          description: A list of menus
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Menu"
+    post:
+      operationId: createMenu
+      tags:
+        - menus
+      summary: Create a menu
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateMenuRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+  /menus/{menuId}:
+    get:
+      operationId: getMenuById
+      tags:
+        - menus
+      summary: Get a menu by ID
+      parameters:
+        - name: menuId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A menu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+  /menus/{menuId}/pages:
+    put:
+      operationId: updateMenuPages
+      tags:
+        - menus
+      summary: Update menu pages
+      parameters:
+        - name: menuId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/MenuPage"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+  /restaurants:
+    get:
+      operationId: getAllRestaurants
+      tags:
+        - restaurants
+      summary: Get all restaurants
+      responses:
+        "200":
+          description: A list of restaurants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Restaurant"
+    post:
+      operationId: createRestaurant
+      tags:
+        - restaurants
+      summary: Create a restaurant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Restaurant"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+  /restaurants/{restaurantId}:
+    get:
+      operationId: getRestaurantById
+      tags:
+        - restaurants
+      summary: Get a restaurant by ID
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A restaurant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+    put:
+      operationId: updateRestaurant
+      tags:
+        - restaurants
+      summary: Update a restaurant
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Restaurant"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+    delete:
+      operationId: deleteRestaurant
+      tags:
+        - restaurants
+      summary: Delete a restaurant
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No content
+
+  /qrmenus:
+    get:
+      operationId: getAllQrMenus
+      tags:
+        - qrmenus
+      summary: Get all qr menus
+      responses:
+        "200":
+          description: A list of qr menus
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QrMenu"
+    post:
+      operationId: createQrMenu
+      tags:
+        - qrmenus
+      summary: Create a qr menu
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                createRequest:
+                  $ref: "#/components/schemas/CreateQrMenuRequest"
+            encoding:
+              createRequest:
+                contentType: application/json
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQrMenuRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QrMenu"
+  /qrmenus/{qrMenuId}:
+    get:
+      operationId: getQrMenuById
+      tags:
+        - qrmenus
+      summary: Get a qr menu by ID
+      parameters:
+        - name: qrMenuId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A qr menu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QrMenu"
+    put:
+      operationId: updateQrMenu
+      tags:
+        - qrmenus
+      summary: Update a qr menu
+      parameters:
+        - name: qrMenuId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QrMenu"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QrMenu"
+    delete:
+      operationId: deleteQrMenu
+      tags:
+        - qrmenus
+      summary: Delete a qr menu
+      parameters:
+        - name: qrMenuId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No content
 components:
   schemas:
     Restaurant:
@@ -258,9 +530,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CreateQrMenuItem"
-        file:
-          type: string
-          format: binary
       required:
         - restaurantId
         - name
