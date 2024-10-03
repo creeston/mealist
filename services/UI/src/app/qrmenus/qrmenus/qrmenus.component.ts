@@ -36,19 +36,11 @@ export class QrMenusComponent implements OnInit {
 
   ngAfterViewInit(): void {}
 
-  silentRefresh() {
-    this.service.list()?.then((data: QrMenu[] | undefined) => {
-      if (data) {
-        this.qrMenus = data;
-      }
-    });
-  }
-
   refresh() {
     this.dataLoaded = false;
     this.service
       .list()
-      ?.then((data: QrMenu[] | undefined) => {
+      .then((data: QrMenu[] | undefined) => {
         if (!data) {
           return;
         }

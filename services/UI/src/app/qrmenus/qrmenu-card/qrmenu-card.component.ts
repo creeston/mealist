@@ -119,13 +119,13 @@ export class QrmenuCardComponent implements OnInit {
   }
 
   getMenuPreviewUrl(menu: QrMenu) {
-    return `https://qrmenuapistorage.blob.core.windows.net/preview/${
-      menu.urlSuffix
-    }.jpg?ts=${new Date().getTime()}`;
+    return `http://localhost:9000/mealist-public/QrMenus/${menu.urlSuffix}/loadingPlaceholder.png`;
   }
 
   openQrMenu(menu: QrMenu) {
     let url = this.getMenuPublicUrl(menu);
     window.open(url, '_blank');
   }
+
+  downloadQRCode(menu: QrMenu) {}
 }

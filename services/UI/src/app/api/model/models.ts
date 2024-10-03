@@ -1,6 +1,7 @@
 export * from './code';
 export * from './createLoadingPlaceholderRequest';
 export * from './createQrMenuItem';
+export * from './createQrMenuRequest';
 export * from './menu';
 export * from './menuLine';
 export * from './menuPage';

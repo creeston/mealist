@@ -2,7 +2,6 @@
 README.md
 api.module.ts
 api/api.ts
-api/code.service.ts
 api/menus.service.ts
 api/qrmenus.service.ts
 api/restaurants.service.ts
@@ -11,6 +10,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/code.ts
+model/createLoadingPlaceholderRequest.ts
 model/createQrMenuItem.ts
 model/createQrMenuRequest.ts
 model/menu.ts
@@ -19,6 +19,9 @@ model/menuPage.ts
 model/models.ts
 model/qrMenu.ts
 model/qrMenuItem.ts
+model/qrMenuStyle.ts
+model/readOnlyQrMenu.ts
+model/readonlyQrMenuItem.ts
 model/restaurant.ts
 param.ts
 variables.ts

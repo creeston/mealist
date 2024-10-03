@@ -217,20 +217,24 @@ export class QrMenuFormComponent {
 
     const menus = menuItems;
 
-    await this.qrMenuService.create(
-      {
-        name,
-        urlSuffix,
-        restaurantId,
-        sectionsToShow,
-        style,
-        loadingPlaceholder,
-        menus,
-        title,
-      },
-      loadingPlaceholder.file ?? undefined
-    );
-    this.router.navigate(['qrmenus']);
+    try {
+      await this.qrMenuService.create(
+        {
+          name,
+          urlSuffix,
+          restaurantId,
+          sectionsToShow,
+          style,
+          loadingPlaceholder,
+          menus,
+          title,
+        },
+        loadingPlaceholder.file ?? undefined
+      );
+      this.router.navigate(['qrmenus']);
+    } catch (error) {
+      this.disabled = false;
+    }
   }
 
   updateCode() {

@@ -3,12 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
-import {
-  CreateLoadingPlaceholderRequest,
-  CreateQrMenuItem,
-  QrMenu,
-  QrMenuStyle,
-} from '../api/model/models';
+import { QrMenu } from '../api/model/models';
 import { QrmenusService } from '../api';
 import { CreateQrMenuRequest } from '../api/model/createQrMenuRequest';
 
@@ -25,19 +20,7 @@ export class QrMenuService {
   ) {}
 
   async create(creationRequest: CreateQrMenuRequest, file?: Blob) {
-    await firstValueFrom(
-      this.api.createQrMenu(
-        creationRequest.name,
-        creationRequest.urlSuffix,
-        creationRequest.restaurantId,
-        creationRequest.sectionsToShow,
-        creationRequest.style,
-        creationRequest.loadingPlaceholder,
-        creationRequest.menus,
-        creationRequest.title,
-        file
-      )
-    );
+    await firstValueFrom(this.api.createQrMenu(file, creationRequest));
   }
 
   update(qrMenuFormData: any, id: string) {
@@ -61,11 +44,7 @@ export class QrMenuService {
   }
 
   async list() {
-    if (this.globals.role != 'client') {
-      return;
-    }
-
-    const qrMenus = await firstValueFrom(this.api.getQrMenus());
+    const qrMenus = await firstValueFrom(this.api.getAllQrMenus());
     this.globals.qrMenusCount = qrMenus.length;
     return qrMenus;
   }
@@ -75,7 +54,7 @@ export class QrMenuService {
   }
 
   async getMenu(qrMenuId: string, userId: string): Promise<QrMenu> {
-    const qrMenu = await firstValueFrom(this.api.getQrMenu(qrMenuId));
+    const qrMenu = await firstValueFrom(this.api.getQrMenuById(qrMenuId));
 
     return qrMenu;
   }

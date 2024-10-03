@@ -41,7 +41,7 @@ export class MenuService {
   }
 
   async listMenus() {
-    var menus = await firstValueFrom(this.api.getMenus());
+    var menus = await firstValueFrom(this.api.getAllMenus());
     this.globals.menusCount = menus.length;
     return menus;
   }
@@ -55,7 +55,7 @@ export class MenuService {
   }
 
   async getMenu(menuId: string) {
-    const menu = await firstValueFrom(this.api.getMenu(menuId));
+    const menu = await firstValueFrom(this.api.getMenuById(menuId));
     return menu;
   }
 

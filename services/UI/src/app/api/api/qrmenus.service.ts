@@ -19,13 +19,9 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { CreateLoadingPlaceholderRequest } from '../model/createLoadingPlaceholderRequest';
-// @ts-ignore
-import { CreateQrMenuItem } from '../model/createQrMenuItem';
+import { CreateQrMenuRequest } from '../model/createQrMenuRequest';
 // @ts-ignore
 import { QrMenu } from '../model/qrMenu';
-// @ts-ignore
-import { QrMenuStyle } from '../model/qrMenuStyle';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -112,44 +108,16 @@ export class QrmenusService {
     }
 
     /**
-     * Create a new QR menu
-     * @param name 
-     * @param urlSuffix 
-     * @param restaurantId 
-     * @param sectionsToShow 
-     * @param style 
-     * @param loadingPlaceholder 
-     * @param menus 
-     * @param title 
+     * Create a qr menu
      * @param file 
+     * @param createRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<string>;
-    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<string>>;
-    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<string>>;
-    public createQrMenu(name: string, urlSuffix: string, restaurantId: string, sectionsToShow: Array<string>, style: QrMenuStyle, loadingPlaceholder: CreateLoadingPlaceholderRequest, menus: Array<CreateQrMenuItem>, title?: string, file?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (name === null || name === undefined) {
-            throw new Error('Required parameter name was null or undefined when calling createQrMenu.');
-        }
-        if (urlSuffix === null || urlSuffix === undefined) {
-            throw new Error('Required parameter urlSuffix was null or undefined when calling createQrMenu.');
-        }
-        if (restaurantId === null || restaurantId === undefined) {
-            throw new Error('Required parameter restaurantId was null or undefined when calling createQrMenu.');
-        }
-        if (sectionsToShow === null || sectionsToShow === undefined) {
-            throw new Error('Required parameter sectionsToShow was null or undefined when calling createQrMenu.');
-        }
-        if (style === null || style === undefined) {
-            throw new Error('Required parameter style was null or undefined when calling createQrMenu.');
-        }
-        if (loadingPlaceholder === null || loadingPlaceholder === undefined) {
-            throw new Error('Required parameter loadingPlaceholder was null or undefined when calling createQrMenu.');
-        }
-        if (menus === null || menus === undefined) {
-            throw new Error('Required parameter menus was null or undefined when calling createQrMenu.');
-        }
+    public createQrMenu(file?: Blob, createRequest?: CreateQrMenuRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<QrMenu>;
+    public createQrMenu(file?: Blob, createRequest?: CreateQrMenuRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<QrMenu>>;
+    public createQrMenu(file?: Blob, createRequest?: CreateQrMenuRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<QrMenu>>;
+    public createQrMenu(file?: Blob, createRequest?: CreateQrMenuRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -177,7 +145,8 @@ export class QrmenusService {
 
         // to determine the Content-Type header
         const consumes: string[] = [
-            'multipart/form-data'
+            'multipart/form-data',
+            'application/json'
         ];
 
         const canConsumeForm = this.canConsumeForm(consumes);
@@ -194,44 +163,11 @@ export class QrmenusService {
             localVarFormParams = new HttpParams({encoder: this.encoder});
         }
 
-        if (name !== undefined) {
-            localVarFormParams = localVarFormParams.append('name', <any>name) as any || localVarFormParams;
-        }
-        if (urlSuffix !== undefined) {
-            localVarFormParams = localVarFormParams.append('urlSuffix', <any>urlSuffix) as any || localVarFormParams;
-        }
-        if (title !== undefined) {
-            localVarFormParams = localVarFormParams.append('title', <any>title) as any || localVarFormParams;
-        }
-        if (restaurantId !== undefined) {
-            localVarFormParams = localVarFormParams.append('restaurantId', <any>restaurantId) as any || localVarFormParams;
-        }
-        if (sectionsToShow) {
-            if (localVarUseForm) {
-                sectionsToShow.forEach((element) => {
-                    localVarFormParams = localVarFormParams.append('sectionsToShow', <any>element) as any || localVarFormParams;
-            })
-            } else {
-                localVarFormParams = localVarFormParams.append('sectionsToShow', [...sectionsToShow].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
-            }
-        }
-        if (style !== undefined) {
-            localVarFormParams = localVarFormParams.append('style', localVarUseForm ? new Blob([JSON.stringify(style)], {type: 'application/json'}) : <any>style) as any || localVarFormParams;
-        }
-        if (loadingPlaceholder !== undefined) {
-            localVarFormParams = localVarFormParams.append('loadingPlaceholder', localVarUseForm ? new Blob([JSON.stringify(loadingPlaceholder)], {type: 'application/json'}) : <any>loadingPlaceholder) as any || localVarFormParams;
-        }
-        if (menus) {
-            if (localVarUseForm) {
-                menus.forEach((element) => {
-                    localVarFormParams = localVarFormParams.append('menus', <any>element) as any || localVarFormParams;
-            })
-            } else {
-                localVarFormParams = localVarFormParams.append('menus', [...menus].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
-            }
-        }
         if (file !== undefined) {
             localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
+        }
+        if (createRequest !== undefined) {
+            localVarFormParams = localVarFormParams.append('createRequest', localVarUseForm ? new Blob([JSON.stringify(createRequest)], {type: 'application/json'}) : <any>createRequest) as any || localVarFormParams;
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -246,7 +182,7 @@ export class QrmenusService {
         }
 
         let localVarPath = `/qrmenus`;
-        return this.httpClient.request<string>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<QrMenu>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
@@ -261,17 +197,17 @@ export class QrmenusService {
     }
 
     /**
-     * Get QR Menu
-     * @param id QR Menu ID
+     * Delete a qr menu
+     * @param qrMenuId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getQrMenu(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<QrMenu>;
-    public getQrMenu(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<QrMenu>>;
-    public getQrMenu(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<QrMenu>>;
-    public getQrMenu(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getQrMenu.');
+    public deleteQrMenu(qrMenuId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public deleteQrMenu(qrMenuId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public deleteQrMenu(qrMenuId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public deleteQrMenu(qrMenuId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (qrMenuId === null || qrMenuId === undefined) {
+            throw new Error('Required parameter qrMenuId was null or undefined when calling deleteQrMenu.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -280,7 +216,6 @@ export class QrmenusService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -310,8 +245,8 @@ export class QrmenusService {
             }
         }
 
-        let localVarPath = `/qrmenus/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<QrMenu>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/qrmenus/${this.configuration.encodeParam({name: "qrMenuId", value: qrMenuId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -325,14 +260,14 @@ export class QrmenusService {
     }
 
     /**
-     * Get all QR menus
+     * Get all qr menus
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getQrMenus(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<QrMenu>>;
-    public getQrMenus(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<QrMenu>>>;
-    public getQrMenus(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<QrMenu>>>;
-    public getQrMenus(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getAllQrMenus(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<QrMenu>>;
+    public getAllQrMenus(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<QrMenu>>>;
+    public getAllQrMenus(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<QrMenu>>>;
+    public getAllQrMenus(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -374,6 +309,148 @@ export class QrmenusService {
         return this.httpClient.request<Array<QrMenu>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get a qr menu by ID
+     * @param qrMenuId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getQrMenuById(qrMenuId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<QrMenu>;
+    public getQrMenuById(qrMenuId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<QrMenu>>;
+    public getQrMenuById(qrMenuId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<QrMenu>>;
+    public getQrMenuById(qrMenuId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (qrMenuId === null || qrMenuId === undefined) {
+            throw new Error('Required parameter qrMenuId was null or undefined when calling getQrMenuById.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/qrmenus/${this.configuration.encodeParam({name: "qrMenuId", value: qrMenuId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<QrMenu>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update a qr menu
+     * @param qrMenuId 
+     * @param qrMenu 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<QrMenu>;
+    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<QrMenu>>;
+    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<QrMenu>>;
+    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (qrMenuId === null || qrMenuId === undefined) {
+            throw new Error('Required parameter qrMenuId was null or undefined when calling updateQrMenu.');
+        }
+        if (qrMenu === null || qrMenu === undefined) {
+            throw new Error('Required parameter qrMenu was null or undefined when calling updateQrMenu.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/qrmenus/${this.configuration.encodeParam({name: "qrMenuId", value: qrMenuId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<QrMenu>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: qrMenu,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

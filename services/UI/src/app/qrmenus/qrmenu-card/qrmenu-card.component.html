@@ -1,6 +1,10 @@
 <div class="menu-row">
   <mat-grid-list cols="6" rows="2" rowHeight="75px">
-    <mat-grid-tile [colspan]="screen.width > 800 ? 2 : screen.width > 600 ? 4 : 6" [rowspan]="2" class="grid-cell">
+    <mat-grid-tile
+      [colspan]="screen.width > 800 ? 2 : screen.width > 600 ? 4 : 6"
+      [rowspan]="2"
+      class="grid-cell"
+    >
       <div class="menu-metadata">
         <div class="menu-title">
           <mat-icon class="menu-title-icon">qr_code</mat-icon>{{ qrmenu.name }}
@@ -9,10 +13,16 @@
           <mat-icon class="date-icon">schedule</mat-icon>Apr 7, 2021
         </div>
         <div class="link-date-container">
-          <a class="menu-link float-right" target="_blank" [href]="getMenuPublicUrl(qrmenu)"><mat-icon
-              class="link-icon">link</mat-icon><span>{{ qrmenu.urlSuffix }}</span></a>
+          <a
+            class="menu-link float-right"
+            target="_blank"
+            [href]="getMenuPublicUrl(qrmenu)"
+            ><mat-icon class="link-icon">link</mat-icon
+            ><span>{{ qrmenu.urlSuffix }}</span></a
+          >
           <div class="menu-date float-left" *ngIf="qrmenu.restaurant">
-            <mat-icon class="date-icon">brunch_dining</mat-icon>{{ qrmenu.restaurant.name }}
+            <mat-icon class="date-icon">brunch_dining</mat-icon
+            >{{ qrmenu.restaurant.name }}
           </div>
         </div>
       </div>
@@ -21,56 +31,116 @@
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <!-- <button
-              mat-button
-              (click)="downloadQRCode(qrmenu)"
-              [matTooltip]="'download' | translate"
-              class="menu-button"
-            >
-              <mat-icon>file_download</mat-icon>
-            </button> -->
-          <button mat-button (click)="deleteCode(qrmenu)" [matTooltip]="'delete' | translate" class="menu-button">
+          <button
+            mat-icon-button
+            (click)="deleteCode(qrmenu)"
+            [matTooltip]="'delete' | translate"
+            class="menu-button"
+          >
             <mat-icon>clear</mat-icon>
           </button>
-          <button mat-button (click)="edit(qrmenu)" [matTooltip]="'edit' | translate" class="menu-button">
+          <button
+            mat-icon-button
+            (click)="edit(qrmenu)"
+            [matTooltip]="'edit' | translate"
+            class="menu-button"
+          >
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-button (click)="editMeals(qrmenu)" [matTooltip]="'codes.edit_stop_list' | translate"
-            class="menu-button" [disabled]="editMealsLoading">
+          <button
+            mat-icon-button
+            (click)="editMeals(qrmenu)"
+            [matTooltip]="'codes.edit_stop_list' | translate"
+            class="menu-button"
+            [disabled]="editMealsLoading"
+          >
             <mat-icon>no_meals</mat-icon>
           </button>
         </mat-menu>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile [colspan]="1" *ngIf="screen.width > 1000" [rowspan]="2" class="grid-cell">
+    <mat-grid-tile
+      [colspan]="1"
+      *ngIf="screen.width > 1000"
+      [rowspan]="2"
+      class="grid-cell"
+    >
       <div class="qr-code-stats">
         <p class="qr-stats-value">{{ qrmenu.scanCount }}</p>
         <p [translate]="'codes.scans'"></p>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile [colspan]="1" [rowspan]="2" class="grid-cell" *ngIf="screen.width > 800">
-      <img [src]="getMenuPreviewUrl(qrmenu)" class="preview-image" (click)="openQrMenu(qrmenu)" />
+    <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="2"
+      class="grid-cell"
+      *ngIf="screen.width > 800"
+    >
+      <img
+        [src]="getMenuPreviewUrl(qrmenu)"
+        class="preview-image"
+        (click)="openQrMenu(qrmenu)"
+      />
     </mat-grid-tile>
-    <mat-grid-tile [colspan]="1" [rowspan]="2" class="grid-cell" *ngIf="screen.width > 800">
+    <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="2"
+      class="grid-cell"
+      *ngIf="screen.width > 800"
+    >
       <div class="qrcode-image">
-        <ngx-kjua [text]="getMenuPublicUrl(qrmenu)" [render]="'image'" [crisp]="true" [minVersion]="1" [ecLevel]="'H'"
-          [size]="150" [fill]="'#000'" [back]="'#fff'" [rounded]="80" [quiet]="1" [mode]="'plain'"
-          [cssClass]="'qr-code'"></ngx-kjua>
+        <ngx-kjua
+          [text]="getMenuPublicUrl(qrmenu)"
+          [render]="'image'"
+          [crisp]="true"
+          [minVersion]="1"
+          [ecLevel]="'H'"
+          [size]="150"
+          [fill]="'#000'"
+          [back]="'#fff'"
+          [rounded]="80"
+          [quiet]="1"
+          [mode]="'plain'"
+          [cssClass]="'qr-code'"
+        ></ngx-kjua>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile [colspan]="screen.width > 1000 ? 1 : 2" [rowspan]="1" class="grid-cell menu-buttons"
-      *ngIf="screen.width > 600">
-      <button mat-button (click)="deleteCode(qrmenu)" [matTooltip]="'delete' | translate" class="menu-button">
+    <mat-grid-tile
+      [colspan]="screen.width > 1000 ? 1 : 2"
+      [rowspan]="1"
+      class="grid-cell menu-buttons"
+      *ngIf="screen.width > 600"
+    >
+      <button
+        mat-icon-button
+        (click)="deleteCode(qrmenu)"
+        [matTooltip]="'delete' | translate"
+        class="menu-button"
+      >
         <mat-icon>clear</mat-icon>
       </button>
     </mat-grid-tile>
-    <mat-grid-tile [colspan]="screen.width > 1000 ? 1 : 2" [rowspan]="1" class="grid-cell menu-buttons"
-      *ngIf="screen.width > 600">
-      <button mat-button (click)="edit(qrmenu)" [matTooltip]="'edit' | translate" class="menu-button">
+    <mat-grid-tile
+      [colspan]="screen.width > 1000 ? 1 : 2"
+      [rowspan]="1"
+      class="grid-cell menu-buttons"
+      *ngIf="screen.width > 600"
+    >
+      <button
+        mat-icon-button
+        (click)="edit(qrmenu)"
+        [matTooltip]="'edit' | translate"
+        class="menu-button"
+      >
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-button (click)="editMeals(qrmenu)" [matTooltip]="'codes.edit_stop_list' | translate"
-        class="menu-button" [disabled]="editMealsLoading">
+      <button
+        mat-icon-button
+        (click)="editMeals(qrmenu)"
+        [matTooltip]="'codes.edit_stop_list' | translate"
+        class="menu-button"
+        [disabled]="editMealsLoading"
+      >
         <mat-icon>no_meals</mat-icon>
       </button>
     </mat-grid-tile>

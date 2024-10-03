@@ -23,14 +23,13 @@ export class RestaurantService {
   }
 
   async listRestaurants() {
-    const result = await firstValueFrom(this.api.getRestaurants());
+    const result = await firstValueFrom(this.api.getAllRestaurants());
     this.globals.restsCount = result.length;
     return result;
   }
 
   async deleteRestaurant(id: string) {
-    // await firstValueFrom(this.api.deleteRestaurant(id));
-    this.clearCache();
+    await firstValueFrom(this.api.deleteRestaurant(id));
   }
 
   createHttpOptions(): any {
