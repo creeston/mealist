@@ -11,3 +11,4 @@ export * from './qrMenuStyle';
 export * from './readOnlyQrMenu';
 export * from './readonlyQrMenuItem';
 export * from './restaurant';
+export * from './updateQrMenuRequest';

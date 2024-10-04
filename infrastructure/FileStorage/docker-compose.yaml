@@ -17,4 +17,8 @@ services:
     volumes:
       - ../files:/files
     entrypoint: >
-      /bin/sh -c " /usr/bin/mc config host add myminio http://minio-service:9000 minioadmin minioadmin; /usr/bin/mc mb myminio/mealist --ignore-existing;  /usr/bin/mc mb myminio/mealist-public --ignore-existing; exit 0; "
+      /bin/sh -c " 
+        /usr/bin/mc config host add myminio http://minio-service:9000 minioadmin minioadmin; 
+        /usr/bin/mc mb myminio/mealist --ignore-existing;  
+        /usr/bin/mc mb myminio/mealist-public --ignore-existing; 
+        exit 0; "

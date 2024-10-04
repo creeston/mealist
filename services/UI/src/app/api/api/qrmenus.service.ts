@@ -22,6 +22,8 @@ import { Observable }                                        from 'rxjs';
 import { CreateQrMenuRequest } from '../model/createQrMenuRequest';
 // @ts-ignore
 import { QrMenu } from '../model/qrMenu';
+// @ts-ignore
+import { UpdateQrMenuRequest } from '../model/updateQrMenuRequest';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -386,19 +388,17 @@ export class QrmenusService {
     /**
      * Update a qr menu
      * @param qrMenuId 
-     * @param qrMenu 
+     * @param file 
+     * @param updateRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<QrMenu>;
-    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<QrMenu>>;
-    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<QrMenu>>;
-    public updateQrMenu(qrMenuId: string, qrMenu: QrMenu, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updateQrMenu(qrMenuId: string, file?: Blob, updateRequest?: UpdateQrMenuRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<QrMenu>;
+    public updateQrMenu(qrMenuId: string, file?: Blob, updateRequest?: UpdateQrMenuRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<QrMenu>>;
+    public updateQrMenu(qrMenuId: string, file?: Blob, updateRequest?: UpdateQrMenuRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<QrMenu>>;
+    public updateQrMenu(qrMenuId: string, file?: Blob, updateRequest?: UpdateQrMenuRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (qrMenuId === null || qrMenuId === undefined) {
             throw new Error('Required parameter qrMenuId was null or undefined when calling updateQrMenu.');
-        }
-        if (qrMenu === null || qrMenu === undefined) {
-            throw new Error('Required parameter qrMenu was null or undefined when calling updateQrMenu.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -425,14 +425,31 @@ export class QrmenusService {
             localVarTransferCache = true;
         }
 
-
         // to determine the Content-Type header
         const consumes: string[] = [
+            'multipart/form-data',
             'application/json'
         ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let localVarFormParams: { append(param: string, value: any): any; };
+        let localVarUseForm = false;
+        let localVarConvertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        localVarUseForm = canConsumeForm;
+        if (localVarUseForm) {
+            localVarFormParams = new FormData();
+        } else {
+            localVarFormParams = new HttpParams({encoder: this.encoder});
+        }
+
+        if (file !== undefined) {
+            localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
+        }
+        if (updateRequest !== undefined) {
+            localVarFormParams = localVarFormParams.append('updateRequest', localVarUseForm ? new Blob([JSON.stringify(updateRequest)], {type: 'application/json'}) : <any>updateRequest) as any || localVarFormParams;
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -450,7 +467,7 @@ export class QrmenusService {
         return this.httpClient.request<QrMenu>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: qrMenu,
+                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

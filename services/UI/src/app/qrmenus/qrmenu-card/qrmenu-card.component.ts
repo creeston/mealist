@@ -7,6 +7,7 @@ import { ConfirmationDialog } from '../../components/confirmation-dialog/confirm
 import { environment } from '../../../environments/environment';
 import { EditMealsComponent } from '../edit-meals/edit-meals.component';
 import { Router } from '@angular/router';
+import { QrMenuService } from '../../services/qrmenu.service';
 
 @Component({
   selector: 'app-qrmenu-card',
@@ -22,12 +23,11 @@ export class QrmenuCardComponent implements OnInit {
     public screen: ScreenService,
     public translate: TranslateService,
     public dialog: MatDialog,
-    public router: Router
+    public router: Router,
+    public service: QrMenuService
   ) {}
 
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
+  ngOnInit(): void {}
 
   deleteCode(code: QrMenu) {
     this.translate
@@ -39,19 +39,17 @@ export class QrmenuCardComponent implements OnInit {
           data: { message: text + ' "' + code.name + '"?' },
         });
 
-        // dialogRef.componentInstance.callback.subscribe((r) => {
-        //   this.service.delete(code.id).subscribe(
-        //     (r: any) => {
-        //       const index = this.qrMenus.indexOf(code, 0);
-        //       this.qrMenus.splice(index, 1);
-        //       this.silentRefresh();
-        //       dialogRef.componentInstance.close();
-        //     },
-        //     (error: any) => {
-        //       // this.notify.error(JSON.stringify(error));
-        //     }
-        //   );
-        // });
+        dialogRef.componentInstance.callback.subscribe((r) => {
+          this.service.delete(code.id).then(
+            (r: any) => {
+              dialogRef.componentInstance.close();
+            },
+            (error: any) => {
+              console.log(error);
+              dialogRef.componentInstance.close();
+            }
+          );
+        });
       });
   }
 

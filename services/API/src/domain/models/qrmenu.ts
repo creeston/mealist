@@ -12,10 +12,10 @@ export interface QrMenu {
   style: QrMenuStyle;
   menus: QrMenuItem[];
   loadingPlaceholderKey: string;
-  loadingPlaceholderMenuIndex: number | null;
+  loadingPlaceholderMenuIndex?: number;
   stats: QrStats;
   creationDate: string;
-  modificationDate: string | undefined;
+  modificationDate?: string;
 }
 
 export interface CreateQrMenuCommand {
@@ -26,9 +26,20 @@ export interface CreateQrMenuCommand {
   sectionsToShow: string[];
   style: QrMenuStyle;
   menus: CreateQrMenuItemCommand[];
-  loadingPlaceholderMenuIndex: number | null;
+  loadingPlaceholderMenuIndex?: number;
   customLoadingPlaceholder: StreamingBlobPayloadInputTypes | null;
-  stats: QrStats | null;
+}
+
+export interface UpdateQrMenuCommand {
+  name: string;
+  urlSuffix: string;
+  title: string;
+  restaurantId: string;
+  sectionsToShow: string[];
+  style: QrMenuStyle;
+  menus: CreateQrMenuItemCommand[];
+  loadingPlaceholderMenuIndex?: number;
+  customLoadingPlaceholder: StreamingBlobPayloadInputTypes | null;
 }
 
 export interface CreateQrMenuItemCommand {

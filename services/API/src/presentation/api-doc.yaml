@@ -251,6 +251,18 @@ paths:
       requestBody:
         required: true
         content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                updateRequest:
+                  $ref: "#/components/schemas/UpdateQrMenuRequest"
+            encoding:
+              updateRequest:
+                contentType: application/json
           application/json:
             schema:
               $ref: "#/components/schemas/QrMenu"
@@ -508,6 +520,37 @@ components:
         backgroundColor:
           type: string
     CreateQrMenuRequest:
+      type: "object"
+      properties:
+        name:
+          type: string
+        urlSuffix:
+          type: string
+        title:
+          type: string
+        restaurantId:
+          type: string
+        sectionsToShow:
+          type: array
+          items:
+            type: string
+        style:
+          $ref: "#/components/schemas/QrMenuStyle"
+        loadingPlaceholder:
+          $ref: "#/components/schemas/CreateLoadingPlaceholderRequest"
+        menus:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateQrMenuItem"
+      required:
+        - restaurantId
+        - name
+        - urlSuffix
+        - sectionsToShow
+        - style
+        - loadingPlaceholder
+        - menus
+    UpdateQrMenuRequest:
       type: "object"
       properties:
         name:

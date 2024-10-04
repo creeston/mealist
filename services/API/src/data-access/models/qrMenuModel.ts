@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { model, Schema } from 'mongoose';
-import { CreateQrMenuCommand, QrMenu, QrMenuItem } from '../../domain/models/qrmenu';
+import { QrMenu, QrMenuItem } from '../../domain/models/qrmenu';
 import { RestaurantModel } from './restaurantModel';
-import { MenuModel, mapMenuPageModelToMenuPage, mapToMenu } from './menuModel';
+import { MenuModel, mapToMenu } from './menuModel';
 import { mapToRestaurant } from './restaurantModel';
 
 const QrMenuItemSchema = new Schema({
@@ -26,7 +26,7 @@ const QrMenuSchema = new Schema({
   urlSuffix: { type: String, required: true },
   restaurantId: { type: Schema.Types.ObjectId, required: true },
   sectionsToShow: { type: [String], required: true },
-  title: { type: String, required: true },
+  title: { type: String, required: false },
   style: { type: QrMenuStyleSchema, required: true },
   menus: { type: [QrMenuItemSchema], required: true },
   stats: { type: QrStatsSchema, required: true },
@@ -38,53 +38,23 @@ const QrMenuSchema = new Schema({
 
 export const QrMenuModel = model('QrMenu', QrMenuSchema);
 
-// export const mapToQrMenuModel = (qrMenu: QrMenu) => {
-//   return {
-//     name: qrMenu.name,
-//     restaurant: new ObjectId(qrMenu.restaurant.id),
-//     style: {
-//       displayName: qrMenu.style.,
-//       primaryColor: qrMenu.style.headerColor,
-//       secondaryColor: qrMenu.style.secondaryColor,
-//       fontColor: qrMenu.style.fontColor,
-//       previewIndex: qrMenu.style.previewIndex,
-//     },
-//     items: qrMenu.menus.map((item) => ({
-//       menu: new ObjectId(item.menu.id),
-//       style: {
-//         thumbnailIndex: item.style.thumbnailIndex,
-//         title: item.style.title,
-//       },
-//     })),
-//     urlSuffix: qrMenu.urlSuffix,
-//     stats: {
-//       scanCount: qrMenu.stats.scanCount,
-//     },
-//     creationDate: qrMenu.creationDate,
-//     modificationDate: qrMenu.modificationDate,
-//   };
-// };
-
-export const mapCreationCommandToQrMenuModel = (
-  command: CreateQrMenuCommand,
-  creationDate: string,
-  uploadedPlaceholderKey: string
-) => {
+export const mapQrMenuDomainToDbModel = (qrMenu: QrMenu) => {
   return {
-    name: command.name,
-    title: command.title,
-    urlSuffix: command.urlSuffix,
-    restaurantId: new ObjectId(command.restaurantId),
-    sectionsToShow: command.sectionsToShow,
-    style: command.style,
-    menus: command.menus.map((item) => ({
-      menuId: new ObjectId(item.menuId),
+    name: qrMenu.name,
+    title: qrMenu.title,
+    urlSuffix: qrMenu.urlSuffix,
+    restaurantId: new ObjectId(qrMenu.restaurant.id),
+    sectionsToShow: qrMenu.sectionsToShow,
+    style: qrMenu.style,
+    menus: qrMenu.menus.map((item) => ({
+      menuId: new ObjectId(item.menu.id),
       title: item.title,
     })),
-    stats: command.stats,
-    loadingPlaceholderKey: uploadedPlaceholderKey,
-    loadingPlaceholderMenuIndex: command.loadingPlaceholderMenuIndex,
-    creationDate: creationDate,
+    stats: qrMenu.stats,
+    loadingPlaceholderKey: qrMenu.loadingPlaceholderKey,
+    loadingPlaceholderMenuIndex: qrMenu.loadingPlaceholderMenuIndex,
+    creationDate: qrMenu.creationDate,
+    modificationDate: qrMenu.modificationDate,
   };
 };
 

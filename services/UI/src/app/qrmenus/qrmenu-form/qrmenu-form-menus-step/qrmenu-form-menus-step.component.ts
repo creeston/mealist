@@ -1,10 +1,8 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
 } from '@angular/core';
 import {
@@ -58,28 +56,48 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
       this.isStepActive &&
       this.previewQrMenu.menus?.length == 0
     ) {
-      this.addMenuField();
+      this.addEmptyMenuField();
     }
   }
 
+  setFieldValues(menus: QrMenuItem[]) {
+    this.menusFormArray.clear();
+
+    menus.forEach((menu) => {
+      if (!menu.menu) {
+        return;
+      }
+      const formGroup = this.addMenuField(menu.title ?? '', menu.menu);
+      formGroup.controls.menuControl.setValue(menu.menu.id!);
+    });
+  }
+
   async onMenuSelected(menuItem: ReadonlyQrMenuItem, event: any) {
-    let menu = event.value as Menu;
+    let menuId = event.value as string;
+    let menu = this.menus.find((m) => m.id === menuId);
+    if (!menu) {
+      return;
+    }
     menuItem.pages = menu.pages;
     menuItem.stopColor = menu.stopColor;
     menuItem.stopStyle = menu.stopStyle;
   }
 
-  addMenuField() {
+  addEmptyMenuField() {
+    this.addMenuField('');
+  }
+
+  addMenuField(title: string, menu: Menu | null = null) {
     const qrMenuItem = {
-      title: '',
-      pages: [],
+      title: title,
+      pages: menu?.pages ?? [],
     } as ReadonlyQrMenuItem;
 
     this.previewQrMenu.menus!.push(qrMenuItem);
 
     const formGroup = this.fb.group({
       menuControl: this.fb.control('', [Validators.required]),
-      titleControl: this.fb.control('', [Validators.required]),
+      titleControl: this.fb.control(title, [Validators.required]),
     });
 
     formGroup.controls.titleControl.valueChanges.subscribe((value) => {
@@ -87,6 +105,8 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
     });
 
     this.menusFormArray.push(formGroup);
+
+    return formGroup;
   }
 
   removeMenuField(i: number) {
@@ -99,10 +119,14 @@ export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
 
   get configuration(): MenusConfiguration {
     return {
-      menus: this.menusFormArray.controls.map((menuFormGroup) => ({
-        menu: menuFormGroup.get('menuControl')?.value,
-        title: menuFormGroup.get('titleControl')?.value,
-      })),
+      menus: this.menusFormArray.controls.map((menuFormGroup) => {
+        const menuId = menuFormGroup.get('menuControl')?.value;
+        const menu = this.menus.find((m) => m.id === menuId);
+        return {
+          menu: menu,
+          title: menuFormGroup.get('titleControl')?.value,
+        };
+      }),
     };
   }
 }

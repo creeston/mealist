@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ReadOnlyQrMenu } from '../../../api';
+import { QrMenuStyle, ReadOnlyQrMenu } from '../../../api';
 
 @Component({
   selector: 'app-qrmenu-form-style-step',
@@ -60,5 +60,12 @@ export class QrMenuFormStyleStepComponent implements OnInit {
         }
       }
     });
+  }
+
+  setFieldValues(style: QrMenuStyle) {
+    this.form.controls.primaryColorControl.setValue(style.headerColor);
+    this.form.controls.secondaryColorControl.setValue(style.actionsColor);
+    this.form.controls.backgroundColorControl.setValue(style.backgroundColor);
+    this.form.controls.fontColorControl.setValue(style.fontColor);
   }
 }

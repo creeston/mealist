@@ -77,7 +77,7 @@
       *ngIf="screen.width > 800"
     >
       <img
-        [src]="getMenuPreviewUrl(qrmenu)"
+        [src]="qrmenu.loadingPlaceholderUrl"
         class="preview-image"
         (click)="openQrMenu(qrmenu)"
       />

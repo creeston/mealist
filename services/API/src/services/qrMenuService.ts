@@ -1,21 +1,55 @@
-import { CreateQrMenuCommand, QrMenu } from '../domain/models/qrmenu';
+import {
+  CreateQrMenuCommand,
+  CreateQrMenuItemCommand,
+  QrMenu,
+  QrMenuItem,
+  UpdateQrMenuCommand,
+} from '../domain/models/qrmenu';
 import { QrMenusRepository } from '../data-access/repositories/qrMenusRepository';
 import { StorageService } from '../data-access/storage/storageService';
-import { MenusRepository } from '../data-access/repositories/menusRepository';
+import { MenusService } from './menusService';
+import { RestaurantsService } from './restaurantsService';
 
 export class QrMenuService {
   constructor(
     private qrMenusRepository: QrMenusRepository,
     private storageService: StorageService,
-    private menusRepository: MenusRepository
+    private menusService: MenusService,
+    private restaurantService: RestaurantsService
   ) {}
 
   async createQrMenu(createCommand: CreateQrMenuCommand): Promise<string> {
-    const loadingPlaceholderKey = await this.uploadLoadingPlaceholder(createCommand);
-    createCommand.stats = {
-      scanCount: 0,
+    const loadingPlaceholderKey = await this.uploadLoadingPlaceholder(
+      createCommand.urlSuffix,
+      createCommand.loadingPlaceholderMenuIndex,
+      createCommand.customLoadingPlaceholder,
+      createCommand.menus
+    );
+
+    const restaurant = await this.restaurantService.getRestaurantById(createCommand.restaurantId);
+    if (!restaurant) {
+      throw new Error('Restaurant not found');
+    }
+
+    const menus = await this.getMenusItems(createCommand.menus);
+    const qrMenu: QrMenu = {
+      id: '',
+      name: createCommand.name,
+      urlSuffix: createCommand.urlSuffix,
+      restaurant: restaurant,
+      title: createCommand.title,
+      sectionsToShow: createCommand.sectionsToShow,
+      style: createCommand.style,
+      menus: menus,
+      loadingPlaceholderKey: loadingPlaceholderKey,
+      loadingPlaceholderMenuIndex: createCommand.loadingPlaceholderMenuIndex,
+      stats: {
+        scanCount: 0,
+      },
+      creationDate: new Date().toISOString(),
     };
-    const qrMenuId = await this.qrMenusRepository.createQrMenu(createCommand, loadingPlaceholderKey);
+
+    const qrMenuId = await this.qrMenusRepository.createQrMenu(qrMenu);
     return qrMenuId;
   }
 
@@ -42,19 +76,89 @@ export class QrMenuService {
     return menus;
   }
 
-  async updateQrMenu(qrMenu: QrMenu): Promise<void> {
-    await Promise.resolve(0);
-    // await this.qrMenusRepository.updateQrMenu(qrMenu);
+  async updateQrMenu(qrMenuId: string, updateCommand: UpdateQrMenuCommand): Promise<void> {
+    const qrMenu = await this.qrMenusRepository.getQrMenuById(qrMenuId);
+    if (!qrMenu) {
+      throw new Error('Menu not found');
+    }
+
+    const restaurant = await this.restaurantService.getRestaurantById(updateCommand.restaurantId);
+    if (!restaurant) {
+      throw new Error('Restaurant not found');
+    }
+
+    const menuIndex = updateCommand.loadingPlaceholderMenuIndex;
+    const loadingPlaceholderKey = this.storageService.getLoadingPlaceholderKey(updateCommand.urlSuffix);
+
+    if (updateCommand.customLoadingPlaceholder && (menuIndex === undefined || menuIndex < 0)) {
+      this.storageService.uploadFileToPublicBucket(loadingPlaceholderKey, updateCommand.customLoadingPlaceholder);
+    }
+
+    // Custom placeholder wan't updated
+    if (updateCommand.customLoadingPlaceholder == null && (menuIndex === undefined || menuIndex < 0)) {
+      // If url suffix was updated, we need to copy the existing loading placeholder to the new location
+      if (qrMenu.urlSuffix !== updateCommand.urlSuffix) {
+        this.storageService.copyFileWithinPublicBuclet(qrMenu.loadingPlaceholderKey, loadingPlaceholderKey);
+      }
+    }
+
+    if (menuIndex !== undefined && menuIndex >= 0) {
+      await this.copyExistingMenuPageToPlaceholderLocation(updateCommand.menus, menuIndex, loadingPlaceholderKey);
+    }
+
+    const menus = await this.getMenusItems(updateCommand.menus);
+
+    qrMenu.name = updateCommand.name;
+    qrMenu.urlSuffix = updateCommand.urlSuffix;
+    qrMenu.restaurant = restaurant;
+    qrMenu.title = updateCommand.title;
+    qrMenu.sectionsToShow = updateCommand.sectionsToShow;
+    qrMenu.style = updateCommand.style;
+    qrMenu.menus = menus;
+    qrMenu.loadingPlaceholderMenuIndex = updateCommand.loadingPlaceholderMenuIndex;
+    qrMenu.loadingPlaceholderKey = loadingPlaceholderKey;
+    qrMenu.modificationDate = new Date().toISOString();
+
+    await this.qrMenusRepository.updateQrMenu(qrMenu);
   }
 
-  private async uploadLoadingPlaceholder(createCommand: CreateQrMenuCommand): Promise<string> {
-    const placeholderKey = this.storageService.getLoadingPlaceholderKey(createCommand.urlSuffix);
-    const menuIndex = createCommand.loadingPlaceholderMenuIndex;
+  private async getMenusItems(createMenuItems: CreateQrMenuItemCommand[]): Promise<QrMenuItem[]> {
+    const menus = [];
 
-    if (createCommand.customLoadingPlaceholder && menuIndex === undefined) {
-      this.storageService.uploadFile(placeholderKey, createCommand.customLoadingPlaceholder);
-    } else if (menuIndex !== undefined) {
-      await this.copyExistingMenuPageToPlaceholderLocation(createCommand, menuIndex!, placeholderKey);
+    for (const item of createMenuItems) {
+      const menu = await this.menusService.getMenuById(item.menuId);
+      if (!menu) {
+        throw new Error(`Menu ${item.menuId} not found`);
+      }
+
+      menus.push({
+        title: item.title,
+        menu,
+        stopColor: '#fff',
+        stopStyle: 'underline',
+      });
+    }
+
+    return menus;
+  }
+
+  async deleteQrMenu(qrMenuId: string): Promise<void> {
+    await this.qrMenusRepository.deleteQrMenu(qrMenuId);
+  }
+
+  private async uploadLoadingPlaceholder(
+    urlSuffix: string,
+    loadingPlaceholderMenuIndex: number | undefined,
+    customLoadingPlaceholder: any | null,
+    createQrMenuItemCommands: CreateQrMenuItemCommand[]
+  ): Promise<string> {
+    const placeholderKey = this.storageService.getLoadingPlaceholderKey(urlSuffix);
+    const menuIndex = loadingPlaceholderMenuIndex;
+
+    if (customLoadingPlaceholder && (menuIndex === undefined || menuIndex < 0)) {
+      this.storageService.uploadFileToPublicBucket(placeholderKey, customLoadingPlaceholder);
+    } else if (menuIndex !== undefined && menuIndex >= 0) {
+      await this.copyExistingMenuPageToPlaceholderLocation(createQrMenuItemCommands, menuIndex!, placeholderKey);
     } else {
       throw new Error('Invalid loading placeholder configuraiton.');
     }
@@ -63,12 +167,12 @@ export class QrMenuService {
   }
 
   private async copyExistingMenuPageToPlaceholderLocation(
-    creationRequest: CreateQrMenuCommand,
+    createQrMenuItemCommands: CreateQrMenuItemCommand[],
     menuIndex: number,
     loadingPlaceholderPath: string
   ): Promise<void> {
-    const menuId = creationRequest.menus[menuIndex].menuId;
-    const menu = await this.menusRepository.getMenuById(menuId);
+    const menuId = createQrMenuItemCommands[menuIndex].menuId;
+    const menu = await this.menusService.getMenuById(menuId);
     if (!menu || !menu.pages) {
       throw new Error('Menu not found');
     }

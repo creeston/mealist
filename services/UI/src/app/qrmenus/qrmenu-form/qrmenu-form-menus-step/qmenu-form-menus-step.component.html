@@ -6,9 +6,11 @@
         (selectionChange)="onMenuSelected(menuItem, $event)"
         formControlName="menuControl"
       >
-        <mat-option *ngFor="let menu of menus; let i = index" [value]="menu">{{
-          menu.name
-        }}</mat-option>
+        <mat-option
+          *ngFor="let menu of menus; let i = index"
+          [value]="menu.id"
+          >{{ menu.name }}</mat-option
+        >
       </mat-select>
     </mat-form-field>
     <mat-form-field class="field">
@@ -25,6 +27,6 @@
     </button>
   </form>
 </div>
-<button mat-icon-button (click)="addMenuField()">
+<button mat-icon-button (click)="addEmptyMenuField()">
   <mat-icon>add</mat-icon>
 </button>

@@ -35,7 +35,7 @@
       <mat-icon>attach_file</mat-icon>
     </button>
     <mat-error
-      *ngIf="form.controls.fileControl.invalid"
+      *ngIf="form.controls.fileControl.invalid && isPlaceholderNotSelected"
       class="upload-placeholder"
     >
       <span [translate]="'code.preview.ph'"></span>

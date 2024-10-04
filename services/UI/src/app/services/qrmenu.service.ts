@@ -1,9 +1,9 @@
-import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
-import { QrMenu } from '../api/model/models';
+import { QrMenu, UpdateQrMenuRequest } from '../api/model/models';
 import { QrmenusService } from '../api';
 import { CreateQrMenuRequest } from '../api/model/createQrMenuRequest';
 
@@ -23,17 +23,8 @@ export class QrMenuService {
     await firstValueFrom(this.api.createQrMenu(file, creationRequest));
   }
 
-  update(qrMenuFormData: any, id: string) {
-    const options = {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + this.jwt,
-      }),
-    };
-    return this.http.post(
-      environment.apiUrl + '/api/UpdateQrMenu/' + id,
-      qrMenuFormData,
-      options
-    );
+  async update(id: string, updateRequest: UpdateQrMenuRequest, file?: Blob) {
+    await firstValueFrom(this.api.updateQrMenu(id, file, updateRequest));
   }
 
   updateStopList(id: string, stopLists: string[][]) {
@@ -49,11 +40,11 @@ export class QrMenuService {
     return qrMenus;
   }
 
-  delete(id: string) {
-    return this.http.post(environment.apiUrl + '/api/DeleteQrMenu/' + id, {});
+  async delete(id: string) {
+    return await firstValueFrom(this.api.deleteQrMenu(id));
   }
 
-  async getMenu(qrMenuId: string, userId: string): Promise<QrMenu> {
+  async getMenu(qrMenuId: string): Promise<QrMenu> {
     const qrMenu = await firstValueFrom(this.api.getQrMenuById(qrMenuId));
 
     return qrMenu;

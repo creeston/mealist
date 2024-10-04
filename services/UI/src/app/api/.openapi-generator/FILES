@@ -23,5 +23,6 @@ model/qrMenuStyle.ts
 model/readOnlyQrMenu.ts
 model/readonlyQrMenuItem.ts
 model/restaurant.ts
+model/updateQrMenuRequest.ts
 param.ts
 variables.ts

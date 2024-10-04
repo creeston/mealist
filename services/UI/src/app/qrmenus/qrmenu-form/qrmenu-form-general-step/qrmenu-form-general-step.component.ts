@@ -76,6 +76,22 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     });
   }
 
+  setFieldValues(
+    menuTitle: string,
+    urlSuffix: string,
+    restaurantId: string,
+    sectionsToShow: string[]
+  ) {
+    this.form.controls.qrMenuDisplayNameControl.setValue(menuTitle);
+    this.form.controls.urlSuffixControl.setValue(urlSuffix);
+
+    const restaurant = this.restaurants.find((r) => r.id === restaurantId);
+    if (restaurant) {
+      this.form.controls.restaurantNameControl.setValue(restaurant);
+      this.onRestaurantChange(restaurant, sectionsToShow);
+    }
+  }
+
   get sectionsFormArray(): FormArray<FormControl> {
     if (!this.form) {
       return this.fb.array([]);
@@ -83,7 +99,10 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     return this.form.get('sections') as FormArray<FormControl>;
   }
 
-  onRestaurantChange(restaurant: Restaurant, sectionsToShow: string[] = []) {
+  onRestaurantChange(
+    restaurant: Restaurant,
+    sectionsToShow: string[] | null = null
+  ) {
     this.previewQrMenu.restaurant = restaurant;
     this.sectionsFormArray.clear();
     this.restaurantSections = [];
@@ -120,15 +139,16 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
         checked: true,
       });
     }
-    if (sectionsToShow.length == 0) {
-      this.previewQrMenu.sectionsToShow = this.restaurantSections
-        .filter((s: any) => s.checked)
-        .map((s: any) => s.key);
-    } else {
-      this.restaurantSections.forEach((s: any) => {
-        s.checked = sectionsToShow.includes(s.key);
-      });
+
+    if (sectionsToShow != null) {
+      for (let section of this.restaurantSections) {
+        section.checked = sectionsToShow.includes(section.key);
+      }
     }
+
+    this.previewQrMenu.sectionsToShow = this.restaurantSections
+      .filter((s: any) => s.checked)
+      .map((s: any) => s.key);
 
     this.restaurantSections.forEach((section: any) => {
       this.sectionsFormArray.push(this.fb.control(section.checked));

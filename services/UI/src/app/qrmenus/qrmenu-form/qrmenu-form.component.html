@@ -1,163 +1,155 @@
 <mat-spinner *ngIf="loading" class="loading-spinner"></mat-spinner>
 
-<!-- Display name to view QR menu in dashboard -->
-<div class="menu-name-field" *ngIf="!loading">
-  <mat-form-field class="field">
-    <mat-label>{{ "code.name.title" | translate }}</mat-label>
-    <mat-icon matSuffix>create</mat-icon>
-    <input
-      matInput
-      [placeholder]="'code.name.ph' | translate"
-      [formControl]="qrMenuNameControl"
-    />
-    <mat-error
-      *ngIf="qrMenuNameControl.invalid"
-      [translate]="'code.name.required'"
-    ></mat-error>
-  </mat-form-field>
-</div>
-<div class="grid" *ngIf="!loading">
-  <mat-vertical-stepper
-    #stepper
-    [linear]="menuId ? false : true"
-    class="col"
-    (selectionChange)="stepperChange($event)"
-  >
-    <!-- Step 1. General information in QR menu. -->
-    <mat-step
-      [errorMessage]="'code.choose_rest' | translate"
-      [hasError]="formGroup1.invalid && creationAttempt"
-      [completed]="formGroup1.valid"
+<div [style.visibility]="loading ? 'hidden' : 'visible'">
+  <!-- Display name to view QR menu in dashboard -->
+  <div class="menu-name-field">
+    <mat-form-field class="field">
+      <mat-label>{{ "code.name.title" | translate }}</mat-label>
+      <mat-icon matSuffix>create</mat-icon>
+      <input
+        matInput
+        [placeholder]="'code.name.ph' | translate"
+        [formControl]="qrMenuNameControl"
+      />
+      <mat-error
+        *ngIf="qrMenuNameControl.invalid"
+        [translate]="'code.name.required'"
+      ></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="grid">
+    <mat-vertical-stepper
+      #stepper
+      [linear]="menuId ? false : true"
+      class="col"
+      (selectionChange)="stepperChange($event)"
     >
-      <ng-template matStepLabel>{{ "code.general" | translate }}</ng-template>
-      <div class="stepper-content">
-        <form [formGroup]="formGroup1">
-          <app-qmenu-form-general-step
+      <!-- Step 1. General information in QR menu. -->
+      <mat-step
+        [errorMessage]="'code.choose_rest' | translate"
+        [hasError]="formGroup1.invalid && creationAttempt"
+        [completed]="formGroup1.valid"
+      >
+        <ng-template matStepLabel>{{ "code.general" | translate }}</ng-template>
+        <div class="stepper-content">
+          <form [formGroup]="formGroup1">
+            <app-qmenu-form-general-step
+              [previewQrMenu]="previewQrMenu"
+              [form]="formGroup1"
+              #generalStep
+            ></app-qmenu-form-general-step>
+            <button
+              mat-button
+              (click)="goForward(stepper)"
+              class="next-button"
+              [disabled]="!formGroup1.valid"
+            >
+              {{ "next" | translate }}
+            </button>
+          </form>
+        </div>
+      </mat-step>
+
+      <!-- Step 2. Add menu items to QR menu. -->
+      <mat-step
+        [errorMessage]="'code.menu.add' | translate"
+        [hasError]="creationAttempt && formGroup2.invalid"
+        [completed]="formGroup2.valid"
+      >
+        <ng-template matStepLabel>{{
+          "code.menu.add" | translate
+        }}</ng-template>
+        <div class="stepper-content">
+          <app-qmenu-form-menus-step
+            [form]="formGroup2"
             [previewQrMenu]="previewQrMenu"
-            [form]="formGroup1"
-            #generalStep
-          ></app-qmenu-form-general-step>
+            [isStepActive]="currentStep === 1"
+            #menusStep
+          ></app-qmenu-form-menus-step>
+
           <button
             mat-button
             (click)="goForward(stepper)"
             class="next-button"
-            [disabled]="!formGroup1.valid"
+            [disabled]="!formGroup2.valid"
           >
             {{ "next" | translate }}
           </button>
-        </form>
-      </div>
-    </mat-step>
+        </div>
+      </mat-step>
 
-    <!-- Step 2. Add menu items to QR menu. -->
-    <mat-step
-      [errorMessage]="'code.menu.add' | translate"
-      [hasError]="creationAttempt && formGroup2.invalid"
-      [completed]="formGroup2.valid"
-    >
-      <ng-template matStepLabel>{{ "code.menu.add" | translate }}</ng-template>
-      <div class="stepper-content">
-        <app-qmenu-form-menus-step
-          [form]="formGroup2"
-          [previewQrMenu]="previewQrMenu"
-          [isStepActive]="currentStep === 1"
-          #menusStep
-        ></app-qmenu-form-menus-step>
-
+      <!-- Step 3. Choose colors for QR menu. -->
+      <mat-step
+        [errorMessage]="'code.design.required' | translate"
+        [hasError]="creationAttempt && formGroup3.invalid"
+      >
+        <ng-template matStepLabel>{{
+          "code.design.title" | translate
+        }}</ng-template>
+        <div class="stepper-content">
+          <app-qrmenu-form-style-step
+            [form]="formGroup3"
+            [previewQrMenu]="previewQrMenu"
+            #styleStep
+          >
+          </app-qrmenu-form-style-step>
+        </div>
         <button
           mat-button
           (click)="goForward(stepper)"
           class="next-button"
-          [disabled]="!formGroup2.valid"
+          [disabled]="!formGroup3.valid"
         >
           {{ "next" | translate }}
         </button>
-      </div>
-    </mat-step>
+      </mat-step>
 
-    <!-- Step 3. Choose colors for QR menu. -->
-    <mat-step
-      [errorMessage]="'code.design.required' | translate"
-      [hasError]="creationAttempt && formGroup3.invalid"
-    >
-      <ng-template matStepLabel>{{
-        "code.design.title" | translate
-      }}</ng-template>
-      <div class="stepper-content">
-        <app-qrmenu-form-style-step
-          [form]="formGroup3"
-          [previewQrMenu]="previewQrMenu"
-          #styleStep
-        >
-        </app-qrmenu-form-style-step>
-      </div>
-      <button
-        mat-button
-        (click)="goForward(stepper)"
-        class="next-button"
-        [disabled]="!formGroup3.valid"
+      <!-- Step 4. Choose preview for QR menu. -->
+      <mat-step
+        [errorMessage]="'code.preview.required' | translate"
+        [completed]="formGroup4.valid"
+        [hasError]="creationAttempt && formGroup4.invalid"
       >
-        {{ "next" | translate }}
-      </button>
-    </mat-step>
-
-    <!-- Step 4. Choose preview for QR menu. -->
-    <mat-step
-      [errorMessage]="'code.preview.required' | translate"
-      [completed]="formGroup4.valid"
-      [hasError]="creationAttempt && formGroup4.invalid"
-    >
-      <ng-template matStepLabel>{{
-        "code.preview.title" | translate
-      }}</ng-template>
-      <div class="stepper-content">
-        <app-qrmenu-form-loading-preview-step
-          [form]="formGroup4"
-          [previewQrMenu]="previewQrMenu"
-          (previewImageChange)="previewImage = $event"
-          [isStepActive]="currentStep === 3"
-          #loadingPreviewStep
-        ></app-qrmenu-form-loading-preview-step>
-
-        <div class="create-button">
-          <button
-            mat-raised-button
-            class="create-button"
-            (click)="createCode()"
-            [disabled]="disabled"
-            *ngIf="!menuId"
-          >
-            <span>Создать</span>
-          </button>
-          <button
-            mat-raised-button
-            class="create-button"
-            (click)="updateCode()"
-            [disabled]="disabled"
-            *ngIf="menuId"
-          >
-            <span>Обновить</span>
-          </button>
+        <ng-template matStepLabel>{{
+          "code.preview.title" | translate
+        }}</ng-template>
+        <div class="stepper-content">
+          <app-qrmenu-form-loading-preview-step
+            [form]="formGroup4"
+            [previewQrMenu]="previewQrMenu"
+            (previewImageChange)="previewImage = $event"
+            [isStepActive]="currentStep === 3"
+            #loadingPreviewStep
+          ></app-qrmenu-form-loading-preview-step>
         </div>
-      </div>
-    </mat-step>
-  </mat-vertical-stepper>
+      </mat-step>
+    </mat-vertical-stepper>
 
-  <!-- Preview of QR Menu -->
-  <app-qrmenu-preview
-    [qrmenu]="previewQrMenu"
-    [previewImageParam]="previewImage"
-    [menuLoading]="menuLoading"
-  ></app-qrmenu-preview>
-</div>
-<div class="create-button">
-  <button
-    mat-raised-button
-    class="create-button"
-    (click)="updateCode()"
-    [disabled]="disabled"
-    *ngIf="menuId"
-  >
-    <span>Обновить</span>
-  </button>
+    <!-- Preview of QR Menu -->
+    <app-qrmenu-preview
+      [qrmenu]="previewQrMenu"
+      [previewImageParam]="previewImage"
+      [menuLoading]="menuLoading"
+    ></app-qrmenu-preview>
+  </div>
+  <div class="create-button">
+    <button
+      mat-raised-button
+      class="create-button"
+      (click)="createCode()"
+      [disabled]="disabled || !allStepsCompleted"
+      *ngIf="!menuId"
+    >
+      <span>Создать</span>
+    </button>
+    <button
+      mat-raised-button
+      class="create-button"
+      (click)="updateCode()"
+      [disabled]="disabled"
+      *ngIf="menuId"
+    >
+      <span>Обновить</span>
+    </button>
+  </div>
 </div>

@@ -62,6 +62,16 @@ export class StorageService {
     );
   }
 
+  async copyFileWithinPublicBuclet(sourceKey: string, destinationKey: string) {
+    await client.send(
+      new CopyObjectCommand({
+        Bucket: mealistPublicBucket,
+        CopySource: `${mealistPublicBucket}/${sourceKey}`,
+        Key: destinationKey,
+      })
+    );
+  }
+
   getLoadingPlaceholderKey(urlSuffix: string): string {
     return 'QrMenus/' + urlSuffix + '/loadingPlaceholder.png';
   }

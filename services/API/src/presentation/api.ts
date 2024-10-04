@@ -7,201 +7,45 @@
 export interface paths {
   "/menus": {
     /** Get all menus */
-    get: {
-      responses: {
-        /** @description A list of menus */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Menu"][];
-          };
-        };
-      };
-    };
+    get: operations["getAllMenus"];
     /** Create a menu */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CreateMenuRequest"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          content: {
-            "application/json": components["schemas"]["Menu"];
-          };
-        };
-      };
-    };
+    post: operations["createMenu"];
   };
   "/menus/{menuId}": {
     /** Get a menu by ID */
-    get: {
-      parameters: {
-        path: {
-          menuId: string;
-        };
-      };
-      responses: {
-        /** @description A menu */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Menu"];
-          };
-        };
-      };
-    };
-    /** Update a menu */
-    put: {
-      parameters: {
-        path: {
-          menuId: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["Menu"];
-        };
-      };
-      responses: {
-        /** @description Updated */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Menu"];
-          };
-        };
-      };
-    };
-    /** Delete a menu */
-    delete: {
-      parameters: {
-        path: {
-          menuId: string;
-        };
-      };
-      responses: {
-        /** @description No content */
-        204: {
-          content: never;
-        };
-      };
-    };
+    get: operations["getMenuById"];
+  };
+  "/menus/{menuId}/pages": {
+    /** Update menu pages */
+    put: operations["updateMenuPages"];
   };
   "/restaurants": {
     /** Get all restaurants */
-    get: {
-      responses: {
-        /** @description A list of restaurants */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Restaurant"][];
-          };
-        };
-      };
-    };
+    get: operations["getAllRestaurants"];
     /** Create a restaurant */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["Restaurant"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          content: {
-            "application/json": components["schemas"]["Restaurant"];
-          };
-        };
-      };
-    };
+    post: operations["createRestaurant"];
   };
   "/restaurants/{restaurantId}": {
     /** Get a restaurant by ID */
-    get: {
-      parameters: {
-        path: {
-          restaurantId: string;
-        };
-      };
-      responses: {
-        /** @description A restaurant */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Restaurant"];
-          };
-        };
-      };
-    };
+    get: operations["getRestaurantById"];
     /** Update a restaurant */
-    put: {
-      parameters: {
-        path: {
-          restaurantId: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["Restaurant"];
-        };
-      };
-      responses: {
-        /** @description Updated */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Restaurant"];
-          };
-        };
-      };
-    };
+    put: operations["updateRestaurant"];
     /** Delete a restaurant */
-    delete: {
-      parameters: {
-        path: {
-          restaurantId: string;
-        };
-      };
-      responses: {
-        /** @description No content */
-        204: {
-          content: never;
-        };
-      };
-    };
+    delete: operations["deleteRestaurant"];
   };
   "/qrmenus": {
     /** Get all qr menus */
-    get: {
-      responses: {
-        /** @description A list of qr menus */
-        200: {
-          content: {
-            "application/json": components["schemas"]["QrMenu"][];
-          };
-        };
-      };
-    };
+    get: operations["getAllQrMenus"];
     /** Create a qr menu */
-    post: {
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** Format: binary */
-            file?: string;
-            createRequest?: components["schemas"]["CreateQrMenuRequest"];
-          };
-          "application/json": components["schemas"]["CreateQrMenuRequest"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          content: {
-            "application/json": components["schemas"]["QrMenu"];
-          };
-        };
-      };
-    };
+    post: operations["createQrMenu"];
+  };
+  "/qrmenus/{qrMenuId}": {
+    /** Get a qr menu by ID */
+    get: operations["getQrMenuById"];
+    /** Update a qr menu */
+    put: operations["updateQrMenu"];
+    /** Delete a qr menu */
+    delete: operations["deleteQrMenu"];
   };
 }
 
@@ -312,6 +156,16 @@ export interface components {
       loadingPlaceholder: components["schemas"]["CreateLoadingPlaceholderRequest"];
       menus: components["schemas"]["CreateQrMenuItem"][];
     };
+    UpdateQrMenuRequest: {
+      name: string;
+      urlSuffix: string;
+      title?: string;
+      restaurantId: string;
+      sectionsToShow: string[];
+      style: components["schemas"]["QrMenuStyle"];
+      loadingPlaceholder: components["schemas"]["CreateLoadingPlaceholderRequest"];
+      menus: components["schemas"]["CreateQrMenuItem"][];
+    };
     CreateLoadingPlaceholderRequest: {
       menuIndex?: number;
     };
@@ -331,4 +185,236 @@ export type $defs = Record<string, never>;
 
 export type external = Record<string, never>;
 
-export type operations = Record<string, never>;
+export interface operations {
+
+  /** Get all menus */
+  getAllMenus: {
+    responses: {
+      /** @description A list of menus */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Menu"][];
+        };
+      };
+    };
+  };
+  /** Create a menu */
+  createMenu: {
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["CreateMenuRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Menu"];
+        };
+      };
+    };
+  };
+  /** Get a menu by ID */
+  getMenuById: {
+    parameters: {
+      path: {
+        menuId: string;
+      };
+    };
+    responses: {
+      /** @description A menu */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Menu"];
+        };
+      };
+    };
+  };
+  /** Update menu pages */
+  updateMenuPages: {
+    parameters: {
+      path: {
+        menuId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MenuPage"][];
+      };
+    };
+    responses: {
+      /** @description Updated */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Menu"];
+        };
+      };
+    };
+  };
+  /** Get all restaurants */
+  getAllRestaurants: {
+    responses: {
+      /** @description A list of restaurants */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Restaurant"][];
+        };
+      };
+    };
+  };
+  /** Create a restaurant */
+  createRestaurant: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Restaurant"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Restaurant"];
+        };
+      };
+    };
+  };
+  /** Get a restaurant by ID */
+  getRestaurantById: {
+    parameters: {
+      path: {
+        restaurantId: string;
+      };
+    };
+    responses: {
+      /** @description A restaurant */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Restaurant"];
+        };
+      };
+    };
+  };
+  /** Update a restaurant */
+  updateRestaurant: {
+    parameters: {
+      path: {
+        restaurantId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Restaurant"];
+      };
+    };
+    responses: {
+      /** @description Updated */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Restaurant"];
+        };
+      };
+    };
+  };
+  /** Delete a restaurant */
+  deleteRestaurant: {
+    parameters: {
+      path: {
+        restaurantId: string;
+      };
+    };
+    responses: {
+      /** @description No content */
+      204: {
+        content: never;
+      };
+    };
+  };
+  /** Get all qr menus */
+  getAllQrMenus: {
+    responses: {
+      /** @description A list of qr menus */
+      200: {
+        content: {
+          "application/json": components["schemas"]["QrMenu"][];
+        };
+      };
+    };
+  };
+  /** Create a qr menu */
+  createQrMenu: {
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file?: string;
+          createRequest?: components["schemas"]["CreateQrMenuRequest"];
+        };
+        "application/json": components["schemas"]["CreateQrMenuRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        content: {
+          "application/json": components["schemas"]["QrMenu"];
+        };
+      };
+    };
+  };
+  /** Get a qr menu by ID */
+  getQrMenuById: {
+    parameters: {
+      path: {
+        qrMenuId: string;
+      };
+    };
+    responses: {
+      /** @description A qr menu */
+      200: {
+        content: {
+          "application/json": components["schemas"]["QrMenu"];
+        };
+      };
+    };
+  };
+  /** Update a qr menu */
+  updateQrMenu: {
+    parameters: {
+      path: {
+        qrMenuId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file?: string;
+          updateRequest?: components["schemas"]["UpdateQrMenuRequest"];
+        };
+        "application/json": components["schemas"]["QrMenu"];
+      };
+    };
+    responses: {
+      /** @description Updated */
+      200: {
+        content: {
+          "application/json": components["schemas"]["QrMenu"];
+        };
+      };
+    };
+  };
+  /** Delete a qr menu */
+  deleteQrMenu: {
+    parameters: {
+      path: {
+        qrMenuId: string;
+      };
+    };
+    responses: {
+      /** @description No content */
+      204: {
+        content: never;
+      };
+    };
+  };
+}
