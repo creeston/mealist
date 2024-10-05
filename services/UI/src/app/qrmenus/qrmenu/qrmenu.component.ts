@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
 import {
   Directive,
   Output,
@@ -11,7 +10,7 @@ import {
 import { QrMenuService } from '../../services/qrmenu.service';
 import { Globals } from '../../globals';
 import { DrawService } from '../../services/draw.service';
-import { ReadOnlyQrMenu, ReadonlyQrMenuItem } from '../../api';
+import { ReadonlyQrMenu, ReadonlyQrMenuItem } from '../../api';
 
 @Component({
   selector: 'app-qr-menu',
@@ -20,13 +19,7 @@ import { ReadOnlyQrMenu, ReadonlyQrMenuItem } from '../../api';
 })
 export class QrMenuComponent implements OnInit {
   @Input()
-  menuIdParam!: string;
-
-  @Input()
-  userIdParam!: string;
-
-  @Input()
-  qrMenuParam!: ReadOnlyQrMenu;
+  qrMenuParam!: ReadonlyQrMenu;
 
   @Input()
   previewImageParam!: string;
@@ -34,93 +27,56 @@ export class QrMenuComponent implements OnInit {
   @Input()
   menuLoading!: boolean;
 
-  menuId: string | undefined;
-  userId: string | undefined;
   urlSuffix: string | undefined;
-  qrMenu: ReadOnlyQrMenu | undefined = undefined;
+  qrMenu: ReadonlyQrMenu | undefined = undefined;
   selectedMenu: ReadonlyQrMenuItem | undefined = undefined;
   imagesData: any[] = [];
   previewMode = true;
   loading = true;
-  Arr = Array;
 
   constructor(
     private route: ActivatedRoute,
     public globals: Globals,
     private service: QrMenuService,
     private draw: DrawService
-  ) {
-    if (!this.qrMenuParam) {
-      this.globals.role = 'guest';
-    }
-  }
+  ) {}
 
   ngOnInit(): void {
     if (this.qrMenuParam) {
       this.previewMode = true;
-      this.globals.role = 'client';
       this.qrMenu = this.qrMenuParam;
       this.loading = false;
     } else {
-      this.globals.role = 'guest';
+      this.previewMode = false;
       this.getMenu();
     }
   }
 
   getMenu() {
-    // this.route.params.subscribe((p: any) => {
-    //   this.previewMode = false;
-    //   if (p.suffix) {
-    //     this.urlSuffix = p.suffix;
-    //     this.service
-    //       .getMenuRoutingParams(p.suffix)
-    //       .subscribe((r: QrRoutingParams) => {
-    //         this.menuId = r.qrMenuId;
-    //         this.userId = r.userId;
-    //         this.service.getMenu(this.menuId, this.userId).then((r: ReadonlyQrMenuItem) => {
-    //           this.qrMenu = r;
-    //           this.setMenuColors();
-    //           this.initializeMenuImages();
-    //         });
-    //       });
-    //   } else {
-    //     this.menuId = p.menuId;
-    //     this.userId = p.userId;
-    //     if (this.menuId && this.userId) {
-    //       this.service.getMenu(this.menuId!, this.userId!).then((r: ReadonlyQrMenuItem) => {
-    //         this.qrMenu = r;
-    //         this.setMenuColors();
-    //         this.initializeMenuImages();
-    //       });
-    //     }
-    //   }
-    // });
+    this.route.params.subscribe((p: any) => {
+      const suffix = p.suffix;
+      this.urlSuffix = suffix;
+      this.service.getMenuBySuffix(suffix).then((response: ReadonlyQrMenu) => {
+        this.qrMenu = response;
+        this.setMenuColors(response);
+        this.loading = false;
+      });
+    });
   }
 
-  setMenuColors() {
-    if (!this.qrMenu) {
-      return;
+  setMenuColors(qrMenu: ReadonlyQrMenu) {
+    if (!qrMenu.style.headerColor) {
+      qrMenu.style.headerColor = '#3f51b5';
     }
-    if (!this.qrMenu.style.headerColor) {
-      this.qrMenu.style.headerColor = '#3f51b5';
+    if (!qrMenu.style.actionsColor) {
+      qrMenu.style.actionsColor = '#3f51b5c0';
     }
-    if (!this.qrMenu.style.actionsColor) {
-      this.qrMenu.style.actionsColor = '#3f51b5c0';
+    if (!qrMenu.style.fontColor) {
+      qrMenu.style.fontColor = '#ffffff';
     }
-    if (!this.qrMenu.style.fontColor) {
-      this.qrMenu.style.fontColor = '#ffffff';
+    if (!qrMenu.style.backgroundColor) {
+      qrMenu.style.backgroundColor = '#ffffff';
     }
-    if (!this.qrMenu.style.backgroundColor) {
-      this.qrMenu.style.backgroundColor = '#ffffff';
-    }
-  }
-
-  initializeMenuImages() {
-    if (!this.qrMenu) {
-      return;
-    }
-
-    this.loading = false;
   }
 
   openMenu(menuItem: ReadonlyQrMenuItem) {

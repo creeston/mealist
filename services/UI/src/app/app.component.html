@@ -2,8 +2,8 @@
 
 <mat-drawer-container
   autosize
-  [class.menuDashboard]="router.url.indexOf('menu/') === -1"
-  [class.menuGuestDashboard]="router.url.indexOf('menu/') !== -1"
+  [class.menuDashboard]="router.url.indexOf('qr/') === -1"
+  [class.menuGuestDashboard]="router.url.indexOf('qr/') !== -1"
 >
   <mat-drawer
     #sidenav
@@ -17,7 +17,7 @@
     <router-outlet></router-outlet>
     <div
       class="footer-basic"
-      *ngIf="!globals.isLogged && router.url.indexOf('menu/') === -1"
+      *ngIf="!globals.isLogged && router.url.indexOf('qr/') === -1"
     >
       <footer>
         <div class="social">

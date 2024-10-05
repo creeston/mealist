@@ -19,7 +19,6 @@ const routes: Routes = [
   { path: 'qrmenus', component: QrMenusComponent },
   { path: 'qrmenu-create', component: QrMenuFormComponent },
   { path: 'qrmenus/:menuId', component: QrMenuFormComponent },
-  { path: 'qrmenu/:userId/:menuId', component: QrMenuComponent },
   { path: 'qr/:suffix', component: QrMenuComponent },
 ];
 
@@ -27,4 +26,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

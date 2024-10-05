@@ -6,7 +6,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ReadOnlyQrMenu, Restaurant } from '../../../api';
+import { ReadonlyQrMenu, Restaurant } from '../../../api';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { RestaurantService } from '../../../services/restaurant.service';
@@ -31,7 +31,7 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
 
   restaurantSections: any = [];
   environment = environment;
-  @Input({ required: true }) previewQrMenu!: ReadOnlyQrMenu;
+  @Input({ required: true }) previewQrMenu!: ReadonlyQrMenu;
   @Input({ required: true }) form!: FormGroup;
 
   constructor(
@@ -164,11 +164,11 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
       .map((s: any) => s.key);
   }
 
-  get configuration() {
+  get configuration(): GeneralConfiguration {
     return {
-      restaurant: this.previewQrMenu.restaurant,
+      restaurant: this.form.controls.restaurantNameControl.value as Restaurant,
       title: this.previewQrMenu.title ?? '',
-      urlSuffix: this.form.controls.urlSuffixControl.value,
+      urlSuffix: this.form.controls.urlSuffixControl.value as string,
       sections: this.previewQrMenu.sectionsToShow,
     };
   }

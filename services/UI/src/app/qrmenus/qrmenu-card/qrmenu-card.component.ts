@@ -113,7 +113,7 @@ export class QrmenuCardComponent implements OnInit {
   }
 
   getMenuPublicUrl(menu: QrMenu) {
-    return environment.selfUrl + '/menu/' + menu.urlSuffix;
+    return environment.selfUrl + '/qr/' + menu.urlSuffix;
   }
 
   getMenuPreviewUrl(menu: QrMenu) {

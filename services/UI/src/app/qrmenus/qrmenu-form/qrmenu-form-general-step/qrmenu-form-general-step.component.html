@@ -43,7 +43,7 @@
       [placeholder]="'code.qr.ph' | translate"
       formControlName="urlSuffixControl"
     />
-    <span matTextPrefix>{{ environment.selfUrl }}/menu/</span>
+    <span matTextPrefix>{{ environment.selfUrl }}/qr/</span>
     <mat-error
       [translate]="'code.qr.required'"
       *ngIf="form.controls.urlSuffixControl.errors?.required"

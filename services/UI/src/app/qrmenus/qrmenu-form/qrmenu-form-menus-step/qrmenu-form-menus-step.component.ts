@@ -8,7 +8,7 @@ import {
 import {
   Menu,
   QrMenuItem,
-  ReadOnlyQrMenu,
+  ReadonlyQrMenu,
   ReadonlyQrMenuItem,
 } from '../../../api';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -24,7 +24,7 @@ export interface MenusConfiguration {
   styleUrls: ['./qmenu-form-menus-step.component.scss'],
 })
 export class QrMenuFormMenusStepComponent implements OnInit, OnChanges {
-  @Input({ required: true }) previewQrMenu!: ReadOnlyQrMenu;
+  @Input({ required: true }) previewQrMenu!: ReadonlyQrMenu;
   @Input({ required: true }) form!: FormGroup;
   @Input({ required: true }) isStepActive!: boolean;
 

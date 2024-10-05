@@ -16,7 +16,7 @@ import {
   ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
-import { ReadOnlyQrMenu } from '../../../api';
+import { ReadonlyQrMenu } from '../../../api';
 
 const PLACEHOLDER_URL = 'assets/placeholder.png';
 
@@ -31,7 +31,7 @@ export interface LoadingPlaceholderConfiguration {
   styleUrls: ['./qrmenu-form-loading-preview-step.component.scss'],
 })
 export class QrMenuFormLoadingPreviewStepComponent implements OnInit {
-  @Input({ required: true }) previewQrMenu!: ReadOnlyQrMenu;
+  @Input({ required: true }) previewQrMenu!: ReadonlyQrMenu;
   @Input({ required: true }) form!: FormGroup;
   @Input({ required: true }) isStepActive!: boolean;
 

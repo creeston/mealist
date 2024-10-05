@@ -3,8 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Globals } from '../globals';
-import { QrMenu, UpdateQrMenuRequest } from '../api/model/models';
-import { QrmenusService } from '../api';
+import {
+  QrMenu,
+  ReadonlyQrMenu,
+  UpdateQrMenuRequest,
+} from '../api/model/models';
+import { QrmenusService, QrService } from '../api';
 import { CreateQrMenuRequest } from '../api/model/createQrMenuRequest';
 
 @Injectable()
@@ -16,7 +20,8 @@ export class QrMenuService {
   constructor(
     public globals: Globals,
     private http: HttpClient,
-    private api: QrmenusService
+    private api: QrmenusService,
+    private qrApi: QrService
   ) {}
 
   async create(creationRequest: CreateQrMenuRequest, file?: Blob) {
@@ -50,13 +55,9 @@ export class QrMenuService {
     return qrMenu;
   }
 
-  getMenuRoutingParams(urlSuffix: string) {
-    return this.http.get<QrRoutingParams>(
-      environment.apiUrl + '/api/GetRoutingParams/' + urlSuffix
-    );
-  }
-}
+  async getMenuBySuffix(suffix: string): Promise<ReadonlyQrMenu> {
+    const qrMenu = await firstValueFrom(this.qrApi.getQrMenuBySuffix(suffix));
 
-export class QrRoutingParams {
-  constructor(public userId: string, public qrMenuId: string) {}
+    return qrMenu;
+  }
 }

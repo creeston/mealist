@@ -14,7 +14,7 @@ import {
   CreateQrMenuItem,
   QrMenu,
   QrMenuItem,
-  ReadOnlyQrMenu,
+  ReadonlyQrMenu,
 } from '../../api/model/models';
 import { QrMenuFormGeneralStepComponent } from './qrmenu-form-general-step/qrmenu-form-general-step.component';
 import { QrMenuFormMenusStepComponent } from './qrmenu-form-menus-step/qrmenu-form-menus-step.component';
@@ -32,7 +32,7 @@ export class QrMenuFormComponent implements OnInit, AfterViewInit {
   public loading: boolean = true;
   public previewImage: string = '';
   public currentStep: number = 0;
-  public previewQrMenu: ReadOnlyQrMenu = {
+  public previewQrMenu: ReadonlyQrMenu = {
     style: {
       headerColor: '#989089',
       actionsColor: '#A0B454b0',
