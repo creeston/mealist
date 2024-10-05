@@ -7,8 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:qrmenu-ui": "node dist/qrmenu-ui/server/server.mjs",
-    "generate-client": "openapi-generator-cli generate -i http://localhost:3000/api-docs/swagger.json -g typescript-angular -o ./projects/management-ui/src/app/api"
+    "generate-client": "openapi-generator-cli generate -i http://localhost:3000/api-docs/swagger.json -g typescript-angular -o ./src/app/api"
   },
   "private": true,
   "dependencies": {

@@ -5,7 +5,7 @@
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
@@ -14,11 +14,6 @@
     "declaration": false,
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "paths": {
-      "qrmenu-lib": [
-        "./dist/qrmenu-lib"
-      ]
-    },
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
