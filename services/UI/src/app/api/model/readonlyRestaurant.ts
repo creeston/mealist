@@ -11,11 +11,10 @@
  */
 
 
-export interface Restaurant { 
-    id?: string;
-    name: string;
-    address: string;
-    city: string;
+export interface ReadonlyRestaurant { 
+    name?: string;
+    address?: string;
+    city?: string;
     description?: string;
     wifiName?: string;
     wifiPassword?: string;

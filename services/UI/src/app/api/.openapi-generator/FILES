@@ -3,6 +3,7 @@ README.md
 api.module.ts
 api/api.ts
 api/menus.service.ts
+api/qr.service.ts
 api/qrmenus.service.ts
 api/restaurants.service.ts
 configuration.ts
@@ -20,8 +21,9 @@ model/models.ts
 model/qrMenu.ts
 model/qrMenuItem.ts
 model/qrMenuStyle.ts
-model/readOnlyQrMenu.ts
+model/readonlyQrMenu.ts
 model/readonlyQrMenuItem.ts
+model/readonlyRestaurant.ts
 model/restaurant.ts
 model/updateQrMenuRequest.ts
 param.ts

@@ -5,6 +5,7 @@ import { connectoToRabbitMQ } from './queue/connection';
 import { listenToMenuParsingStatusQueue, listenToMenuOcrStatusQueue } from './presentation/routes/menus';
 import { connectToDatabase } from './config/db';
 import { router as qrMenusRouter } from './presentation/routes/qrmenus';
+import { router as qrRouter } from './presentation/routes/qr';
 import { router as menusRouter } from './presentation/routes/menus';
 import { router as restaurantsRouter } from './presentation/routes/restaurants';
 import { parse as yamlParse } from 'yaml';
@@ -47,6 +48,7 @@ app.use('/api-docs', swaggerUi.serveFiles(undefined, options), swaggerUi.setup(u
 app.use('/qrmenus', qrMenusRouter);
 app.use('/menus', menusRouter);
 app.use('/restaurants', restaurantsRouter);
+app.use('/qr', qrRouter);
 
 connectToDatabase()
   .then(() => {

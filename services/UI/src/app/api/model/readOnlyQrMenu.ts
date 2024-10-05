@@ -9,14 +9,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Restaurant } from './restaurant';
 import { QrMenuStyle } from './qrMenuStyle';
+import { ReadonlyRestaurant } from './readonlyRestaurant';
 import { ReadonlyQrMenuItem } from './readonlyQrMenuItem';
 
 
-export interface ReadOnlyQrMenu { 
+export interface ReadonlyQrMenu { 
     title?: string;
-    restaurant: Restaurant;
+    restaurant: ReadonlyRestaurant;
     sectionsToShow: Array<string>;
     style: QrMenuStyle;
     loadingPlaceholderUrl: string;

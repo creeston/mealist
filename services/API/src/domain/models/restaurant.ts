@@ -7,7 +7,6 @@ export interface Restaurant {
   wifiName?: string;
   wifiPassword?: string;
   instagramUrl?: string;
-  vkUrl?: string;
   facebookUrl?: string;
   tripAdvisorUrl?: string;
 }

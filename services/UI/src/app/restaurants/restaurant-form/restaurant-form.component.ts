@@ -15,7 +15,6 @@ export class RestaurantFormDialog {
 
   public showFacebook: boolean = false;
   public showInstagram: boolean = false;
-  public showVk: boolean = false;
   public showTripAdvisor: boolean = false;
   public mapUrl: string | null = null;
 
@@ -38,7 +37,6 @@ export class RestaurantFormDialog {
       wifiPassword: [''],
       facebookUrl: [''],
       instagramUrl: [''],
-      vkUrl: [''],
       tripAdvisorUrl: [''],
     });
   }
@@ -54,13 +52,11 @@ export class RestaurantFormDialog {
         wifiPassword: this.data.wifiPassword,
         facebookUrl: this.data.facebookUrl,
         instagramUrl: this.data.instagramUrl,
-        vkUrl: this.data.vkUrl,
         tripAdvisorUrl: this.data.tripAdvisorUrl,
       });
 
       this.showFacebook = !!this.data.facebookUrl;
       this.showInstagram = !!this.data.instagramUrl;
-      this.showVk = !!this.data.vkUrl;
       this.showTripAdvisor = !!this.data.tripAdvisorUrl;
     }
   }
@@ -103,7 +99,6 @@ export class RestaurantFormDialog {
       instagramUrl: this.showInstagram
         ? this.restaurantForm.get('instagramUrl')?.value
         : '',
-      vkUrl: this.showVk ? this.restaurantForm.get('vkUrl')?.value : '',
       tripAdvisorUrl: this.showTripAdvisor
         ? this.restaurantForm.get('tripAdvisorUrl')?.value
         : '',

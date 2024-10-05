@@ -9,7 +9,6 @@ const RestaurantSchema = new Schema({
   wifiName: String,
   wifiPassword: String,
   instagramUrl: String,
-  vkUrl: String,
   facebookUrl: String,
   tripAdvisorUrl: String,
 });
@@ -25,7 +24,6 @@ export function mapToRestaurantModel(restaurant: Restaurant) {
     wifiName: restaurant.wifiName,
     wifiPassword: restaurant.wifiPassword,
     instagramUrl: restaurant.instagramUrl,
-    vkUrl: restaurant.vkUrl,
     facebookUrl: restaurant.facebookUrl,
     tripAdvisorUrl: restaurant.tripAdvisorUrl,
   };
@@ -41,7 +39,6 @@ export function mapToRestaurant(document: any): Restaurant {
     wifiName: document.wifiName,
     wifiPassword: document.wifiPassword,
     instagramUrl: document.instagramUrl,
-    vkUrl: document.vkUrl,
     facebookUrl: document.facebookUrl,
     tripAdvisorUrl: document.tripAdvisorUrl,
   };

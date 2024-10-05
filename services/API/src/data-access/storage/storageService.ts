@@ -42,14 +42,8 @@ export class StorageService {
     return url;
   }
 
-  async getFileFromPublicBucket(key: string) {
-    const command = new GetObjectCommand({
-      Bucket: mealistPublicBucket,
-      Key: key,
-    });
-
-    const url = await getSignedUrl(client, command, { expiresIn: 3600 });
-    return url;
+  getFileFromPublicBucket(key: string) {
+    return `${s3config.endpoint}/${mealistPublicBucket}/${key}`;
   }
 
   async copyFileToPublicBucket(sourceKey: string, destinationKey: string) {

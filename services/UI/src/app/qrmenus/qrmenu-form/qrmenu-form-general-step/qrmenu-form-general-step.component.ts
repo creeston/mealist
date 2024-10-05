@@ -130,7 +130,6 @@ export class QrMenuFormGeneralStepComponent implements OnInit {
     if (
       restaurant.facebookUrl ||
       restaurant.instagramUrl ||
-      restaurant.vkUrl ||
       restaurant.tripAdvisorUrl
     ) {
       this.restaurantSections.push({

@@ -2,7 +2,6 @@ import { components } from '../api';
 import { QrMenuService } from '../../services/qrMenuService';
 import { QrMenusRepository } from '../../data-access/repositories/qrMenusRepository';
 import { StorageService } from '../../data-access/storage/storageService';
-import { logInfo } from '../../utils/logging/logger';
 import { menusService, menuToResponseModel } from './menus';
 import { CreateQrMenuCommand, CreateQrMenuItemCommand, QrMenu, UpdateQrMenuCommand } from '../../domain/models/qrmenu';
 import { Router } from 'express';
@@ -23,17 +22,6 @@ export const qrMenuService = new QrMenuService(qrMenusRepository, storageService
 export const router = Router();
 
 router.get('/', async (req, res) => {
-  const urlSuffix = req.query.urlSuffix as string;
-  logInfo(`GET /qrmenus urlSuffix: ${urlSuffix}`);
-  if (urlSuffix) {
-    const qrMenu = await qrMenuService.getQrMenuByUrlSuffix(urlSuffix);
-    if (!qrMenu) {
-      res.status(404).send();
-      return;
-    }
-    res.status(200).json([await mapDomainToApiModel(qrMenu)]);
-    return;
-  }
   const qrMenus = await qrMenuService.listQrMenus();
   const qrMenusResponse = await Promise.all(qrMenus.map(mapDomainToApiModel));
   res.status(200).json(qrMenusResponse);

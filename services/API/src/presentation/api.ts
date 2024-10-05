@@ -47,6 +47,10 @@ export interface paths {
     /** Delete a qr menu */
     delete: operations["deleteQrMenu"];
   };
+  "/qr/{urlSuffix}": {
+    /** Get a qr menu by URL suffix */
+    get: operations["getQrMenuBySuffix"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -62,7 +66,17 @@ export interface components {
       wifiName?: string;
       wifiPassword?: string;
       instagramUrl?: string;
-      vkUrl?: string;
+      facebookUrl?: string;
+      tripAdvisorUrl?: string;
+    };
+    ReadonlyRestaurant: {
+      name?: string;
+      address?: string;
+      city?: string;
+      description?: string;
+      wifiName?: string;
+      wifiPassword?: string;
+      instagramUrl?: string;
       facebookUrl?: string;
       tripAdvisorUrl?: string;
     };
@@ -103,9 +117,9 @@ export interface components {
     Code: {
       menuId: number;
     };
-    ReadOnlyQrMenu: {
+    ReadonlyQrMenu: {
       title?: string;
-      restaurant: components["schemas"]["Restaurant"];
+      restaurant: components["schemas"]["ReadonlyRestaurant"];
       sectionsToShow: string[];
       style: components["schemas"]["QrMenuStyle"];
       loadingPlaceholderUrl: string;
@@ -414,6 +428,22 @@ export interface operations {
       /** @description No content */
       204: {
         content: never;
+      };
+    };
+  };
+  /** Get a qr menu by URL suffix */
+  getQrMenuBySuffix: {
+    parameters: {
+      path: {
+        urlSuffix: string;
+      };
+    };
+    responses: {
+      /** @description A qr menu */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ReadonlyQrMenu"];
+        };
       };
     };
   };

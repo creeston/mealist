@@ -105,25 +105,6 @@
 
       <button
         mat-button
-        (click)="showVk = true"
-        [matTooltip]="'rest.vk.add' | translate"
-        *ngIf="!showVk"
-      >
-        <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
-        <mat-icon class="icon-in-corner">add</mat-icon>
-      </button>
-      <button
-        mat-button
-        (click)="showVk = false"
-        [matTooltip]="'rest.vk.remove' | translate"
-        *ngIf="showVk"
-      >
-        <span class="iconify" data-icon="mdi-vk" data-inline="false"></span>
-        <mat-icon class="icon-in-corner">remove</mat-icon>
-      </button>
-
-      <button
-        mat-button
         (click)="showTripAdvisor = true"
         [matTooltip]="'rest.ta.add' | translate"
         *ngIf="!showTripAdvisor"
@@ -166,16 +147,6 @@
         <span
           class="iconify"
           data-icon="mdi-instagram"
-          data-inline="false"
-          matSuffix
-        ></span>
-      </mat-form-field>
-      <mat-form-field class="field" *ngIf="showVk">
-        <mat-label [translate]="'rest.vk.name'"></mat-label>
-        <input formControlName="vkUrl" matInput />
-        <span
-          class="iconify"
-          data-icon="mdi-vk"
           data-inline="false"
           matSuffix
         ></span>

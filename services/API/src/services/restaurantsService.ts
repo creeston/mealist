@@ -47,7 +47,6 @@ export class RestaurantsService {
       wifiName: restaurant.wifiName,
       wifiPassword: restaurant.wifiPassword,
       instagramUrl: restaurant.instagramUrl,
-      vkUrl: restaurant.vkUrl,
       facebookUrl: restaurant.facebookUrl,
       tripAdvisorUrl: restaurant.tripAdvisorUrl,
     };
@@ -63,7 +62,6 @@ export class RestaurantsService {
       wifiName: restaurant.wifiName,
       wifiPassword: restaurant.wifiPassword,
       instagramUrl: restaurant.instagramUrl,
-      vkUrl: restaurant.vkUrl,
       facebookUrl: restaurant.facebookUrl,
       tripAdvisorUrl: restaurant.tripAdvisorUrl,
     };

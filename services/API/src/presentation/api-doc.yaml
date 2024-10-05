@@ -82,6 +82,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Menu"
+
   /restaurants:
     get:
       operationId: getAllRestaurants
@@ -287,6 +288,25 @@ paths:
       responses:
         "204":
           description: No content
+  /qr/{urlSuffix}:
+    get:
+      operationId: getQrMenuBySuffix
+      tags:
+        - qr
+      summary: Get a qr menu by URL suffix
+      parameters:
+        - name: urlSuffix
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A qr menu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadonlyQrMenu"
 components:
   schemas:
     Restaurant:
@@ -308,8 +328,6 @@ components:
           type: string
         instagramUrl:
           type: string
-        vkUrl:
-          type: string
         facebookUrl:
           type: string
         tripAdvisorUrl:
@@ -318,6 +336,27 @@ components:
         - name
         - address
         - city
+    ReadonlyRestaurant:
+      type: "object"
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        description:
+          type: string
+        wifiName:
+          type: string
+        wifiPassword:
+          type: string
+        instagramUrl:
+          type: string
+        facebookUrl:
+          type: string
+        tripAdvisorUrl:
+          type: string
     CreateMenuRequest:
       type: "object"
       properties:
@@ -414,13 +453,13 @@ components:
           type: integer
       required:
         - menuId
-    ReadOnlyQrMenu:
+    ReadonlyQrMenu:
       type: "object"
       properties:
         title:
           type: string
         restaurant:
-          $ref: "#/components/schemas/Restaurant"
+          $ref: "#/components/schemas/ReadonlyRestaurant"
         sectionsToShow:
           type: array
           items:
