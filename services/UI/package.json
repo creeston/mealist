@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:qrmenu-ui": "node dist/qrmenu-ui/server/server.mjs",
-    "generate-client": "openapi-generator-cli generate -i http://localhost:3000/api-docs/swagger.json -g typescript-angular -o ./projects/management-ui/src/app/api"
+    "generate-client": "openapi-generator-cli generate -i http://localhost:3000/api-docs/swagger.json -g typescript-angular -o ./projects/management-ui/src/app/api",
+    "generate-client-lib": "openapi-generator-cli generate -i http://localhost:3000/api-docs/swagger.json -g typescript-angular -o ./projects/qrmenu-lib/src/services/api"
   },
   "private": true,
   "dependencies": {
@@ -22,12 +23,15 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@ng-icons/core": "^29.5.1",
+    "@ng-icons/heroicons": "^29.5.1",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "colorthief": "^2.4.0",
     "leaflet": "^1.9.4",
     "material-community-components": "^13.0.0",
     "ng-ocr-editor": "^0.0.6",
+    "ng-packagr": "^18.2.1",
     "ngx-kjua": "^18.1.3",
     "ngx-markdown": "^18.0.0",
     "rxjs": "~7.8.0",

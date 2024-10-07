@@ -11,7 +11,6 @@ import {
   EditMealsComponent,
   SearchFilterPipe,
 } from './edit-meals/edit-meals.component';
-import { QrMenuComponent } from './qrmenu/qrmenu.component';
 import { NgxKjuaComponent } from 'ngx-kjua';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,11 +18,18 @@ import { QrmenuCardComponent } from './qrmenu-card/qrmenu-card.component';
 import { QrmenuPreviewComponent } from './qrmenu-preview/qrmenu-preview.component';
 import { MccColorPickerModule } from 'material-community-components/color-picker';
 import { ColorInputComponent } from '../components/color-input/color-input.component';
-import { GradientBorderComponent } from '../components/gradient-border/gradient-border.component';
 import { QrMenuFormGeneralStepComponent } from './qrmenu-form/qrmenu-form-general-step/qrmenu-form-general-step.component';
 import { QrMenuFormMenusStepComponent } from './qrmenu-form/qrmenu-form-menus-step/qrmenu-form-menus-step.component';
 import { QrMenuFormStyleStepComponent } from './qrmenu-form/qrmenu-form-style-step/qrmenu-form-style-step.component';
 import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form/qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
+import { GradientBorderComponent } from '../../../../qrmenu-lib/src/lib/gradient-border/gradient-border.component';
+import { QrMenuComponent } from '../../../../qrmenu-lib/src/lib/qrmenu/qrmenu.component';
+import { NgIconsModule } from '@ng-icons/core';
+import {
+  heroArrowLeft,
+  heroEye,
+  heroClipboard,
+} from '@ng-icons/heroicons/outline';
 
 @NgModule({
   declarations: [
@@ -35,7 +41,6 @@ import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form/qrmenu-form
     QrMenuFormMenusStepComponent,
     QrMenuFormStyleStepComponent,
     QrMenuFormLoadingPreviewStepComponent,
-    QrMenuComponent,
     SearchFilterPipe,
     QrmenuPreviewComponent,
   ],
@@ -43,6 +48,7 @@ import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form/qrmenu-form
     NgxKjuaComponent,
     ColorInputComponent,
     GradientBorderComponent,
+    QrMenuComponent,
     CommonModule,
     MatStepperModule,
     MatFormFieldModule,
@@ -50,6 +56,7 @@ import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form/qrmenu-form
     ReactiveFormsModule,
     FormsModule,
     MccColorPickerModule,
+    NgIconsModule.withIcons({ heroArrowLeft, heroEye, heroClipboard }),
     TranslateModule.forRoot({
       defaultLanguage: 'ru',
       loader: {

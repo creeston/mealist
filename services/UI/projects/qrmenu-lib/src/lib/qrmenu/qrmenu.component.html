@@ -26,7 +26,6 @@
   <div class="back-button-container" *ngIf="selectedMenu">
     <button
       type="button"
-      mat-icon-button
       [style.backgroundColor]="qrMenu!.style.actionsColor"
       [style.color]="qrMenu!.style.fontColor"
       (click)="container.scrollTop = 0; back()"
@@ -35,7 +34,7 @@
         'back-button-preview': previewMode
       }"
     >
-      <mat-icon class="back-icon">west</mat-icon>
+      <ng-icon name="heroArrowLeft"></ng-icon>
     </button>
   </div>
   <div
@@ -64,8 +63,8 @@
         <span class="iconify" data-icon="mdi-wifi"></span>
         <span>WIFI: {{ qrMenu.restaurant.wifiName }}</span>
         <span>PASWORD: {{ qrMenu.restaurant.wifiPassword }}</span>
-        <button mat-icon-button class="small-icon-button">
-          <mat-icon>content_copy</mat-icon>
+        <button class="small-icon-button">
+          <ng-icon name="heroClipboard"></ng-icon>
         </button>
       </div>
       <h1
@@ -157,9 +156,7 @@
             [style.backgroundColor]="qrMenu.style.actionsColor"
           >
             <p [style.color]="qrMenu.style.fontColor">{{ menu.title }}</p>
-            <mat-icon [style.color]="qrMenu.style.fontColor"
-              >visibility</mat-icon
-            >
+            <ng-icon name="heroEye"></ng-icon>
           </div>
         </div>
       </div>

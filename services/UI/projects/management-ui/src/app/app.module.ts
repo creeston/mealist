@@ -36,7 +36,6 @@ import localeRu from '@angular/common/locales/ru';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { SidenavService } from './services/sidenav.service';
-import { DrawService } from './services/draw.service';
 import { ScreenService } from './services/screen.service';
 import {
   TranslateLoader,
@@ -134,7 +133,6 @@ export function apiConfigFactory(): Configuration {
     MenuService,
     QrMenuService,
     SidenavService,
-    DrawService,
     ScreenService,
     FeedbackService,
     TranslateHelperClass,

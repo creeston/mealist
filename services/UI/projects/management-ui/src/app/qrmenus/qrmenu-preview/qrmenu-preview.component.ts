@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ReadonlyQrMenu } from '../../api';
+import { QrMenuSpecification } from '../../../../../qrmenu-lib/src/models/qrmenu-specification';
 
 @Component({
   selector: 'app-qrmenu-preview',
@@ -7,7 +7,7 @@ import { ReadonlyQrMenu } from '../../api';
   styleUrls: ['./qrmenu-preview.component.scss'],
 })
 export class QrmenuPreviewComponent {
-  @Input({ required: true }) qrmenu!: ReadonlyQrMenu;
+  @Input({ required: true }) qrmenu!: QrMenuSpecification;
   @Input({ required: true }) previewImageParam!: string;
   @Input({ required: true }) menuLoading!: boolean;
   @Output() public colorDetected = new EventEmitter<any>();

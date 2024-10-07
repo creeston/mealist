@@ -2,8 +2,9 @@
   "name": "qrmenu-lib",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^17.3.0",
-    "@angular/core": "^17.3.0"
+    "@angular/common": "^18.2.0",
+    "@angular/core": "^18.2.0",
+    "@ng-icons/heroicons": "^29.5.1"
   },
   "dependencies": {
     "tslib": "^2.3.0"

@@ -6,7 +6,6 @@ import { RegisterComponent } from './components/register/register.component';
 import { MenuOcrComponent } from './menus/menu-ocr/menu-ocr.component';
 import { QrMenusComponent } from './qrmenus/qrmenus/qrmenus.component';
 import { QrMenuFormComponent } from './qrmenus/qrmenu-form/qrmenu-form.component';
-import { QrMenuComponent } from './qrmenus/qrmenu/qrmenu.component';
 import { MenusComponent } from './menus/menus/menus.component';
 
 const routes: Routes = [
@@ -19,7 +18,6 @@ const routes: Routes = [
   { path: 'qrmenus', component: QrMenusComponent },
   { path: 'qrmenu-create', component: QrMenuFormComponent },
   { path: 'qrmenus/:menuId', component: QrMenuFormComponent },
-  { path: 'qr/:suffix', component: QrMenuComponent },
 ];
 
 @NgModule({

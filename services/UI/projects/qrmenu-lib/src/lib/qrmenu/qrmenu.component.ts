@@ -1,25 +1,25 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import {
-  Directive,
-  Output,
-  EventEmitter,
-  ElementRef,
-  HostListener,
-} from '@angular/core';
-import { QrMenuService } from '../../services/qrmenu.service';
-import { Globals } from '../../globals';
+import { QrMenuSpecification } from '../../models/qrmenu-specification';
+import { MenuSpecification } from '../../models/menu-specification';
 import { DrawService } from '../../services/draw.service';
-import { ReadonlyQrMenu, ReadonlyQrMenuItem } from '../../api';
+import { GradientBorderComponent } from '../gradient-border/gradient-border.component';
+import { CommonModule } from '@angular/common';
+import { NgIconsModule } from '@ng-icons/core';
 
 @Component({
   selector: 'app-qr-menu',
   templateUrl: './qrmenu.component.html',
   styleUrls: ['./qrmenu.component.scss'],
+  standalone: true,
+  imports: [GradientBorderComponent, CommonModule, NgIconsModule],
+  providers: [DrawService],
 })
 export class QrMenuComponent implements OnInit {
-  @Input()
-  qrMenuParam!: ReadonlyQrMenu;
+  @Input({ required: true })
+  qrMenuParam!: QrMenuSpecification;
+
+  @Input({ required: true })
+  previewMode!: boolean;
 
   @Input()
   previewImageParam!: string;
@@ -28,43 +28,18 @@ export class QrMenuComponent implements OnInit {
   menuLoading!: boolean;
 
   urlSuffix: string | undefined;
-  qrMenu: ReadonlyQrMenu | undefined = undefined;
-  selectedMenu: ReadonlyQrMenuItem | undefined = undefined;
+  qrMenu: QrMenuSpecification | undefined = undefined;
+  selectedMenu: MenuSpecification | undefined = undefined;
   imagesData: any[] = [];
-  previewMode = true;
-  loading = true;
+  loading = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    public globals: Globals,
-    private service: QrMenuService,
-    private draw: DrawService
-  ) {}
+  constructor(private draw: DrawService) {}
 
   ngOnInit(): void {
-    if (this.qrMenuParam) {
-      this.previewMode = true;
-      this.qrMenu = this.qrMenuParam;
-      this.loading = false;
-    } else {
-      this.previewMode = false;
-      this.getMenu();
-    }
+    this.qrMenu = this.qrMenuParam;
   }
 
-  getMenu() {
-    this.route.params.subscribe((p: any) => {
-      const suffix = p.suffix;
-      this.urlSuffix = suffix;
-      this.service.getMenuBySuffix(suffix).then((response: ReadonlyQrMenu) => {
-        this.qrMenu = response;
-        this.setMenuColors(response);
-        this.loading = false;
-      });
-    });
-  }
-
-  setMenuColors(qrMenu: ReadonlyQrMenu) {
+  setMenuColors(qrMenu: QrMenuSpecification) {
     if (!qrMenu.style.headerColor) {
       qrMenu.style.headerColor = '#3f51b5';
     }
@@ -79,7 +54,7 @@ export class QrMenuComponent implements OnInit {
     }
   }
 
-  openMenu(menuItem: ReadonlyQrMenuItem) {
+  openMenu(menuItem: MenuSpecification) {
     this.imagesData = [];
     for (let pageId = 0; pageId < menuItem.pages!.length; pageId++) {
       this.imagesData.push({ width: 0, height: 0 });
@@ -111,8 +86,6 @@ export class QrMenuComponent implements OnInit {
 
     context.lineWidth = 3;
     let menuindex = this.qrMenu.menus!.indexOf(this.selectedMenu);
-    // TODO Consider using separate stop list
-    // let markup = this.menu.stopMarkup[menuindex][i];
     let markup = this.qrMenu.menus![menuindex].pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
@@ -157,8 +130,6 @@ export class QrMenuComponent implements OnInit {
 
     context.lineWidth = 3;
     let menuindex = this.qrMenu.menus!.indexOf(this.selectedMenu);
-    // TODO Consider using separate stop list
-    // let markup = this.menu.stopMarkup[menuindex][i];
     let markup = this.qrMenu.menus![menuindex].pages![i].markup!;
     context.strokeStyle = 'red';
     markup.forEach((line) => {
@@ -186,23 +157,5 @@ export class QrMenuComponent implements OnInit {
 
   back() {
     this.selectedMenu = undefined;
-  }
-}
-
-@Directive({
-  selector: 'img[loaded]',
-})
-export class LoadedDirective {
-  @Output() loaded = new EventEmitter();
-
-  @HostListener('load')
-  onLoad() {
-    this.loaded.emit();
-  }
-
-  constructor(private elRef: ElementRef<HTMLImageElement>) {
-    if (this.elRef.nativeElement.complete) {
-      this.loaded.emit();
-    }
   }
 }

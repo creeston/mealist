@@ -10,16 +10,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QrMenuService } from '../../services/qrmenu.service';
 import { environment } from '../../../environments/environment';
 import { Globals } from '../../globals';
-import {
-  CreateQrMenuItem,
-  QrMenu,
-  QrMenuItem,
-  ReadonlyQrMenu,
-} from '../../api/model/models';
+import { CreateQrMenuItem, QrMenu, QrMenuItem } from '../../api/model/models';
 import { QrMenuFormGeneralStepComponent } from './qrmenu-form-general-step/qrmenu-form-general-step.component';
 import { QrMenuFormMenusStepComponent } from './qrmenu-form-menus-step/qrmenu-form-menus-step.component';
 import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
 import { QrMenuFormStyleStepComponent } from './qrmenu-form-style-step/qrmenu-form-style-step.component';
+import { QrMenuSpecification } from '../../../../../qrmenu-lib/src/models/qrmenu-specification';
 
 @Component({
   selector: 'qrmenu-form-component',
@@ -32,7 +28,7 @@ export class QrMenuFormComponent implements OnInit, AfterViewInit {
   public loading: boolean = true;
   public previewImage: string = '';
   public currentStep: number = 0;
-  public previewQrMenu: ReadonlyQrMenu = {
+  public previewQrMenu: QrMenuSpecification = {
     style: {
       headerColor: '#989089',
       actionsColor: '#A0B454b0',
