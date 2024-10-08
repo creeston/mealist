@@ -1,0 +1,74 @@
+<div class="menu-metadata" [style.backgroundColor]="style.headerColor">
+  <div
+    *ngIf="
+      restaurant &&
+      sectionsToShow.includes('wifi') &&
+      restaurant.wifiName &&
+      restaurant.wifiPassword
+    "
+    class="wifi-data"
+  >
+    <span class="iconify" data-icon="mdi-wifi"></span>
+    <span>WIFI: {{ restaurant.wifiName }}</span>
+    <span>PASWORD: {{ restaurant.wifiPassword }}</span>
+    <button class="small-icon-button">
+      <ng-icon name="heroClipboard"></ng-icon>
+    </button>
+  </div>
+  <h1
+    *ngIf="restaurant && sectionsToShow.includes('name')"
+    class="rest-name"
+    [style.color]="style.fontColor"
+  >
+    {{ restaurant.name }}
+  </h1>
+  <div
+    class="rest-social flex-container"
+    *ngIf="restaurant && sectionsToShow.includes('social')"
+  >
+    <a
+      href="{{ restaurant.facebookUrl }}"
+      target="_blank"
+      *ngIf="restaurant.facebookUrl"
+      [style.color]="style.fontColor"
+    >
+      <span class="iconify" data-icon="mdi-facebook" data-inline="false"></span>
+    </a>
+    <a
+      href="{{ restaurant.instagramUrl }}"
+      target="_blank"
+      *ngIf="restaurant.instagramUrl"
+      [style.color]="style.fontColor"
+    >
+      <span
+        class="iconify"
+        data-icon="mdi-instagram"
+        data-inline="false"
+      ></span>
+    </a>
+    <a
+      href="{{ restaurant.tripAdvisorUrl }}"
+      target="_blank"
+      *ngIf="restaurant.tripAdvisorUrl"
+      [style.color]="style.fontColor"
+    >
+      <span
+        class="iconify"
+        data-icon="fa:tripadvisor"
+        data-inline="false"
+      ></span>
+    </a>
+  </div>
+  <div class="menu-restaurant">
+    <p *ngIf="title" class="menu-name" [style.color]="style.fontColor">
+      {{ title }}
+    </p>
+    <p
+      *ngIf="restaurant && sectionsToShow.includes('address')"
+      class="rest-address"
+      [style.color]="style.fontColor"
+    >
+      {{ restaurant.address }}
+    </p>
+  </div>
+</div>

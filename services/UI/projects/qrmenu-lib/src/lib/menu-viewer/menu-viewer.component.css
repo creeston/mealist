@@ -1,0 +1,54 @@
+.back-button {
+  background-color: #3f51b5c0;
+  color: white;
+  display: block;
+  z-index: 20;
+  position: relative;
+  top: 10px;
+  left: 20px;
+}
+
+.back-button-container {
+  position: fixed;
+  z-index: 20;
+}
+
+.back-button-preview {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  background-color: #3f51b5c0;
+  color: white;
+  /* display: block; */
+  width: 50px;
+  z-index: 20;
+}
+
+.back-icon {
+  font-weight: bold;
+}
+
+.menu-canvas {
+  position: absolute;
+}
+
+.markup-canvas {
+  z-index: 4;
+  position: absolute;
+  visibility: hidden;
+}
+
+.menu-image-original {
+  position: absolute;
+  visibility: hidden;
+}
+
+.menu-image-container {
+  position: relative;
+}
+
+.menu-image {
+  width: 100%;
+  min-width: 200px;
+  z-index: 6;
+}

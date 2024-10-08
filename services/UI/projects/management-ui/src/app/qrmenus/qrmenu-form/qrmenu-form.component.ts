@@ -39,6 +39,7 @@ export class QrMenuFormComponent implements OnInit, AfterViewInit {
     sectionsToShow: [],
     menus: [],
     loadingPlaceholderUrl: '',
+    title: '',
   };
   public existingQrMenu: QrMenu | null = null;
   public menuLoading: boolean = false;

@@ -1,185 +1,35 @@
-<div #container class="container">
+<div #container>
   <div
-    *ngIf="!qrMenu || menuLoading"
-    class="loading-image"
-    [class.loadingplaceholder]="!previewMode"
-    [class.previewloadingplaceholder]="previewMode"
-    [class.menuloadingpreview]="menuLoading"
-    [class.menuloading]="!menuLoading"
-  >
-    <app-gradient-border *ngIf="previewImageParam">
-      <img #image [src]="previewImageParam" class="menu-thumbnail" />
-    </app-gradient-border>
-
-    <app-gradient-border *ngIf="!previewImageParam">
-      <img
-        #image
-        [src]="
-          'https://qrmenuapistorage.blob.core.windows.net/preview/' +
-          urlSuffix +
-          '.jpg'
-        "
-        class="menu-thumbnail"
-      />
-    </app-gradient-border>
-  </div>
-  <div class="back-button-container" *ngIf="selectedMenu">
-    <button
-      type="button"
-      [style.backgroundColor]="qrMenu!.style.actionsColor"
-      [style.color]="qrMenu!.style.fontColor"
-      (click)="container.scrollTop = 0; back()"
-      [ngClass]="{
-        'back-button': !previewMode,
-        'back-button-preview': previewMode
-      }"
-    >
-      <ng-icon name="heroArrowLeft"></ng-icon>
-    </button>
-  </div>
-  <div
-    *ngIf="qrMenu && !menuLoading"
+    *ngIf="!selectedMenu"
     class="menu"
-    [ngStyle]="{
-      'box-shadow':
-        '0px 0px 17px 0px ' + qrMenu.style.headerColor + ', 0 0px 0px 0px'
-    }"
     [style.backgroundColor]="qrMenu.style.backgroundColor"
   >
-    <div
-      class="menu-metadata"
-      *ngIf="!selectedMenu && qrMenu.sectionsToShow"
-      [style.backgroundColor]="qrMenu.style.headerColor"
-    >
-      <div
-        *ngIf="
-          qrMenu.restaurant &&
-          qrMenu.sectionsToShow.includes('wifi') &&
-          qrMenu.restaurant.wifiName &&
-          qrMenu.restaurant.wifiPassword
-        "
-        class="wifi-data"
-      >
-        <span class="iconify" data-icon="mdi-wifi"></span>
-        <span>WIFI: {{ qrMenu.restaurant.wifiName }}</span>
-        <span>PASWORD: {{ qrMenu.restaurant.wifiPassword }}</span>
-        <button class="small-icon-button">
-          <ng-icon name="heroClipboard"></ng-icon>
-        </button>
-      </div>
-      <h1
-        *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('name')"
-        class="rest-name"
-        [style.color]="qrMenu.style.fontColor"
-      >
-        {{ qrMenu.restaurant.name }}
-      </h1>
-      <div
-        class="rest-social flex-container"
-        *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('social')"
-      >
-        <a
-          href="{{ qrMenu.restaurant.facebookUrl }}"
-          target="_blank"
-          *ngIf="qrMenu.restaurant.facebookUrl"
-          [style.color]="qrMenu.style.fontColor"
-        >
-          <span
-            class="iconify"
-            data-icon="mdi-facebook"
-            data-inline="false"
-          ></span>
-        </a>
-        <a
-          href="{{ qrMenu.restaurant.instagramUrl }}"
-          target="_blank"
-          *ngIf="qrMenu.restaurant.instagramUrl"
-          [style.color]="qrMenu.style.fontColor"
-        >
-          <span
-            class="iconify"
-            data-icon="mdi-instagram"
-            data-inline="false"
-          ></span>
-        </a>
-        <a
-          href="{{ qrMenu.restaurant.tripAdvisorUrl }}"
-          target="_blank"
-          *ngIf="qrMenu.restaurant.tripAdvisorUrl"
-          [style.color]="qrMenu.style.fontColor"
-        >
-          <span
-            class="iconify"
-            data-icon="fa:tripadvisor"
-            data-inline="false"
-          ></span>
-        </a>
-      </div>
-      <div class="menu-restaurant">
-        <p
-          *ngIf="qrMenu.title"
-          class="menu-name"
-          [style.color]="qrMenu.style.fontColor"
-        >
-          {{ qrMenu.title }}
-        </p>
-        <p
-          *ngIf="qrMenu.restaurant && qrMenu.sectionsToShow.includes('address')"
-          class="rest-address"
-          [style.color]="qrMenu.style.fontColor"
-        >
-          {{ qrMenu.restaurant.address }}
-        </p>
-      </div>
-    </div>
+    <lib-menu-header
+      [restaurant]="qrMenu.restaurant"
+      [sectionsToShow]="qrMenu.sectionsToShow"
+      [style]="qrMenu.style"
+      [title]="qrMenu.title"
+    ></lib-menu-header>
+
     <div
       class="menus-container flex-container"
       *ngIf="!selectedMenu && qrMenu.restaurant"
     >
       <div *ngFor="let menu of qrMenu.menus" class="menu-item">
-        <div
-          class="menu-image-container"
-          (click)="container.scrollTop = 0; openMenu(menu)"
+        <lib-qrmenu-item
+          [menu]="menu"
+          [style]="qrMenu.style"
+          (onMenuSelected)="menuSelected($event)"
         >
-          <img
-            [src]="menu.pages![0]!.imageUrl"
-            class="menu-thumbnail"
-            *ngIf="menu && menu.pages && menu.pages.length > 0"
-          />
-          <img
-            src="assets/placeholder.png"
-            class="menu-thumbnail"
-            *ngIf="!menu || !menu.pages || menu.pages.length === 0"
-          />
-          <div
-            class="menu-item-name"
-            [style.backgroundColor]="qrMenu.style.actionsColor"
-          >
-            <p [style.color]="qrMenu.style.fontColor">{{ menu.title }}</p>
-            <ng-icon name="heroEye"></ng-icon>
-          </div>
-        </div>
+        </lib-qrmenu-item>
       </div>
     </div>
-    <div *ngIf="selectedMenu && selectedMenu.pages">
-      <div *ngFor="let page of selectedMenu.pages; let i = index" #menuContent>
-        <!-- <pinch-zoom [wheel]="false">  -->
-        <img
-          crossorigin="anonymous"
-          class="menu-image"
-          [src]="page.imageUrl"
-          [id]="'image_' + i"
-        />
-        <!-- </pinch-zoom> -->
-        <img
-          crossorigin="anonymous"
-          class="menu-image-original"
-          [src]="page.imageUrl"
-          [id]="'image_original_' + i"
-          (loaded)="drawCanvas(i)"
-        />
-        <canvas [id]="'canvas_' + i" class="markup-canvas"> </canvas>
-      </div>
-    </div>
+  </div>
+  <div *ngIf="selectedMenu">
+    <lib-menu-viewer
+      [menu]="selectedMenu"
+      [style]="qrMenu.style"
+      (onBackClicked)="backClicked()"
+    ></lib-menu-viewer>
   </div>
 </div>

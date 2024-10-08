@@ -65,8 +65,6 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { MenusModule } from './menus/menus.module';
 import { GeocodingService } from './services/geocoding.service';
 import { QrMenusModule } from './qrmenus/qrmenus.module';
-import { ColorInputComponent } from './components/color-input/color-input.component';
-import { MccColorPickerModule } from 'material-community-components/color-picker';
 
 registerLocaleData(localeBe);
 registerLocaleData(localeRu);

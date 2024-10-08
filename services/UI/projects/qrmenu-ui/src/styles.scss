@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+.flex-container {
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+body {
+  margin: 0px;
+}

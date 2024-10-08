@@ -1,0 +1,79 @@
+.rest-name {
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-top: 10px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.rest-address {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.rest-social {
+  width: 60%;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+
+.wifi-data {
+  color: white;
+  text-align: left;
+  margin-left: 5px;
+  font-size: 10px;
+  cursor: default;
+}
+
+.wifi-data > * .mat-icon {
+  height: 10px !important;
+  width: 10px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.wifi-data > .mat-icon-button {
+  // height: 10px !important;
+  // width: 10px !important;
+  // font-size: 10px !important;
+  // line-height: 10px !important;
+
+  margin-left: 5px;
+}
+
+.iconify {
+  width: 15px;
+  height: 15px;
+}
+
+.wifi-data > .iconify {
+  width: 10px;
+  height: 10px;
+}
+
+.wifi-data > span {
+  margin-left: 2px;
+}
+
+.menu-name {
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.menu-metadata {
+  color: white;
+  padding: 0px 0px 60px 0px;
+}
+
+.menu-restaurant {
+  text-align: left;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.menu-restaurant > p {
+  margin: 0px;
+}

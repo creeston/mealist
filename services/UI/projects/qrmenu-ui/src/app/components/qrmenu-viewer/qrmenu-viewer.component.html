@@ -1,0 +1,12 @@
+<div
+  *ngIf="loadingPlaceholderUrl !== null && qrMenu === null"
+  class="loading-laceholder"
+>
+  <app-gradient-border>
+    <img #image [src]="loadingPlaceholderUrl" class="menu-thumbnail" />
+  </app-gradient-border>
+</div>
+
+<div *ngIf="qrMenu">
+  <app-qr-menu [qrMenu]="qrMenu" [previewMode]="false"></app-qr-menu>
+</div>

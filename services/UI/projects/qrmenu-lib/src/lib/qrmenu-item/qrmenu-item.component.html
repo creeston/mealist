@@ -1,0 +1,16 @@
+<div class="menu-image-container" (click)="onMenuSelected.emit(menu)">
+  <img
+    [src]="menu.pages![0]!.imageUrl"
+    class="menu-thumbnail"
+    *ngIf="menu && menu.pages && menu.pages.length > 0"
+  />
+  <img
+    src="assets/placeholder.png"
+    class="menu-thumbnail"
+    *ngIf="!menu || !menu.pages || menu.pages.length === 0"
+  />
+  <div class="menu-item-name" [style.backgroundColor]="style.actionsColor">
+    <p [style.color]="style.fontColor">{{ menu.title }}</p>
+    <ng-icon name="heroEye"></ng-icon>
+  </div>
+</div>
