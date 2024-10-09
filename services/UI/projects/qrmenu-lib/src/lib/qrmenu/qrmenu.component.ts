@@ -3,7 +3,6 @@ import { QrMenuSpecification } from '../../models/qrmenu-specification';
 import { MenuSpecification } from '../../models/menu-specification';
 import { GradientBorderComponent } from '../gradient-border/gradient-border.component';
 import { CommonModule } from '@angular/common';
-import { NgIconsModule } from '@ng-icons/core';
 import { QrMenuHeader } from '../qrmenu-header/qrmenu-header.component';
 import { QrmenuItemComponent } from '../qrmenu-item/qrmenu-item.component';
 import { MenuViewerComponent } from '../menu-viewer/menu-viewer.component';
@@ -16,7 +15,6 @@ import { MenuViewerComponent } from '../menu-viewer/menu-viewer.component';
   imports: [
     GradientBorderComponent,
     CommonModule,
-    NgIconsModule,
     QrMenuHeader,
     QrmenuItemComponent,
     MenuViewerComponent,

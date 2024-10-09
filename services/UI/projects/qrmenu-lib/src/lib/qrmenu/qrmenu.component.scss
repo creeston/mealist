@@ -1,9 +1,14 @@
+.container {
+  height: 100%;
+}
+
 .menu {
   width: 100%;
   margin: 0 auto;
   text-align: center;
   max-width: 800px;
-  min-height: 100vh;
+  min-height: 100%;
+  border: 1px solid #00000078;
 }
 
 .menu-item {

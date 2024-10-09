@@ -1,29 +1,33 @@
 <div class="back-button-container">
   <button
+    mat-icon-button
     type="button"
-    class="back-button"
     [style.backgroundColor]="style.actionsColor"
     [style.color]="style.fontColor"
+    [ngClass]="{
+      'back-button': !previewMode,
+      'back-button-preview': previewMode
+    }"
     (click)="onBackClicked.emit()"
   >
-    <ng-icon name="heroArrowLeft"></ng-icon>
+    <mat-icon class="back-icon">west</mat-icon>
   </button>
 </div>
 <div>
-  <div *ngFor="let page of menu.pages; let i = index" #menuContent>
+  <div *ngFor="let page of menu.pages; let i = index">
     <img
       crossorigin="anonymous"
       class="menu-image"
       [src]="page.imageUrl"
       [id]="'image_' + i"
     />
-    <img
+    <!-- <img
       crossorigin="anonymous"
       class="menu-image-original"
       [src]="page.imageUrl"
       [id]="'image_original_' + i"
       (loaded)="drawCanvas(i)"
-    />
-    <canvas [id]="'canvas_' + i" class="markup-canvas"> </canvas>
+    /> -->
+    <!-- <canvas [id]="'canvas_' + i" class="markup-canvas"> </canvas> -->
   </div>
 </div>

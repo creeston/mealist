@@ -2,14 +2,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MenuSpecification } from '../../models/menu-specification';
 import { CommonModule } from '@angular/common';
 import { QrMenuStyle } from '../../models/qrmenu-style';
-import { NgIconsModule } from '@ng-icons/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'lib-qrmenu-item',
   standalone: true,
-  imports: [CommonModule, NgIconsModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './qrmenu-item.component.html',
-  styleUrl: './qrmenu-item.component.css',
+  styleUrl: './qrmenu-item.component.scss',
 })
 export class QrmenuItemComponent {
   @Output()

@@ -1,4 +1,4 @@
-<div #container>
+<div #container class="container">
   <div
     *ngIf="!selectedMenu"
     class="menu"
@@ -30,6 +30,7 @@
       [menu]="selectedMenu"
       [style]="qrMenu.style"
       (onBackClicked)="backClicked()"
+      [previewMode]="previewMode"
     ></lib-menu-viewer>
   </div>
 </div>

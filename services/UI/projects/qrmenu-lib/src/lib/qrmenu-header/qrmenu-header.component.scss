@@ -4,6 +4,9 @@
   padding-top: 10px;
   font-size: 32px;
   font-weight: bold;
+
+  margin-top: 0px;
+  padding-top: 20px;
 }
 
 .rest-address {
@@ -23,38 +26,12 @@
   color: white;
   text-align: left;
   margin-left: 5px;
-  font-size: 10px;
   cursor: default;
-}
-
-.wifi-data > * .mat-icon {
-  height: 10px !important;
-  width: 10px !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
-}
-
-.wifi-data > .mat-icon-button {
-  // height: 10px !important;
-  // width: 10px !important;
-  // font-size: 10px !important;
-  // line-height: 10px !important;
-
-  margin-left: 5px;
-}
-
-.iconify {
-  width: 15px;
-  height: 15px;
-}
-
-.wifi-data > .iconify {
-  width: 10px;
-  height: 10px;
+  font-size: 15px;
 }
 
 .wifi-data > span {
-  margin-left: 2px;
+  margin-left: 5px;
 }
 
 .menu-name {
@@ -76,4 +53,11 @@
 
 .menu-restaurant > p {
   margin: 0px;
+}
+
+.copy-button {
+  border: 0px;
+  margin-left: 5px;
+  font-size: 10px;
+  line-height: 10px;
 }

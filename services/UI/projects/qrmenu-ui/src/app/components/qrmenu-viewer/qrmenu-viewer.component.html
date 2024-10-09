@@ -7,6 +7,8 @@
   </app-gradient-border>
 </div>
 
-<div *ngIf="qrMenu">
-  <app-qr-menu [qrMenu]="qrMenu" [previewMode]="false"></app-qr-menu>
-</div>
+<app-qr-menu
+  *ngIf="qrMenu"
+  [qrMenu]="qrMenu"
+  [previewMode]="false"
+></app-qr-menu>

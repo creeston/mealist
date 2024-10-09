@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgIconsModule } from '@ng-icons/core';
 import { MenuSpecification } from '../../models/menu-specification';
 import { QrMenuStyle } from '../../models/qrmenu-style';
 import { DrawService } from '../../services/draw.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'lib-menu-viewer',
   standalone: true,
-  imports: [CommonModule, NgIconsModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule],
   templateUrl: './menu-viewer.component.html',
   styleUrl: './menu-viewer.component.css',
   providers: [DrawService],
@@ -19,6 +20,9 @@ export class MenuViewerComponent {
 
   @Input({ required: true })
   style!: QrMenuStyle;
+
+  @Input({ required: true })
+  previewMode: boolean = false;
 
   @Output()
   onBackClicked: EventEmitter<void> = new EventEmitter();

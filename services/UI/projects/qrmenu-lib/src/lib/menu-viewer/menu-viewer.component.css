@@ -3,14 +3,9 @@
   color: white;
   display: block;
   z-index: 20;
-  position: relative;
   top: 10px;
   left: 20px;
-}
-
-.back-button-container {
   position: fixed;
-  z-index: 20;
 }
 
 .back-button-preview {
@@ -19,13 +14,8 @@
   top: 10px;
   background-color: #3f51b5c0;
   color: white;
-  /* display: block; */
   width: 50px;
   z-index: 20;
-}
-
-.back-icon {
-  font-weight: bold;
 }
 
 .menu-canvas {

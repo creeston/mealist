@@ -113,11 +113,11 @@ export class QrmenuCardComponent implements OnInit {
   }
 
   getMenuPublicUrl(menu: QrMenu) {
-    return environment.selfUrl + '/qr/' + menu.urlSuffix;
+    return `${environment.qrMenuUrl}/${menu.urlSuffix}`;
   }
 
   getMenuPreviewUrl(menu: QrMenu) {
-    return `http://localhost:9000/mealist-public/QrMenus/${menu.urlSuffix}/loadingPlaceholder.png`;
+    return `${environment.storageUrl}/mealist-public/QrMenus/${menu.urlSuffix}/loadingPlaceholder.png`;
   }
 
   openQrMenu(menu: QrMenu) {

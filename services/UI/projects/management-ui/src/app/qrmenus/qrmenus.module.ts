@@ -24,12 +24,6 @@ import { QrMenuFormStyleStepComponent } from './qrmenu-form/qrmenu-form-style-st
 import { QrMenuFormLoadingPreviewStepComponent } from './qrmenu-form/qrmenu-form-loading-preview-step/qrmenu-form-loading-preview-step.component';
 import { GradientBorderComponent } from '../../../../qrmenu-lib/src/lib/gradient-border/gradient-border.component';
 import { QrMenuComponent } from '../../../../qrmenu-lib/src/lib/qrmenu/qrmenu.component';
-import { NgIconsModule } from '@ng-icons/core';
-import {
-  heroArrowLeft,
-  heroEye,
-  heroClipboard,
-} from '@ng-icons/heroicons/outline';
 
 @NgModule({
   declarations: [
@@ -56,7 +50,6 @@ import {
     ReactiveFormsModule,
     FormsModule,
     MccColorPickerModule,
-    NgIconsModule.withIcons({ heroArrowLeft, heroEye, heroClipboard }),
     TranslateModule.forRoot({
       defaultLanguage: 'ru',
       loader: {

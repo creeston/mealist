@@ -30,18 +30,23 @@ export class QrmenuViewerComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.qrSuffix = params['qrSuffix'];
       this.loadingPlaceholderUrl = `http://localhost:9000/mealist-public/QrMenus/${this.qrSuffix}/loadingPlaceholder.png`;
-      this.qrService.getQrMenuBySuffix(this.qrSuffix).subscribe((qrMenu) => {
-        if (qrMenu) {
-          this.qrMenu = {
-            title: qrMenu.title,
-            restaurant: qrMenu.restaurant as RestaurantInfo,
-            sectionsToShow: qrMenu.sectionsToShow,
-            style: qrMenu.style,
-            menus: qrMenu.menus,
-          } as QrMenuSpecification;
-        } else {
-          this.router.navigate(['not-found']);
-        }
+      this.qrService.getQrMenuBySuffix(this.qrSuffix).subscribe({
+        next: (qrMenu) => {
+          if (qrMenu) {
+            this.qrMenu = {
+              title: qrMenu.title,
+              restaurant: qrMenu.restaurant as RestaurantInfo,
+              sectionsToShow: qrMenu.sectionsToShow,
+              style: qrMenu.style,
+              menus: qrMenu.menus,
+            } as QrMenuSpecification;
+          } else {
+            this.router.navigate(['']);
+          }
+        },
+        error: (error) => {
+          this.router.navigate(['']);
+        },
       });
     });
   }

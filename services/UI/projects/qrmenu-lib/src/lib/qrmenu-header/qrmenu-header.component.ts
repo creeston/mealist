@@ -2,12 +2,13 @@ import { Component, Input } from '@angular/core';
 import { RestaurantInfo } from '../../models/restaurant-info';
 import { QrMenuStyle } from '../../models/qrmenu-style';
 import { CommonModule } from '@angular/common';
-import { NgIconsModule } from '@ng-icons/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'lib-menu-header',
   standalone: true,
-  imports: [CommonModule, NgIconsModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule],
   templateUrl: './qrmenu-header.component.html',
   styleUrl: './qrmenu-header.component.scss',
 })

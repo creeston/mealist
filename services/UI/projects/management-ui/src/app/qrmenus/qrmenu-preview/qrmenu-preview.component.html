@@ -14,13 +14,7 @@
         >
           <div id="smartphonePlaceholder" class="placeholder ratchet">
             <div class="angularPreviewWrapper compiled custom-scrollbar">
-              <app-qr-menu
-                [previewMode]="true"
-                [qrMenuParam]="qrmenu"
-                [previewImageParam]="previewImageParam"
-                [menuLoading]="menuLoading"
-                (colorDetected)="onColorDetected($event)"
-              ></app-qr-menu>
+              <app-qr-menu [previewMode]="true" [qrMenu]="qrmenu"></app-qr-menu>
             </div>
           </div>
         </div>
